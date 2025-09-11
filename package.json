@@ -1,0 +1,18 @@
+{
+  "name": "webflow-gunther-map",
+  "version": "1.0.0",
+  "description": "Webflow scripts with hot reload development",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && git add dist && git commit -m \"Deploy build\" && git push",
+    "new-script": "webflow-scripts new",
+    "embed-code": "webflow-scripts embed",
+    "test-connection": "webflow-scripts test"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
