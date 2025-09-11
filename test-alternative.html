@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Pages 3D Map Test</title>
+    <title>Alternative 3D Map Test</title>
     <style>
         * {
             margin: 0;
@@ -80,9 +80,9 @@
 <body>
     <div class="page_wrap">
         <header class="test-header">
-            <h1>🗺️ GitHub Pages 3D Map Test</h1>
-            <p>Loading your actual Bremerhaven and Goetheviertel 3D models from GitHub Pages with CORS support!</p>
-            <p><strong>Ready for Webflow!</strong> This is exactly how it will work on your homepage.</p>
+            <h1>🗺️ Alternative 3D Map Test</h1>
+            <p>Testing different loading approaches for the 3D models. This version uses local files and fallback strategies.</p>
+            <p><strong>Trying multiple approaches to ensure model loading works!</strong></p>
         </header>
         
         <div class="status" id="status">
@@ -90,11 +90,11 @@
         </div>
         
         <div class="controls">
-            <div><strong>Model Controls:</strong></div>
-            <button class="btn" onclick="loadBremerhaven()">Load Bremerhaven</button>
-            <button class="btn" onclick="loadGoetheviertel()">Load Goetheviertel</button>
+            <div><strong>Test Options:</strong></div>
+            <button class="btn" onclick="loadLocalBremerhaven()">Load Local Bremerhaven</button>
+            <button class="btn" onclick="loadGitHubBremerhaven()">Load GitHub Bremerhaven</button>
+            <button class="btn" onclick="loadGoetheviertel()">Load Goetheviertel GLB</button>
             <button class="btn" onclick="resetCamera()">Reset View</button>
-            <button class="btn" onclick="toggleWireframe()">Wireframe</button>
             <button class="btn" onclick="showInfo()">Debug Info</button>
         </div>
     </div>
@@ -108,10 +108,11 @@
         const statusEl = document.getElementById('status');
         let scene, camera, renderer, controls, currentModel;
         
-        // GitHub raw URLs with specific commit hash for reliability
+        // Multiple URL options to try - now with texture fixes!
         const MODEL_URLS = {
-            bremerhaven: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/6d1d1bf/public/Bremerhaven_250731_github.gltf',
-            goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/6d1d1bf/public/Goetheviertel_250812.glb'
+            localBremerhaven: '/public/Bremerhaven_250731_local.gltf',
+            githubBremerhaven: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Bremerhaven_250731_fixed.gltf',
+            goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb'
         };
         
         function updateStatus(msg) {
@@ -119,8 +120,8 @@
             console.log(msg);
         }
         
-        function loadModel(url, name) {
-            updateStatus(`🔄 Loading ${name} from GitHub Pages...`);
+        function loadModel(url, name, isLocal = false) {
+            updateStatus(`🔄 Loading ${name}...`);
             
             // Remove existing model
             if (currentModel) {
@@ -134,6 +135,7 @@
             dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
             dracoLoader.preload();
             loader.setDRACOLoader(dracoLoader);
+            
             loader.load(
                 url,
                 (gltf) => {
@@ -153,7 +155,6 @@
                     
                     // Enhance materials and count meshes
                     let meshCount = 0;
-                    let textureCount = 0;
                     currentModel.traverse((child) => {
                         if (child.isMesh) {
                             meshCount++;
@@ -164,7 +165,6 @@
                                 child.material.needsUpdate = true;
                                 if (child.material.map) {
                                     child.material.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
-                                    textureCount++;
                                 }
                             }
                         }
@@ -172,20 +172,14 @@
                     
                     scene.add(currentModel);
                     
-                    // Reset camera to good viewing position
+                    // Reset camera
                     camera.position.set(0, size.y * scale * 0.5, size.z * scale * 1.2);
                     camera.lookAt(0, 0, 0);
                     controls.update();
                     
-                    updateStatus(`🎉 ${name} ready!<br/>📦 Meshes: ${meshCount}<br/>🎨 Textures: ${textureCount}<br/>📏 Scale: ${scale.toFixed(2)}x<br/>📍 Size: ${size.x.toFixed(0)} x ${size.y.toFixed(0)} x ${size.z.toFixed(0)}`);
+                    updateStatus(`🎉 ${name} loaded successfully!<br/>📦 Meshes: ${meshCount}<br/>📏 Scale: ${scale.toFixed(2)}x<br/>🌐 Source: ${isLocal ? 'Local' : 'GitHub'}`);
                     
-                    // Store globally for debugging
                     window.map3dScene = { scene, camera, renderer, controls, model: currentModel };
-                    
-                    // Dispatch event
-                    window.dispatchEvent(new CustomEvent('map3dLoaded', {
-                        detail: { model: currentModel, scene, camera, renderer, controls, name }
-                    }));
                 },
                 (progress) => {
                     if (progress.total > 0) {
@@ -197,7 +191,15 @@
                 },
                 (error) => {
                     console.error(`${name} loading error:`, error);
-                    updateStatus(`❌ Failed to load ${name}:<br/>${error.message}<br/><br/>💡 GitHub Pages may take a few minutes to update after push.`);
+                    updateStatus(`❌ Failed to load ${name}:<br/>${error.message}<br/><br/>💡 Trying alternative approach...`);
+                    
+                    // If GitHub fails, try a different approach
+                    if (!isLocal && name.includes('Bremerhaven')) {
+                        updateStatus(`🔄 GitHub failed, trying local files...`);
+                        setTimeout(() => {
+                            loadModel(MODEL_URLS.localBremerhaven, 'Local Bremerhaven', true);
+                        }, 1000);
+                    }
                 }
             );
         }
@@ -251,14 +253,6 @@
                 const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
                 directionalLight.position.set(200, 200, 100);
                 directionalLight.castShadow = true;
-                directionalLight.shadow.mapSize.width = 2048;
-                directionalLight.shadow.mapSize.height = 2048;
-                directionalLight.shadow.camera.near = 0.5;
-                directionalLight.shadow.camera.far = 1000;
-                directionalLight.shadow.camera.left = -200;
-                directionalLight.shadow.camera.right = 200;
-                directionalLight.shadow.camera.top = 200;
-                directionalLight.shadow.camera.bottom = -200;
                 scene.add(directionalLight);
                 
                 const fillLight = new THREE.DirectionalLight(0x87ceeb, 0.4);
@@ -280,12 +274,7 @@
                     renderer.setSize(window.innerWidth, window.innerHeight);
                 });
                 
-                updateStatus('✅ 3D scene ready! Click buttons to load models from GitHub Pages.');
-                
-                // Auto-load Bremerhaven after a short delay
-                setTimeout(() => {
-                    loadModel(MODEL_URLS.bremerhaven, 'Bremerhaven');
-                }, 1000);
+                updateStatus('✅ 3D scene ready! Try loading models with the buttons.');
                 
             } catch (error) {
                 console.error('Init error:', error);
@@ -294,12 +283,16 @@
         }
         
         // Global functions for controls
-        window.loadBremerhaven = function() {
-            loadModel(MODEL_URLS.bremerhaven, 'Bremerhaven');
+        window.loadLocalBremerhaven = function() {
+            loadModel(MODEL_URLS.localBremerhaven, 'Local Bremerhaven', true);
+        };
+        
+        window.loadGitHubBremerhaven = function() {
+            loadModel(MODEL_URLS.githubBremerhaven, 'GitHub Bremerhaven', false);
         };
         
         window.loadGoetheviertel = function() {
-            loadModel(MODEL_URLS.goetheviertel, 'Goetheviertel');
+            loadModel(MODEL_URLS.goetheviertel, 'Goetheviertel GLB', false);
         };
         
         window.resetCamera = function() {
@@ -311,38 +304,23 @@
             }
         };
         
-        window.toggleWireframe = function() {
-            if (currentModel) {
-                let wireframe = false;
-                currentModel.traverse((child) => {
-                    if (child.isMesh && child.material) {
-                        child.material.wireframe = !child.material.wireframe;
-                        wireframe = child.material.wireframe;
-                    }
-                });
-                updateStatus(`🔧 Wireframe mode: ${wireframe ? 'ON' : 'OFF'}`);
-            }
-        };
-        
         window.showInfo = function() {
             const info = [
                 `🌐 Three.js Version: ${THREE.REVISION}`,
                 `📱 Screen: ${window.innerWidth}x${window.innerHeight}`,
-                `🎮 WebGL: ${renderer.capabilities.isWebGL2 ? '2.0' : '1.0'}`,
                 `🔺 Triangles: ${renderer.info.render.triangles}`,
-                `📦 Geometries: ${renderer.info.memory.geometries}`,
-                `🎨 Textures: ${renderer.info.memory.textures}`,
-                `📍 Camera: (${camera.position.x.toFixed(0)}, ${camera.position.y.toFixed(0)}, ${camera.position.z.toFixed(0)})`,
-                `🗺️ Models Available:`,
-                `  • Bremerhaven (GLTF)`,
-                `  • Goetheviertel (GLB)`,
-                `🌐 GitHub Pages: CORS enabled ✅`
+                `📦 Models Available:`,
+                `  • Local Bremerhaven (relative path)`,
+                `  • GitHub Bremerhaven (absolute URLs)`,
+                `  • Goetheviertel GLB`,
+                `🔧 Commit: 6d1d1bf`,
+                `🌐 Testing multiple loading strategies`
             ];
             alert(info.join('\n'));
         };
         
         // Initialize
-        updateStatus('🚀 Initializing GitHub Pages 3D map...');
+        updateStatus('🚀 Initializing alternative loading test...');
         initMap();
     </script>
 </body>

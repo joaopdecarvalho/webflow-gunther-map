@@ -92,9 +92,9 @@
         this.container = null;
         this.animationId = null;
         
-        // Production model URLs from GitHub (with absolute bin file URLs)
+        // Production model URLs from GitHub (with absolute texture and bin file URLs)
         this.modelUrls = {
-          bremerhaven: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Bremerhaven_250731_github.gltf',
+          bremerhaven: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Bremerhaven_250731_fixed.gltf',
           goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb'
         };
         
