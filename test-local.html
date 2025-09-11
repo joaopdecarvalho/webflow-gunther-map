@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local 3D Map Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .page_wrap {
+            position: relative;
+            z-index: 10;
+            pointer-events: auto;
+        }
+        
+        .test-header {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 100;
+            font-family: monospace;
+            max-width: 400px;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 100;
+        }
+        
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 2px;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="page_wrap">
+        <header class="test-header">
+            <h1>🗺️ Local 3D Map Test</h1>
+            <p>Testing the Bremerhaven 3D map using local Three.js installation</p>
+        </header>
+        
+        <div class="status" id="status">
+            Status: Starting...
+        </div>
+        
+        <div class="controls">
+            <div><strong>Test Controls:</strong></div>
+            <button class="btn" onclick="resetCamera()">Reset View</button>
+            <button class="btn" onclick="toggleWireframe()">Wireframe</button>
+            <button class="btn" onclick="showInfo()">Debug Info</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from '/node_modules/three/build/three.module.js';
+        import { GLTFLoader } from '/node_modules/three/examples/jsm/loaders/GLTFLoader.js';
+        import { OrbitControls } from '/node_modules/three/examples/jsm/controls/OrbitControls.js';
+        
+        const statusEl = document.getElementById('status');
+        let scene, camera, renderer, controls, model;
+        
+        function updateStatus(msg) {
+            statusEl.innerHTML = 'Status: ' + msg;
+            console.log(msg);
+        }
+        
+        function initMap() {
+            try {
+                updateStatus('Creating 3D scene...');
+                
+                // Create container
+                const container = document.createElement('div');
+                container.id = 'map-3d-container';
+                container.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    z-index: -1;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                `;
+                document.body.insertBefore(container, document.body.firstChild);
+                
+                // Create scene
+                scene = new THREE.Scene();
+                scene.fog = new THREE.Fog(0x667eea, 100, 2000);
+                
+                // Create camera
+                camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10000);
+                camera.position.set(0, 150, 300);
+                
+                // Create renderer
+                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                container.appendChild(renderer.domElement);
+                
+                // Add controls
+                controls = new OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.05;
+                controls.minDistance = 50;
+                controls.maxDistance = 2000;
+                
+                // Add lighting
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.8);
+                scene.add(ambientLight);
+                
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+                directionalLight.position.set(200, 300, 200);
+                scene.add(directionalLight);
+                
+                const fillLight = new THREE.DirectionalLight(0x87ceeb, 0.4);
+                fillLight.position.set(-100, 100, -100);
+                scene.add(fillLight);
+                
+                updateStatus('Loading 3D model from CloudFront...');
+                
+                // Load the model
+                const loader = new GLTFLoader();
+                loader.load(
+                    'https://d3uoa9ify8080u.cloudfront.net/Bremerhaven_250731.gltf',
+                    (gltf) => {
+                        updateStatus('Model loaded! Processing geometry...');
+                        
+                        model = gltf.scene;
+                        
+                        // Scale and center the model
+                        const box = new THREE.Box3().setFromObject(model);
+                        const size = box.getSize(new THREE.Vector3());
+                        const maxSize = Math.max(size.x, size.y, size.z);
+                        const scale = 100 / maxSize;
+                        model.scale.setScalar(scale);
+                        
+                        const center = box.getCenter(new THREE.Vector3());
+                        model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+                        
+                        // Enhance materials
+                        let meshCount = 0;
+                        model.traverse((child) => {
+                            if (child.isMesh) {
+                                meshCount++;
+                                child.castShadow = true;
+                                child.receiveShadow = true;
+                                
+                                if (child.material) {
+                                    child.material.needsUpdate = true;
+                                    // Enhance the material
+                                    if (child.material.map) {
+                                        child.material.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                                    }
+                                }
+                            }
+                        });
+                        
+                        scene.add(model);
+                        updateStatus(`🎉 3D Map loaded successfully!<br/>Model: Bremerhaven_250731.gltf<br/>Meshes: ${meshCount}<br/>Scale: ${scale.toFixed(2)}x`);
+                        
+                        // Store globally for debugging
+                        window.map3dScene = { scene, camera, renderer, controls, model };
+                        
+                        // Dispatch event
+                        window.dispatchEvent(new CustomEvent('map3dLoaded', {
+                            detail: { model, scene, camera, renderer, controls }
+                        }));
+                    },
+                    (progress) => {
+                        if (progress.total > 0) {
+                            const percent = Math.round((progress.loaded / progress.total) * 100);
+                            const loaded = (progress.loaded / 1024 / 1024).toFixed(1);
+                            const total = (progress.total / 1024 / 1024).toFixed(1);
+                            updateStatus(`Loading model: ${percent}%<br/>${loaded}MB / ${total}MB`);
+                        }
+                    },
+                    (error) => {
+                        console.error('Model loading error:', error);
+                        updateStatus(`❌ Failed to load 3D model:<br/>${error.message}`);
+                    }
+                );
+                
+                // Animation loop
+                function animate() {
+                    requestAnimationFrame(animate);
+                    controls.update();
+                    renderer.render(scene, camera);
+                }
+                animate();
+                
+                // Handle resize
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+                
+                updateStatus('✅ 3D scene initialized, loading model...');
+                
+            } catch (error) {
+                console.error('Init error:', error);
+                updateStatus(`❌ Initialization failed:<br/>${error.message}`);
+            }
+        }
+        
+        // Global functions for controls
+        window.resetCamera = function() {
+            if (camera && controls) {
+                camera.position.set(0, 150, 300);
+                camera.lookAt(0, 0, 0);
+                controls.reset();
+                updateStatus('📷 Camera reset to default position');
+            }
+        };
+        
+        window.toggleWireframe = function() {
+            if (model) {
+                let wireframe = false;
+                model.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        child.material.wireframe = !child.material.wireframe;
+                        wireframe = child.material.wireframe;
+                    }
+                });
+                updateStatus(`🔧 Wireframe mode: ${wireframe ? 'ON' : 'OFF'}`);
+            }
+        };
+        
+        window.showInfo = function() {
+            if (window.map3dScene) {
+                const info = [
+                    `🌐 Three.js Version: ${THREE.REVISION}`,
+                    `📱 Screen: ${window.innerWidth}x${window.innerHeight}`,
+                    `🎮 WebGL: ${renderer.capabilities.isWebGL2 ? '2.0' : '1.0'}`,
+                    `🔺 Triangles: ${renderer.info.render.triangles}`,
+                    `📦 Geometries: ${renderer.info.memory.geometries}`,
+                    `🎨 Textures: ${renderer.info.memory.textures}`,
+                    `📍 Camera: (${camera.position.x.toFixed(0)}, ${camera.position.y.toFixed(0)}, ${camera.position.z.toFixed(0)})`
+                ];
+                alert(info.join('\n'));
+            }
+        };
+        
+        // Initialize when DOM is ready
+        updateStatus('🚀 Initializing Three.js modules...');
+        initMap();
+    </script>
+</body>
+</html>

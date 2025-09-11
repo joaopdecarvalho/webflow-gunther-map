@@ -14,5 +14,9 @@
   },
   "devDependencies": {
     "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "three": "^0.180.0",
+    "webflow-mcp-server": "^0.7.0"
   }
 }

@@ -12,9 +12,17 @@
   // Scripts that load on EVERY page
   window.globalScripts = ['alert'];  // Add your global scripts here
   
+  // Page-specific scripts and styles
+  const isHomePage = window.location.pathname === '/' || window.location.pathname === '';
+  if (isHomePage) {
+    window.pageScripts = ['3d-map'];
+    window.pageStyles = ['3d-map'];
+  }
+  
   // Load the router
   const script = document.createElement('script');
   script.src = baseUrl + '/router.js';
   document.head.appendChild(script);
 })();
 </script>
+

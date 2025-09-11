@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Working 3D Map Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .page_wrap {
+            position: relative;
+            z-index: 10;
+            pointer-events: auto;
+        }
+        
+        .test-header {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 100;
+            font-family: monospace;
+            max-width: 400px;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 100;
+        }
+        
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 2px;
+            display: block;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="page_wrap">
+        <header class="test-header">
+            <h1>🗺️ Working 3D Map Demo</h1>
+            <p>This demonstrates the 3D map functionality with a procedural city while we fix the CORS issue with your Bremerhaven model.</p>
+            <p><strong>Next step:</strong> Upload your GLTF file to a CORS-enabled server or configure CloudFront CORS headers.</p>
+        </header>
+        
+        <div class="status" id="status">
+            Status: Starting...
+        </div>
+        
+        <div class="controls">
+            <div><strong>Demo Controls:</strong></div>
+            <button class="btn" onclick="resetCamera()">Reset View</button>
+            <button class="btn" onclick="toggleWireframe()">Wireframe</button>
+            <button class="btn" onclick="addBuilding()">Add Building</button>
+            <button class="btn" onclick="tryLoadGLTF()">Try Load GLTF</button>
+            <button class="btn" onclick="showInfo()">Debug Info</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from '/node_modules/three/build/three.module.js';
+        import { GLTFLoader } from '/node_modules/three/examples/jsm/loaders/GLTFLoader.js';
+        import { OrbitControls } from '/node_modules/three/examples/jsm/controls/OrbitControls.js';
+        
+        const statusEl = document.getElementById('status');
+        let scene, camera, renderer, controls, cityGroup;
+        let buildingCount = 0;
+        
+        function updateStatus(msg) {
+            statusEl.innerHTML = 'Status: ' + msg;
+            console.log(msg);
+        }
+        
+        function createProceduralCity() {
+            updateStatus('🏗️ Creating procedural city as placeholder...');
+            
+            cityGroup = new THREE.Group();
+            
+            // Create a base plane (ground)
+            const groundGeometry = new THREE.PlaneGeometry(200, 200);
+            const groundMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x4a5d23,
+                transparent: true,
+                opacity: 0.8
+            });
+            const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = -Math.PI / 2;
+            cityGroup.add(ground);
+            
+            // Create buildings in a grid
+            const colors = [0x8b9dc3, 0xdbc2cf, 0xf4e4c1, 0xa8c8a5, 0xff9999];
+            
+            for (let x = -50; x <= 50; x += 15) {
+                for (let z = -50; z <= 50; z += 15) {
+                    if (Math.random() > 0.3) { // 70% chance of building
+                        const height = 5 + Math.random() * 25;
+                        const width = 3 + Math.random() * 8;
+                        const depth = 3 + Math.random() * 8;
+                        
+                        const buildingGeometry = new THREE.BoxGeometry(width, height, depth);
+                        const buildingMaterial = new THREE.MeshLambertMaterial({ 
+                            color: colors[Math.floor(Math.random() * colors.length)],
+                            transparent: true,
+                            opacity: 0.9
+                        });
+                        
+                        const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
+                        building.position.set(
+                            x + (Math.random() - 0.5) * 5,
+                            height / 2,
+                            z + (Math.random() - 0.5) * 5
+                        );
+                        
+                        cityGroup.add(building);
+                        buildingCount++;
+                    }
+                }
+            }
+            
+            // Add some trees/details
+            for (let i = 0; i < 20; i++) {
+                const treeGeometry = new THREE.ConeGeometry(2, 8, 8);
+                const treeMaterial = new THREE.MeshLambertMaterial({ color: 0x228b22 });
+                const tree = new THREE.Mesh(treeGeometry, treeMaterial);
+                
+                tree.position.set(
+                    (Math.random() - 0.5) * 180,
+                    4,
+                    (Math.random() - 0.5) * 180
+                );
+                
+                cityGroup.add(tree);
+            }
+            
+            scene.add(cityGroup);
+            updateStatus(`🏙️ Procedural city created!<br/>Buildings: ${buildingCount}<br/>Trees: 20<br/><br/>This demonstrates the 3D map concept.<br/>UI elements stay above the 3D scene.`);
+        }
+        
+        function initMap() {
+            try {
+                updateStatus('🚀 Creating 3D scene...');
+                
+                // Create container
+                const container = document.createElement('div');
+                container.id = 'map-3d-container';
+                container.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    z-index: -1;
+                    background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0E68C 100%);
+                `;
+                document.body.insertBefore(container, document.body.firstChild);
+                
+                // Create scene
+                scene = new THREE.Scene();
+                scene.fog = new THREE.Fog(0x87CEEB, 50, 300);
+                
+                // Create camera
+                camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.set(50, 80, 100);
+                
+                // Create renderer
+                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                renderer.shadowMap.enabled = true;
+                renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                container.appendChild(renderer.domElement);
+                
+                // Add controls
+                controls = new OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.05;
+                controls.minDistance = 20;
+                controls.maxDistance = 500;
+                controls.maxPolarAngle = Math.PI / 2.1;
+                
+                // Add lighting
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+                scene.add(ambientLight);
+                
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+                directionalLight.position.set(100, 100, 50);
+                directionalLight.castShadow = true;
+                directionalLight.shadow.mapSize.width = 2048;
+                directionalLight.shadow.mapSize.height = 2048;
+                directionalLight.shadow.camera.near = 0.5;
+                directionalLight.shadow.camera.far = 500;
+                directionalLight.shadow.camera.left = -100;
+                directionalLight.shadow.camera.right = 100;
+                directionalLight.shadow.camera.top = 100;
+                directionalLight.shadow.camera.bottom = -100;
+                scene.add(directionalLight);
+                
+                // Animation loop
+                function animate() {
+                    requestAnimationFrame(animate);
+                    controls.update();
+                    renderer.render(scene, camera);
+                }
+                animate();
+                
+                // Handle resize
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+                
+                updateStatus('✅ 3D scene ready!');
+                
+                // Create the procedural city
+                setTimeout(createProceduralCity, 500);
+                
+                // Store globally for debugging
+                window.map3dScene = { scene, camera, renderer, controls, cityGroup };
+                
+            } catch (error) {
+                console.error('Init error:', error);
+                updateStatus(`❌ Initialization failed:<br/>${error.message}`);
+            }
+        }
+        
+        // Global functions for controls
+        window.resetCamera = function() {
+            if (camera && controls) {
+                camera.position.set(50, 80, 100);
+                camera.lookAt(0, 0, 0);
+                controls.reset();
+                updateStatus('📷 Camera reset to default position');
+            }
+        };
+        
+        window.toggleWireframe = function() {
+            if (cityGroup) {
+                let wireframe = false;
+                cityGroup.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        child.material.wireframe = !child.material.wireframe;
+                        wireframe = child.material.wireframe;
+                    }
+                });
+                updateStatus(`🔧 Wireframe mode: ${wireframe ? 'ON' : 'OFF'}`);
+            }
+        };
+        
+        window.addBuilding = function() {
+            if (cityGroup) {
+                const height = 5 + Math.random() * 20;
+                const buildingGeometry = new THREE.BoxGeometry(4, height, 4);
+                const buildingMaterial = new THREE.MeshLambertMaterial({ 
+                    color: Math.random() * 0xffffff 
+                });
+                
+                const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
+                building.position.set(
+                    (Math.random() - 0.5) * 150,
+                    height / 2,
+                    (Math.random() - 0.5) * 150
+                );
+                building.castShadow = true;
+                building.receiveShadow = true;
+                
+                cityGroup.add(building);
+                buildingCount++;
+                updateStatus(`🏢 Added building! Total: ${buildingCount}`);
+            }
+        };
+        
+        window.tryLoadGLTF = function() {
+            const loader = new GLTFLoader();
+            updateStatus('🔄 Attempting to load your GLTF model...');
+            
+            // Try your original URL with better error handling
+            loader.load(
+                'https://d3uoa9ify8080u.cloudfront.net/Bremerhaven_250731.gltf',
+                (gltf) => {
+                    // Remove existing city
+                    if (cityGroup) {
+                        scene.remove(cityGroup);
+                    }
+                    
+                    const model = gltf.scene;
+                    const box = new THREE.Box3().setFromObject(model);
+                    const size = box.getSize(new THREE.Vector3());
+                    const maxSize = Math.max(size.x, size.y, size.z);
+                    const scale = 50 / maxSize;
+                    model.scale.setScalar(scale);
+                    
+                    const center = box.getCenter(new THREE.Vector3());
+                    model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+                    
+                    scene.add(model);
+                    cityGroup = model;
+                    
+                    updateStatus('🎉 GLTF model loaded successfully!');
+                },
+                (progress) => {
+                    const percent = progress.total > 0 ? Math.round((progress.loaded / progress.total) * 100) : 0;
+                    updateStatus(`Loading GLTF: ${percent}%`);
+                },
+                (error) => {
+                    console.error('GLTF Error:', error);
+                    updateStatus(`❌ GLTF load failed: ${error.message}<br/><br/>💡 <strong>Solution:</strong><br/>1. Upload GLTF to GitHub Pages<br/>2. Or configure CORS on CloudFront<br/>3. Or host on cors-anywhere.herokuapp.com`);
+                }
+            );
+        };
+        
+        window.showInfo = function() {
+            const info = [
+                `🌐 Three.js Version: ${THREE.REVISION}`,
+                `📱 Screen: ${window.innerWidth}x${window.innerHeight}`,
+                `🎮 WebGL: ${renderer.capabilities.isWebGL2 ? '2.0' : '1.0'}`,
+                `🏢 Buildings: ${buildingCount}`,
+                `🔺 Triangles: ${renderer.info.render.triangles}`,
+                `📦 Geometries: ${renderer.info.memory.geometries}`,
+                `🎨 Textures: ${renderer.info.memory.textures}`,
+                `📍 Camera: (${camera.position.x.toFixed(0)}, ${camera.position.y.toFixed(0)}, ${camera.position.z.toFixed(0)})`
+            ];
+            alert(info.join('\n'));
+        };
+        
+        // Initialize
+        updateStatus('🚀 Initializing 3D map demo...');
+        initMap();
+    </script>
+</body>
+</html>
