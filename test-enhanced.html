@@ -104,6 +104,13 @@
             -ms-user-select: text; 
             user-select: text; 
         }
+        /* Allow text selection on copyable elements for fallback clipboard functionality */
+        .info-panels .copyable {
+            -webkit-user-select: text; 
+            -moz-user-select: text; 
+            -ms-user-select: text; 
+            user-select: text; 
+        }
         
         .info-panel {
             background: rgba(31, 41, 55, 0.85);
@@ -337,13 +344,19 @@
         body.drag-through-panels .info-panels .info-panel,
         body.drag-through-panels .controls-panel,
         body.drag-through-panels .test-header { pointer-events: none; }
+        
+        /* Re-enable pointer events for all interactive elements in drag-through mode */
         body.drag-through-panels .info-panels .info-panel button,
         body.drag-through-panels .info-panels .info-panel input,
         body.drag-through-panels .info-panels .info-panel select,
+        body.drag-through-panels .info-panels .info-panel .copyable,
+        body.drag-through-panels .info-panels .info-panel h3,
+        body.drag-through-panels .info-panels .info-panel .minimize-btn,
         body.drag-through-panels .controls-panel button,
         body.drag-through-panels .controls-panel input,
-    body.drag-through-panels .controls-panel select,
-    body.drag-through-panels .info-panels .info-panel .copyable { pointer-events: auto; }
+        body.drag-through-panels .controls-panel select,
+        body.drag-through-panels .controls-panel h3,
+        body.drag-through-panels .controls-panel .minimize-btn { pointer-events: auto; }
         body.drag-through-panels::after {
             content: 'Drag-Through Mode (press D to toggle, H hides UI)';
             position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
@@ -2260,6 +2273,9 @@
                 // Enable click-to-copy on camera info rows
                 setupCameraCopyHandlers();
                 
+                // Set up minimize button click handlers
+                setupMinimizeButtons();
+                
             } catch (error) {
                 console.error('Init error:', error);
                 updateModelStatus(`❌ Initialization failed:<br/>${error.message}`, true);
@@ -2426,21 +2442,32 @@
         
         // Reusable safe copy helper with fallback for non-secure contexts
         async function safeCopy(text) {
+            console.log('[safeCopy] Attempting to copy:', text.slice(0, 50) + '...');
+            
             // 1. Modern API (must be secure context: https or localhost)
             if (navigator.clipboard && window.isSecureContext) {
                 try {
                     await navigator.clipboard.writeText(text);
+                    console.log('[safeCopy] ✅ Clipboard API success');
                     return true;
                 } catch (err) {
                     console.warn('[safeCopy] navigator.clipboard failed, falling back', err);
                 }
+            } else {
+                console.log('[safeCopy] Clipboard API not available (secure context:', window.isSecureContext, 'clipboard:', !!navigator.clipboard, ')');
             }
+            
             // 2. Old IE / Edge HTML clipboardData
             try {
                 if (window.clipboardData && window.clipboardData.setData) {
-                    return window.clipboardData.setData('Text', text);
+                    const result = window.clipboardData.setData('Text', text);
+                    console.log('[safeCopy] clipboardData result:', result);
+                    return result;
                 }
-            } catch (err) { /* ignore */ }
+            } catch (err) { 
+                console.warn('[safeCopy] clipboardData failed', err);
+            }
+            
             // 3. execCommand fallback (must occur during a user gesture to be reliable)
             try {
                 const ta = document.createElement('textarea');
@@ -2454,10 +2481,13 @@
                 ta.setSelectionRange(0, ta.value.length);
                 const ok = document.execCommand('copy');
                 document.body.removeChild(ta);
+                console.log('[safeCopy] execCommand result:', ok);
                 if (ok) return true;
             } catch (err) {
                 console.warn('[safeCopy] execCommand fallback failed', err);
             }
+            
+            console.error('[safeCopy] ❌ All clipboard methods failed');
             return false;
         }
 
@@ -2505,6 +2535,27 @@
                     const ok = await safeCopy(text);
                     showToast(ok ? `${label} copied` : 'Copy failed');
                 });
+            });
+        }
+        
+        function setupMinimizeButtons() {
+            // Set up minimize button handlers for panels that don't have inline onclick
+            const buttons = [
+                { id: 'tips-btn', panelId: 'tips-panel' },
+                { id: 'model-status-btn', panelId: 'model-status-panel' },
+                { id: 'camera-btn', panelId: 'camera-panel' },
+                { id: 'animation-helper-btn', panelId: 'animation-helper-panel' },
+                { id: 'performance-btn', panelId: 'performance-panel' }
+            ];
+            
+            buttons.forEach(({ id, panelId }) => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        togglePanel(panelId);
+                    };
+                }
             });
         }
         
