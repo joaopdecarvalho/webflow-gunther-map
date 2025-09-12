@@ -342,7 +342,8 @@
         body.drag-through-panels .info-panels .info-panel select,
         body.drag-through-panels .controls-panel button,
         body.drag-through-panels .controls-panel input,
-        body.drag-through-panels .controls-panel select { pointer-events: auto; }
+    body.drag-through-panels .controls-panel select,
+    body.drag-through-panels .info-panels .info-panel .copyable { pointer-events: auto; }
         body.drag-through-panels::after {
             content: 'Drag-Through Mode (press D to toggle, H hides UI)';
             position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
@@ -2494,6 +2495,7 @@
             rows.forEach((row) => {
                 row.style.cursor = 'pointer';
                 row.title = 'Click to copy';
+                row.classList.add('copyable');
                 row.addEventListener('click', async () => {
                     const labelNode = row.childNodes[0];
                     const label = labelNode ? String(labelNode.textContent || '').replace(':','').trim() : 'Value';
