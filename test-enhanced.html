@@ -1244,128 +1244,19 @@
         // Auto-discover models in public folder
         async function discoverModels() {
             try {
-                updateModelStatus('🔍 Scanning for 3D models...');
+                updateModelStatus('✨ Loading available models...');
                 
-                let detectedFiles = [];
-                
-                // Method 1: Try to use our file listing API (served by Vite middleware)
-                try {
-                    const response = await fetch('/models-list.json');
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.success && data.models) {
-                            detectedFiles = data.models.map(filename => '/' + filename);
-                            console.log('✅ Found via API:', detectedFiles);
-                        }
-                    }
-                } catch (error) {
-                    console.warn('API listing failed:', error);
-                }
-                
-                // Method 2: If API failed, directly check your known files
-                if (detectedFiles.length === 0) {
-                    updateModelStatus('🔍 Checking known model files...');
-                    
-                    // List of your actual files (from ls command)
-                    const knownFiles = [
-                        'Goetheviertel_250812_with-textures.glb',
-                        'Goetheviertel_250812_with-textures_webp.glb',
-                        'Goetheviertel_250812_with-textures_webp15.glb',
-                        'Goetheviertel_250812_with-textures_webp25.glb',
-                        ...USER_MODELS  // Add any user-defined files
-                    ];
-                    
-                    // Test each known file
-                    for (const fileName of knownFiles) {
-                        try {
-                            const response = await fetch('/' + fileName, { method: 'HEAD' });
-                            if (response.ok) {
-                                detectedFiles.push('/' + fileName);
-                                console.log(`✅ Confirmed: ${fileName}`);
-                            }
-                        } catch (error) {
-                            console.log(`❌ Not found: ${fileName}`);
-                        }
-                    }
-                }
-                
-                // Method 3: If still no files, try a broader scan of common patterns
-                if (detectedFiles.length === 0) {
-                    updateModelStatus('🔍 Broad scan for any .glb/.gltf files...');
-                    
-                    // Common filename patterns people might use
-                    const commonPatterns = [];
-                    
-                    // Single letter files (a.glb, b.glb, etc.)
-                    for (let i = 0; i < 26; i++) {
-                        const letter = String.fromCharCode(97 + i);
-                        commonPatterns.push(`${letter}.glb`, `${letter}.gltf`);
-                    }
-                    
-                    // Numbered files (1.glb, 2.glb, model1.glb, etc.)
-                    for (let i = 1; i <= 20; i++) {
-                        commonPatterns.push(`${i}.glb`, `${i}.gltf`);
-                        commonPatterns.push(`model${i}.glb`, `model${i}.gltf`);
-                        commonPatterns.push(`test${i}.glb`, `test${i}.gltf`);
-                    }
-                    
-                    // Common prefixes with common suffixes
-                    const prefixes = ['model', 'scene', 'building', 'city', 'test', 'demo', 'sample'];
-                    const suffixes = ['', '_final', '_v1', '_v2', '_optimized'];
-                    
-                    prefixes.forEach(prefix => {
-                        suffixes.forEach(suffix => {
-                            commonPatterns.push(`${prefix}${suffix}.glb`);
-                            commonPatterns.push(`${prefix}${suffix}.gltf`);
-                        });
-                    });
-                    
-                    // Test patterns in small batches
-                    const batchSize = 10;
-                    for (let i = 0; i < commonPatterns.length; i += batchSize) {
-                        const batch = commonPatterns.slice(i, i + batchSize);
-                        
-                        for (const fileName of batch) {
-                            try {
-                                const response = await fetch('/' + fileName, { method: 'HEAD' });
-                                if (response.ok && !detectedFiles.includes('/' + fileName)) {
-                                    detectedFiles.push('/' + fileName);
-                                    console.log(`✅ Found: ${fileName}`);
-                                }
-                            } catch (error) {
-                                // File doesn't exist, continue
-                            }
-                        }
-                        
-                        // Show progress
-                        const progress = Math.round((i + batchSize) / commonPatterns.length * 100);
-                        updateModelStatus(`🔍 Scanning... ${Math.min(progress, 100)}% (${detectedFiles.length} found)`);
-                        
-                        // Small delay to avoid overwhelming requests
-                        await new Promise(resolve => setTimeout(resolve, 50));
-                    }
-                }
-                
-                const modelFiles = detectedFiles;
-                
-                // Add known GitHub models (only ones that exist on GitHub)
-                const githubModels = [
-                    {
-                        name: 'Goetheviertel WebP',
-                        url: './public/Goetheviertel_250812_with-textures_webp.glb',
-                        key: 'goetheviertel_webp'
-                    },
-                    {
-                        name: 'Goetheviertel WebP15',
-                        url: './public/Goetheviertel_250812_with-textures_webp15.glb',
-                        key: 'goetheviertel_webp15'
-                    },
-                    {
-                        name: 'Goetheviertel WebP25',
-                        url: './public/Goetheviertel_250812_with-textures_webp25.glb',
-                        key: 'goetheviertel_webp25'
-                    }
+                // Direct list of your 4 models in the public folder
+                const modelFiles = [
+                    './public/Goetheviertel_250812_with-textures.glb',
+                    './public/Goetheviertel_250812_with-textures_webp.glb',
+                    './public/Goetheviertel_250812_with-textures_webp15.glb',
+                    './public/Goetheviertel_250812_with-textures_webp25.glb'
                 ];
+                
+                console.log('✅ Loading models:', modelFiles);
+                
+                // No need for separate GitHub models - using direct paths above
                 
                 // Create model entries
                 availableModels = [];
@@ -1423,36 +1314,15 @@
                     console.log('🎯 Latest local model detected:', latestLocal.name, 'priority:', latestLocal.priority);
                 }
                 
-                // Add GitHub models
-                githubModels.forEach(model => {
-                    availableModels.push({
-                        key: model.key,
-                        name: model.name,
-                        url: model.url,
-                        type: model.url.endsWith('.glb') ? 'GLB' : 'GLTF',
-                        source: 'GitHub'
-                    });
-                    MODEL_URLS[model.key] = model.url;
-                });
-                
-                // Sort models: Local by priority (newest first), then GitHub by name
-                availableModels.sort((a, b) => {
-                    if (a.source === 'Local' && b.source === 'Local') {
-                        return (b.priority || 0) - (a.priority || 0); // Highest priority first
-                    }
-                    if (a.source !== b.source) {
-                        return a.source === 'Local' ? -1 : 1; // Local models first
-                    }
-                    return a.name.localeCompare(b.name);
-                });
+                // Sort models by priority (newest first)
+                availableModels.sort((a, b) => (b.priority || 0) - (a.priority || 0));
                 
                 // Update UI
                 populateModelSelectors();
                 
-                const localCount = availableModels.filter(m => m.source === 'Local').length;
-                const githubCount = availableModels.filter(m => m.source === 'GitHub').length;
+                const modelCount = availableModels.length;
                 
-                updateModelStatus(`✅ Found ${availableModels.length} models! (${localCount} local, ${githubCount} GitHub)<br/>🎮 Ready to test any model you add to the public folder.`);
+                updateModelStatus(`✅ Found ${modelCount} models! 🎮 Ready to test.`);
                 
                 // Auto-load the latest model if available
                 if (latestModelKey && availableModels.find(m => m.key === latestModelKey)) {
