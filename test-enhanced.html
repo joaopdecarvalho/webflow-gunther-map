@@ -1390,6 +1390,53 @@
                 return 7.5625 * (t -= 2.625/2.75) * t + 0.984375;
             }
         };
+
+        // Welcome animation - runs automatically when first model loads
+        let hasPlayedWelcomeAnimation = false;
+        function playWelcomeAnimation() {
+            if (hasPlayedWelcomeAnimation || !camera || !controls) return;
+            
+            hasPlayedWelcomeAnimation = true;
+            console.log('🎬 Starting welcome animation...');
+            
+            // Start position
+            const startPos = new THREE.Vector3(43.8, 38.1, 63.7);
+            const startTarget = new THREE.Vector3(3.5, -35.4, -14.7);
+            
+            // End position  
+            const endPos = new THREE.Vector3(15.2, 31.7, 17.3);
+            const endTarget = new THREE.Vector3(-0.8, -33.2, -15.3);
+            
+            // Set starting position
+            camera.position.copy(startPos);
+            controls.target.copy(startTarget);
+            controls.update();
+            
+            // Animate to end position over 1 second
+            const duration = 1000; // 1 second
+            const startTime = performance.now();
+            
+            const animate = () => {
+                const elapsed = performance.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easedProgress = EASING.easeInOut(progress);
+                
+                // Interpolate position
+                camera.position.lerpVectors(startPos, endPos, easedProgress);
+                
+                // Interpolate target
+                controls.target.lerpVectors(startTarget, endTarget, easedProgress);
+                controls.update();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    console.log('✅ Welcome animation complete');
+                }
+            };
+            
+            requestAnimationFrame(animate);
+        }
         
         // Comparison mode variables
         let isComparisonMode = false;
@@ -2085,6 +2132,9 @@
                         💾 Est. size: ${(fileSize / 1024 / 1024).toFixed(1)}MB<br/>
                         📍 Camera distance ${currentDistance.toFixed(1)} (preserved)
                     `);
+                    
+                    // Trigger welcome animation for first model load
+                    setTimeout(() => playWelcomeAnimation(), 500);
                     
                     window.map3dScene = { scene, camera, renderer, controls, model: currentModel };
                 },
