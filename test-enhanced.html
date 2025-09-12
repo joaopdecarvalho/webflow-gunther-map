@@ -164,6 +164,8 @@
                 <button class="btn" onclick="loadModel('local', 'Local Bremerhaven')">🏠 Load Local Bremerhaven</button>
                 <button class="btn" onclick="loadModel('github', 'GitHub Bremerhaven')">🌐 Load GitHub Bremerhaven</button>
                 <button class="btn" onclick="loadModel('goetheviertel', 'Goetheviertel GLB')">🏘️ Load Goetheviertel</button>
+                <button class="btn" onclick="loadModel('goetheviertel_textures', 'Goetheviertel w/ Textures')">🎨 Load Goetheviertel + Textures</button>
+                <button class="btn" onclick="loadModel('goetheviertel_webp', 'Goetheviertel WebP')">🖼️ Load Goetheviertel WebP</button>
                 <hr style="margin: 10px 0; border-color: #333;">
                 <button class="btn success" onclick="resetCamera()">📷 Reset Camera</button>
                 <button class="btn warning" onclick="toggleWireframe()">🔧 Toggle Wireframe</button>
@@ -191,7 +193,9 @@
         const MODEL_URLS = {
             local: '/Bremerhaven_250731_local.gltf',
             github: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Bremerhaven_250731_fixed.gltf',
-            goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb'
+            goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb',
+            goetheviertel_textures: '/Goetheviertel_250812_with-textures.glb',
+            goetheviertel_webp: '/Goetheviertel_250812_with-textures_webp.glb'
         };
         
         function updateModelStatus(msg, isError = false) {
