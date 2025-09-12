@@ -196,10 +196,8 @@
         }
         
         .controls-panel.minimized .refresh-icon {
-            top: 8px;
-            right: 52px;
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             font-size: 14px;
         }
         
@@ -628,28 +626,31 @@
         }
         
         .refresh-icon {
-            position: absolute;
-            top: 16px;
-            right: 60px;
+            position: static;
             background: rgba(107, 114, 128, 0.1);
             border: 1px solid rgba(107, 114, 128, 0.2);
             color: #6b7280;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border-radius: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             transition: all 0.3s ease;
-            z-index: 110;
         }
         
         .refresh-icon:hover {
             background: rgba(107, 114, 128, 0.2);
             border-color: rgba(107, 114, 128, 0.4);
             transform: rotate(180deg) scale(1.1);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .btn {
@@ -1014,10 +1015,70 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+
+        /* Tips floating panel */
+        .tips-panel {
+            position: fixed;
+            top: 32px; /* align with bottom panels padding */
+            left: 32px; /* upper-left corner */
+            background: rgba(31, 41, 55, 0.85);
+            color: #e5e7eb;
+            padding: 14px 16px;
+            border-radius: 16px;
+            width: 240px;
+            z-index: 110;
+            border: 1px solid rgba(75, 85, 99, 0.4);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 4px 12px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(12px);
+        }
+        .tips-panel h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: #f9fafb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(107, 114, 128, 0.3);
+            padding-bottom: 6px;
+            cursor: pointer;
+        }
+        .tips-panel .panel-content { font-size: 12px; line-height: 1.5; }
+        .tips-panel ul { margin: 6px 0 0 16px; }
+        .tips-panel li { margin: 4px 0; }
+        .tips-panel.minimized { padding: 10px 12px; }
+
+        @media (max-width: 768px) {
+            .tips-panel {
+                top: 16px;
+                left: 16px;
+                right: auto;
+                bottom: auto;
+                width: 200px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="page_wrap">
+        <!-- Floating Tips Panel -->
+        <div class="tips-panel" id="tips-panel">
+            <h3 onclick="togglePanel('tips-panel')">
+                <span>💡 Tips</span>
+                <button class="minimize-btn" id="tips-btn">−</button>
+            </h3>
+            <div class="panel-content">
+                <ul>
+                    <li>Left mouse: Orbit</li>
+                    <li>Right mouse: Pan</li>
+                    <li>Scroll: Zoom</li>
+                    <li>R: Reset camera</li>
+                    <li>W: Toggle wireframe</li>
+                </ul>
+            </div>
+        </div>
         
         <div class="info-panels">
             <div class="info-panel" id="model-status-panel">
@@ -1058,12 +1119,12 @@
         <div id="toast"></div>
 
         <div class="controls-panel" id="controls-panel">
-            <div class="refresh-icon" onclick="discoverModels()" title="Refresh Models">
-                🔄
-            </div>
             <h3 onclick="togglePanel('controls-panel')">
                 <span>Model Controls</span>
-                <button class="minimize-btn" id="controls-btn">−</button>
+                <span class="header-actions">
+                    <div class="refresh-icon" onclick="event.stopPropagation(); discoverModels();" title="Refresh Models">🔄</div>
+                    <button class="minimize-btn" id="controls-btn" onclick="event.stopPropagation(); togglePanel('controls-panel');">−</button>
+                </span>
             </h3>
             <div class="panel-content" id="controls-content">
                 
@@ -1073,16 +1134,6 @@
                     <div class="toggle-switch">
                         <div class="toggle-option active" onclick="setMode('single')" id="single-mode-btn">🎯 Single Model</div>
                         <div class="toggle-option" onclick="setMode('comparison')" id="comparison-mode-btn">🔄 Comparison</div>
-                    </div>
-                    <div class="tips-box">
-                        <b>Tips</b>
-                        <ul>
-                            <li>Left mouse: Orbit</li>
-                            <li>Right mouse: Pan</li>
-                            <li>Scroll: Zoom</li>
-                            <li>R: Reset camera</li>
-                            <li>W: Toggle wireframe</li>
-                        </ul>
                     </div>
                 </div>
                 
@@ -1114,13 +1165,17 @@
                         </div>
                     </div>
                     
+                    <!-- Model Toggle -->
+                    <div class="model-toggle" style="margin-bottom: 16px;">
+                        <div style="font-size: 11px; margin-bottom: 5px;">Quick Toggle:</div>
+                        <div class="toggle-switch">
+                            <div class="toggle-option active" onclick="toggleToModel('A')" id="model-a-toggle">Model A</div>
+                            <div class="toggle-option" onclick="toggleToModel('B')" id="model-b-toggle">Model B</div>
+                        </div>
+                    </div>
+                    
                     <div class="comparison-controls">
                         <button class="btn" onclick="loadBothModels()">⚡ Load Both</button>
-                        <button class="btn" onclick="swapModels()">🔄 Swap A↔B</button>
-                    </div>
-                    <div class="comparison-controls" style="margin-top: 5px;">
-                        <button class="btn" onclick="loadPreset('texture-comparison')" style="font-size: 9px;">🎨 Original vs Textures</button>
-                        <button class="btn" onclick="loadPreset('format-comparison')" style="font-size: 9px;">🖼️ PNG vs WebP</button>
                     </div>
                 </div>
                 
@@ -1478,6 +1533,19 @@
                 selectA.value = availableModels[0].key;
                 selectB.value = availableModels[1].key;
             }
+            
+            // Add auto-loading event listeners for comparison mode
+            selectA.addEventListener('change', () => {
+                if (isComparisonMode) {
+                    loadBothModels();
+                }
+            });
+            
+            selectB.addEventListener('change', () => {
+                if (isComparisonMode) {
+                    loadBothModels();
+                }
+            });
             
             // Update single model controls
             updateSingleModelControls();
@@ -1915,11 +1983,9 @@
                     materialCount = materials.size;
                     scene.add(currentModel);
                     
-                    // Position camera for good view
-                    const idealDistance = Math.max(size.x, size.y, size.z) * scale * 1.5;
-                    camera.position.set(idealDistance * 0.5, idealDistance * 0.3, idealDistance);
-                    camera.lookAt(0, 0, 0);
+                    // Preserve current camera; only update info
                     controls.update();
+                    const currentDistance = camera.position.distanceTo(controls.target);
                     
                     // Calculate file size estimate
                     const fileSize = gltf.parser ? 
@@ -1933,7 +1999,7 @@
                         🎨 Textures: ${textureCount} | Scale: ${scale.toFixed(2)}x<br/>
                         📏 Size: ${size.x.toFixed(0)} × ${size.y.toFixed(0)} × ${size.z.toFixed(0)}<br/>
                         💾 Est. size: ${(fileSize / 1024 / 1024).toFixed(1)}MB<br/>
-                        📍 Camera positioned at distance ${idealDistance.toFixed(1)}
+                        📍 Camera distance ${currentDistance.toFixed(1)} (preserved)
                     `);
                     
                     window.map3dScene = { scene, camera, renderer, controls, model: currentModel };
@@ -1999,7 +2065,7 @@
                 
                 // Create camera
                 camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
-                camera.position.set(0, 80, 150);
+                camera.position.set(-23.8, 69.2, 89.3);
                 
                 // Create renderer
                 renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -2017,8 +2083,8 @@
                 controls.maxDistance = 800;
                 controls.maxPolarAngle = Math.PI / 2.1;
                 // Set default camera target
-                controls.target.set(34.7, -36.3, 7.8);
-                camera.lookAt(34.7, -36.3, 7.8);
+                controls.target.set(3.5, -35.4, -14.7);
+                camera.lookAt(3.5, -35.4, -14.7);
                 // Persist as reset state
                 if (typeof controls.saveState === 'function') controls.saveState();
                 
@@ -2054,6 +2120,12 @@
                     camera.updateProjectionMatrix();
                     renderer.setSize(window.innerWidth, window.innerHeight);
                 });
+
+                // Keyboard shortcuts for tips
+                window.addEventListener('keydown', (e) => {
+                    if (e.key.toLowerCase() === 'r') { window.resetCamera(); }
+                    if (e.key.toLowerCase() === 'w') { window.toggleWireframe(); }
+                });
                 
                 updateModelStatus('✅ 3D environment ready!<br/>🎮 Use controls to load and test models.');
                 
@@ -2087,6 +2159,80 @@
             }
         };
         
+        // Model toggle function for comparison mode
+        window.toggleToModel = function(modelLetter) {
+            if (!isComparisonMode) return;
+            
+            const toggleA = document.getElementById('model-a-toggle');
+            const toggleB = document.getElementById('model-b-toggle');
+            const selectA = document.getElementById('model-a-select');
+            const selectB = document.getElementById('model-b-select');
+            
+            // Update toggle visual state
+            toggleA.classList.toggle('active', modelLetter === 'A');
+            toggleB.classList.toggle('active', modelLetter === 'B');
+            
+            // Clear existing models
+            clearAllModels();
+            
+            if (modelLetter === 'A') {
+                // Show only Model A
+                const modelAKey = selectA.value;
+                const modelAInfo = availableModels.find(m => m.key === modelAKey);
+                if (modelAInfo) {
+                    updateModelStatus(`🔄 Loading Model A: ${modelAInfo.name}...`);
+                    loadModelForComparison(modelAKey, 'Model A').then(result => {
+                        modelA = result.model;
+                        modelB = null;
+                        setupSingleModel(modelA);
+                        updateModelStatus(`✅ Model A loaded: ${modelAInfo.name}<br/>📦 ${result.meshCount} meshes | ${result.loadTime}s`);
+                    }).catch(error => {
+                        updateModelStatus(`❌ Failed to load Model A: ${error.message}`, true);
+                    });
+                }
+            } else {
+                // Show only Model B  
+                const modelBKey = selectB.value;
+                const modelBInfo = availableModels.find(m => m.key === modelBKey);
+                if (modelBInfo) {
+                    updateModelStatus(`🔄 Loading Model B: ${modelBInfo.name}...`);
+                    loadModelForComparison(modelBKey, 'Model B').then(result => {
+                        modelB = result.model;
+                        modelA = null;
+                        setupSingleModel(modelB);
+                        updateModelStatus(`✅ Model B loaded: ${modelBInfo.name}<br/>📦 ${result.meshCount} meshes | ${result.loadTime}s`);
+                    }).catch(error => {
+                        updateModelStatus(`❌ Failed to load Model B: ${error.message}`, true);
+                    });
+                }
+            }
+        };
+        
+        // Setup single model in comparison mode
+        function setupSingleModel(model) {
+            if (!model) return;
+            
+            // Calculate bounding box and scale
+            const box = new THREE.Box3().setFromObject(model);
+            const size = box.getSize(new THREE.Vector3());
+            const maxSize = Math.max(size.x, size.y, size.z);
+            const scale = 100 / maxSize;
+            
+            // Scale and center the model
+            model.scale.setScalar(scale);
+            const center = box.getCenter(new THREE.Vector3());
+            model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+            
+            // Add to scene
+            scene.add(model);
+            
+            // Position camera for good view
+            const idealDistance = maxSize * scale * 1.5;
+            camera.position.set(idealDistance * 0.5, idealDistance * 0.3, idealDistance);
+            camera.lookAt(0, 0, 0);
+            controls.update();
+        }
+        
         // Global functions
         window.loadModel = loadModel;
         window.setMode = setMode;
@@ -2097,9 +2243,9 @@
         
         window.resetCamera = function() {
             if (camera && controls) {
-                camera.position.set(0, 80, 150);
-                controls.target.set(34.7, -36.3, 7.8);
-                camera.lookAt(34.7, -36.3, 7.8);
+                camera.position.set(-23.8, 69.2, 89.3);
+                controls.target.set(3.5, -35.4, -14.7);
+                camera.lookAt(3.5, -35.4, -14.7);
                 if (typeof controls.saveState === 'function') controls.saveState();
                 controls.update();
                 updateModelStatus('📷 Camera reset to default position');
