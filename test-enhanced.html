@@ -1469,10 +1469,12 @@
                 localStorage.setItem('animationHelperLibrary_v1', JSON.stringify(lib));
                 console.log('💾 Intro animation saved for replay');
                 
-                // Refresh the dropdown if the animation helper is initialized
-                if (typeof populateSavedAnimations === 'function') {
-                    populateSavedAnimations();
-                }
+                // Refresh the dropdown and select "intro" by default if the animation helper is initialized
+                setTimeout(() => {
+                    if (typeof populateSavedAnimations === 'function') {
+                        populateSavedAnimations('intro');
+                    }
+                }, 100);
             } catch (e) {
                 console.warn('Failed to save intro animation:', e);
             }
@@ -3275,11 +3277,22 @@
             const lib = loadLibrary();
             const names = Object.keys(lib).sort((a,b)=>a.localeCompare(b));
             listSelect.innerHTML = '<option value="">(none)</option>' + names.map(n=>`<option value="${n}">${n}</option>`).join('');
+            
+            // Default to "intro" if no specific selection and "intro" exists
+            if (!selectName && names.includes('intro')) {
+                selectName = 'intro';
+            }
+            
             listSelect.value = names.includes(selectName) ? selectName : '';
             const has = !!listSelect.value;
             document.getElementById('anim-load').disabled = !has;
             document.getElementById('anim-rename').disabled = !has;
             document.getElementById('anim-delete').disabled = !has;
+            
+            // If "intro" is selected, load it automatically
+            if (listSelect.value === 'intro') {
+                loadAnimation('intro');
+            }
         }
 
         setTimeout(initAnimationHelperUI, 140);
