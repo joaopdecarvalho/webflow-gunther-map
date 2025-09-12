@@ -340,35 +340,6 @@
             padding: 6px 10px; border-radius: 6px; letter-spacing: .5px;
         }
 
-        /* Drag-through mode: keep UI visible but let pointer events fall through except on interactive elements */
-        body.drag-through-panels .info-panels .info-panel,
-        body.drag-through-panels .controls-panel,
-        body.drag-through-panels .test-header { pointer-events: none; }
-        
-        /* Re-enable pointer events for all interactive elements in drag-through mode */
-        body.drag-through-panels .info-panels .info-panel button,
-        body.drag-through-panels .info-panels .info-panel input,
-        body.drag-through-panels .info-panels .info-panel select,
-        body.drag-through-panels .info-panels .info-panel .copyable,
-        body.drag-through-panels .info-panels .info-panel h3,
-        body.drag-through-panels .info-panels .info-panel .minimize-btn,
-        body.drag-through-panels .controls-panel button,
-        body.drag-through-panels .controls-panel input,
-        body.drag-through-panels .controls-panel select,
-        body.drag-through-panels .controls-panel h3,
-        body.drag-through-panels .controls-panel .minimize-btn,
-        body.drag-through-panels .controls-panel .toggle-option,
-        body.drag-through-panels .controls-panel .slider,
-        body.drag-through-panels .controls-panel .refresh-icon,
-        body.drag-through-panels .controls-panel .model-selector,
-        body.drag-through-panels .controls-panel .opacity-slider { pointer-events: auto; }
-        body.drag-through-panels::after {
-            content: 'Drag-Through Mode (press D to toggle, H hides UI)';
-            position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
-            z-index: 9999; background: rgba(0,0,0,0.45); color:#fff; font: 11px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-            padding: 4px 10px; border-radius: 20px; letter-spacing: .4px; backdrop-filter: blur(4px);
-        }
-        
         .controls-panel:hover h3::after {
             width: 80px;
         }
@@ -1196,6 +1167,7 @@
                     <li>Scroll: Zoom</li>
                     <li>R: Reset camera</li>
                     <li>W: Toggle wireframe</li>
+                    <li>H: Hide/show UI</li>
                 </ul>
             </div>
         </div>
@@ -2294,10 +2266,6 @@
                     if (e.key.toLowerCase() === 'r') { window.resetCamera(); }
                     if (e.key.toLowerCase() === 'w') { window.toggleWireframe(); }
                     if (e.key.toLowerCase() === 'h') { document.body.classList.toggle('ui-hidden'); }
-                    if (e.key.toLowerCase() === 'd') { 
-                        document.body.classList.toggle('drag-through-panels'); 
-                        console.log('Drag-through panels:', document.body.classList.contains('drag-through-panels')); 
-                    }
                 });
                 
                 updateModelStatus('✅ 3D environment ready!<br/>🎮 Use controls to load and test models.');
@@ -2310,7 +2278,6 @@
                 
                 // Debug: Check current UI mode states
                 console.log('🐛 UI States after init:', {
-                    dragThrough: document.body.classList.contains('drag-through-panels'),
                     uiHidden: document.body.classList.contains('ui-hidden'),
                     bodyClasses: Array.from(document.body.classList)
                 });
@@ -2325,7 +2292,6 @@
         window.debugPanelStates = function() {
             console.log('🐛 Panel Debug Info:');
             console.log('Body classes:', Array.from(document.body.classList));
-            console.log('Drag-through mode:', document.body.classList.contains('drag-through-panels'));
             console.log('UI hidden mode:', document.body.classList.contains('ui-hidden'));
             
             const panels = [
