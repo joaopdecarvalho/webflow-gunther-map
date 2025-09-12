@@ -83,11 +83,12 @@
             gap: 24px;
             z-index: 100;
             align-items: flex-end;
-            /* Let empty background / gaps pass pointer events through */
-            pointer-events: none;
+            /* Default: panels fully interactive */
+            pointer-events: auto;
         }
-        /* Panels themselves stay interactive */
-        .info-panels .info-panel { pointer-events: auto; }
+        /* Optional utility: add class pass-through to container if you want only gaps clickable */
+        .info-panels.pass-through { pointer-events: none; }
+        .info-panels.pass-through .info-panel { pointer-events: auto; }
         /* Prevent accidental text selection while dragging over left-side panels */
         .info-panels, .info-panels .info-panel, .info-panels .info-panel *:not(input):not(textarea):not(select) {
             -webkit-user-select: none;
@@ -2421,25 +2422,52 @@
             }
         };
         
-        window.copyCurrentPosition = function() {
-            if (camera && controls) {
-                const pos = camera.position;
-                const target = controls.target;
-                const cameraData = {
-                    position: { x: pos.x, y: pos.y, z: pos.z },
-                    target: { x: target.x, y: target.y, z: target.z },
-                    distance: pos.distanceTo(target)
-                };
-                
-                const jsCode = `
-// Camera position for Webflow
-camera.position.set(${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)});
-camera.lookAt(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)});
-controls.target.set(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)});`;
-                
-                navigator.clipboard.writeText(jsCode).then(() => {
-                    updateModelStatus('📋 Camera position copied to clipboard!<br/>Ready to paste into your production code.');
-                });
+        // Reusable safe copy helper with fallback for non-secure contexts
+        async function safeCopy(text) {
+            // Prefer modern clipboard if available & secure
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(text);
+                    return true;
+                }
+            } catch (e) {
+                // will attempt fallback
+            }
+            // Fallback: temporary textarea + execCommand
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.top = '-3000px';
+                ta.style.left = '-3000px';
+                ta.setAttribute('readonly','');
+                document.body.appendChild(ta);
+                ta.select();
+                ta.setSelectionRange(0, ta.value.length);
+                const ok = document.execCommand('copy');
+                document.body.removeChild(ta);
+                return ok;
+            } catch (err) {
+                console.warn('Copy fallback failed', err);
+                return false;
+            }
+        }
+
+        window.copyCurrentPosition = async function() {
+            if (!(camera && controls)) return;
+            const pos = camera.position;
+            const target = controls.target;
+            const jsCode = `// Camera position for Webflow\n`+
+`camera.position.set(${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)});\n`+
+`camera.lookAt(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)});\n`+
+`controls.target.set(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)});`;
+            const ok = await safeCopy(jsCode);
+            if (ok) {
+                updateModelStatus('📋 Camera position copied to clipboard!<br/>Ready to paste into your production code.');
+                showToast('Camera code copied');
+            } else {
+                updateModelStatus('⚠️ Copy failed. Select & copy manually below:<br/><pre style="font-size:11px;white-space:pre-wrap;max-height:120px;overflow:auto;">'+jsCode.replace(/[<>]/g,m=>({'<':'&lt;','>':'&gt;'}[m]))+'</pre>');
+                showToast('Copy failed');
             }
         };
 
@@ -2459,15 +2487,14 @@ controls.target.set(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.t
             rows.forEach((row) => {
                 row.style.cursor = 'pointer';
                 row.title = 'Click to copy';
-                row.addEventListener('click', () => {
+                row.addEventListener('click', async () => {
                     const labelNode = row.childNodes[0];
                     const label = labelNode ? String(labelNode.textContent || '').replace(':','').trim() : 'Value';
                     const span = row.querySelector('span');
                     const value = span ? span.textContent.trim() : row.textContent.trim();
                     const text = `${label}: ${value}`;
-                    navigator.clipboard.writeText(text)
-                        .then(() => showToast(`${label} copied to clipboard`))
-                        .catch(() => showToast('Copy failed'));
+                    const ok = await safeCopy(text);
+                    showToast(ok ? `${label} copied` : 'Copy failed');
                 });
             });
         }
