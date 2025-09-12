@@ -83,12 +83,13 @@
             gap: 24px;
             z-index: 100;
             align-items: flex-end;
-            /* Default: panels fully interactive */
-            pointer-events: auto;
+            /* Make gaps transparent to pointer events; panels explicitly re-enable */
+            pointer-events: none;
         }
-        /* Optional utility: add class pass-through to container if you want only gaps clickable */
-        .info-panels.pass-through { pointer-events: none; }
-        .info-panels.pass-through .info-panel { pointer-events: auto; }
+        .info-panels > .info-panel { pointer-events: auto; }
+        /* Utility class to disable pass-through entirely if needed (toggle via JS) */
+        .info-panels.no-pass-through { pointer-events: auto; }
+        .info-panels.no-pass-through > .info-panel { pointer-events: auto; }
         /* Prevent accidental text selection while dragging over left-side panels */
         .info-panels, .info-panels .info-panel, .info-panels .info-panel *:not(input):not(textarea):not(select) {
             -webkit-user-select: none;
@@ -2424,33 +2425,39 @@
         
         // Reusable safe copy helper with fallback for non-secure contexts
         async function safeCopy(text) {
-            // Prefer modern clipboard if available & secure
-            try {
-                if (navigator.clipboard && window.isSecureContext) {
+            // 1. Modern API (must be secure context: https or localhost)
+            if (navigator.clipboard && window.isSecureContext) {
+                try {
                     await navigator.clipboard.writeText(text);
                     return true;
+                } catch (err) {
+                    console.warn('[safeCopy] navigator.clipboard failed, falling back', err);
                 }
-            } catch (e) {
-                // will attempt fallback
             }
-            // Fallback: temporary textarea + execCommand
+            // 2. Old IE / Edge HTML clipboardData
+            try {
+                if (window.clipboardData && window.clipboardData.setData) {
+                    return window.clipboardData.setData('Text', text);
+                }
+            } catch (err) { /* ignore */ }
+            // 3. execCommand fallback (must occur during a user gesture to be reliable)
             try {
                 const ta = document.createElement('textarea');
                 ta.value = text;
                 ta.style.position = 'fixed';
-                ta.style.top = '-3000px';
-                ta.style.left = '-3000px';
-                ta.setAttribute('readonly','');
+                ta.style.opacity = '0';
+                ta.style.pointerEvents = 'none';
                 document.body.appendChild(ta);
+                ta.focus({ preventScroll: true });
                 ta.select();
                 ta.setSelectionRange(0, ta.value.length);
                 const ok = document.execCommand('copy');
                 document.body.removeChild(ta);
-                return ok;
+                if (ok) return true;
             } catch (err) {
-                console.warn('Copy fallback failed', err);
-                return false;
+                console.warn('[safeCopy] execCommand fallback failed', err);
             }
+            return false;
         }
 
         window.copyCurrentPosition = async function() {
