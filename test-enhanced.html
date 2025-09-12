@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced 3D Map Controls</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+            background: #f5f5f5;
+        }
+        
+        .page_wrap {
+            position: relative;
+            z-index: 10;
+            pointer-events: auto;
+        }
+        
+        .test-header {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .info-panels {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            flex: 1;
+            min-width: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .info-panel h3 {
+            color: #4CAF50;
+            margin-bottom: 8px;
+            font-size: 14px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 4px;
+        }
+        
+        .controls-panel {
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 250px;
+        }
+        
+        .btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 2px;
+            display: block;
+            width: 100%;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .btn.success { background: #28a745; }
+        .btn.warning { background: #ffc107; color: #000; }
+        .btn.danger { background: #dc3545; }
+        
+        .camera-info {
+            color: #87CEEB;
+        }
+        
+        .performance-info {
+            color: #FFB347;
+        }
+        
+        .model-info {
+            color: #98FB98;
+        }
+        
+        @media (max-width: 768px) {
+            .info-panels {
+                flex-direction: column;
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+            }
+            
+            .test-header {
+                position: static;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page_wrap">
+        <header class="test-header">
+            <h1>🗺️ Enhanced 3D Map Controls</h1>
+            <p>Complete testing environment with loading times, camera tracking, and performance monitoring.</p>
+            <p><strong>Perfect for setting up your Webflow deployment!</strong></p>
+        </header>
+        
+        <div class="info-panels">
+            <div class="info-panel">
+                <h3>📊 Model Status</h3>
+                <div id="model-status">Ready to load models...</div>
+            </div>
+            
+            <div class="info-panel">
+                <h3>📍 Camera Position</h3>
+                <div class="camera-info">
+                    <div>Position: <span id="camera-position">--, --, --</span></div>
+                    <div>Target: <span id="camera-target">--, --, --</span></div>
+                    <div>Distance: <span id="camera-distance">--</span></div>
+                    <div>Rotation: <span id="camera-rotation">--, --</span></div>
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <h3>⚡ Performance</h3>
+                <div class="performance-info">
+                    <div>FPS: <span id="fps-counter">--</span></div>
+                    <div>Triangles: <span id="triangle-count">--</span></div>
+                    <div>Draw Calls: <span id="draw-calls">--</span></div>
+                    <div>Memory: <span id="memory-usage">--</span></div>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <h3>🎮 Model Controls</h3>
+                <button class="btn" onclick="loadModel('local', 'Local Bremerhaven')">🏠 Load Local Bremerhaven</button>
+                <button class="btn" onclick="loadModel('github', 'GitHub Bremerhaven')">🌐 Load GitHub Bremerhaven</button>
+                <button class="btn" onclick="loadModel('goetheviertel', 'Goetheviertel GLB')">🏘️ Load Goetheviertel</button>
+                <hr style="margin: 10px 0; border-color: #333;">
+                <button class="btn success" onclick="resetCamera()">📷 Reset Camera</button>
+                <button class="btn warning" onclick="toggleWireframe()">🔧 Toggle Wireframe</button>
+                <button class="btn" onclick="copyCurrentPosition()">📋 Copy Camera Position</button>
+                <button class="btn danger" onclick="showFullDebugInfo()">🐛 Full Debug Info</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from '/node_modules/three/build/three.module.js';
+        import { GLTFLoader } from '/node_modules/three/examples/jsm/loaders/GLTFLoader.js';
+        import { DRACOLoader } from '/node_modules/three/examples/jsm/loaders/DRACOLoader.js';
+        import { OrbitControls } from '/node_modules/three/examples/jsm/controls/OrbitControls.js';
+        
+        let scene, camera, renderer, controls, currentModel;
+        let loadingStartTime = 0;
+        let performanceMonitor = {
+            frameCount: 0,
+            lastTime: 0,
+            fps: 0
+        };
+        
+        // Model URLs
+        const MODEL_URLS = {
+            local: '/Bremerhaven_250731_local.gltf',
+            github: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Bremerhaven_250731_fixed.gltf',
+            goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb'
+        };
+        
+        function updateModelStatus(msg, isError = false) {
+            const statusEl = document.getElementById('model-status');
+            statusEl.innerHTML = msg;
+            statusEl.style.color = isError ? '#ff6b6b' : '#98FB98';
+            console.log(msg.replace(/<br\/>/g, '\n').replace(/<[^>]*>/g, ''));
+        }
+        
+        function updateCameraInfo() {
+            if (!camera || !controls) return;
+            
+            const pos = camera.position;
+            const target = controls.target;
+            const distance = pos.distanceTo(target);
+            
+            // Calculate rotation in degrees
+            const euler = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ');
+            const rotX = THREE.MathUtils.radToDeg(euler.x);
+            const rotY = THREE.MathUtils.radToDeg(euler.y);
+            
+            document.getElementById('camera-position').textContent = 
+                `${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)}`;
+            document.getElementById('camera-target').textContent = 
+                `${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)}`;
+            document.getElementById('camera-distance').textContent = distance.toFixed(1);
+            document.getElementById('camera-rotation').textContent = 
+                `${rotX.toFixed(1)}°, ${rotY.toFixed(1)}°`;
+        }
+        
+        function updatePerformanceInfo() {
+            if (!renderer) return;
+            
+            // Calculate FPS
+            performanceMonitor.frameCount++;
+            const currentTime = performance.now();
+            if (currentTime - performanceMonitor.lastTime >= 1000) {
+                performanceMonitor.fps = Math.round(performanceMonitor.frameCount * 1000 / (currentTime - performanceMonitor.lastTime));
+                performanceMonitor.frameCount = 0;
+                performanceMonitor.lastTime = currentTime;
+            }
+            
+            const info = renderer.info;
+            document.getElementById('fps-counter').textContent = performanceMonitor.fps;
+            document.getElementById('triangle-count').textContent = info.render.triangles.toLocaleString();
+            document.getElementById('draw-calls').textContent = info.render.calls;
+            document.getElementById('memory-usage').textContent = 
+                `${info.memory.geometries}G / ${info.memory.textures}T`;
+        }
+        
+        function loadModel(type, displayName) {
+            const url = MODEL_URLS[type];
+            if (!url) {
+                updateModelStatus(`❌ Unknown model type: ${type}`, true);
+                return;
+            }
+            
+            loadingStartTime = performance.now();
+            updateModelStatus(`🔄 Loading ${displayName}...<br/>⏱️ Started at ${new Date().toLocaleTimeString()}`);
+            
+            // Remove existing model
+            if (currentModel) {
+                scene.remove(currentModel);
+                currentModel = null;
+            }
+            
+            const loader = new GLTFLoader();
+            
+            // Set up DRACO loader
+            const dracoLoader = new DRACOLoader();
+            dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+            dracoLoader.preload();
+            loader.setDRACOLoader(dracoLoader);
+            
+            let lastProgressTime = loadingStartTime;
+            
+            loader.load(
+                url,
+                (gltf) => {
+                    const loadTime = performance.now() - loadingStartTime;
+                    
+                    currentModel = gltf.scene;
+                    
+                    // Scale and center the model
+                    const box = new THREE.Box3().setFromObject(currentModel);
+                    const size = box.getSize(new THREE.Vector3());
+                    const maxSize = Math.max(size.x, size.y, size.z);
+                    const scale = 100 / maxSize;
+                    currentModel.scale.setScalar(scale);
+                    
+                    const center = box.getCenter(new THREE.Vector3());
+                    currentModel.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+                    
+                    // Count meshes and materials
+                    let meshCount = 0;
+                    let materialCount = 0;
+                    let textureCount = 0;
+                    const materials = new Set();
+                    
+                    currentModel.traverse((child) => {
+                        if (child.isMesh) {
+                            meshCount++;
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                            
+                            if (child.material) {
+                                materials.add(child.material.uuid);
+                                if (child.material.map) textureCount++;
+                                if (child.material.normalMap) textureCount++;
+                                if (child.material.roughnessMap) textureCount++;
+                                if (child.material.metalnessMap) textureCount++;
+                                
+                                child.material.needsUpdate = true;
+                                if (child.material.map && renderer.capabilities) {
+                                    child.material.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                                }
+                            }
+                        }
+                    });
+                    
+                    materialCount = materials.size;
+                    scene.add(currentModel);
+                    
+                    // Position camera for good view
+                    const idealDistance = Math.max(size.x, size.y, size.z) * scale * 1.5;
+                    camera.position.set(idealDistance * 0.5, idealDistance * 0.3, idealDistance);
+                    camera.lookAt(0, 0, 0);
+                    controls.update();
+                    
+                    // Calculate file size estimate
+                    const fileSize = gltf.parser ? 
+                        (gltf.parser.json.buffers ? 
+                            gltf.parser.json.buffers.reduce((sum, buf) => sum + (buf.byteLength || 0), 0) : 0) : 0;
+                    
+                    updateModelStatus(`
+                        ✅ ${displayName} loaded successfully!<br/>
+                        ⏱️ <strong>Load time: ${(loadTime / 1000).toFixed(2)}s</strong><br/>
+                        📦 Meshes: ${meshCount} | Materials: ${materialCount}<br/>
+                        🎨 Textures: ${textureCount} | Scale: ${scale.toFixed(2)}x<br/>
+                        📏 Size: ${size.x.toFixed(0)} × ${size.y.toFixed(0)} × ${size.z.toFixed(0)}<br/>
+                        💾 Est. size: ${(fileSize / 1024 / 1024).toFixed(1)}MB<br/>
+                        📍 Camera positioned at distance ${idealDistance.toFixed(1)}
+                    `);
+                    
+                    window.map3dScene = { scene, camera, renderer, controls, model: currentModel };
+                },
+                (progress) => {
+                    const now = performance.now();
+                    const currentLoadTime = (now - loadingStartTime) / 1000;
+                    
+                    if (progress.total > 0) {
+                        const percent = Math.round((progress.loaded / progress.total) * 100);
+                        const loaded = (progress.loaded / 1024 / 1024).toFixed(1);
+                        const total = (progress.total / 1024 / 1024).toFixed(1);
+                        const speed = (progress.loaded / 1024 / (now - loadingStartTime)) * 1000; // KB/s
+                        
+                        updateModelStatus(`
+                            📥 Loading ${displayName}: ${percent}%<br/>
+                            📊 ${loaded}MB / ${total}MB<br/>
+                            🚀 Speed: ${speed.toFixed(0)} KB/s<br/>
+                            ⏱️ Elapsed: ${currentLoadTime.toFixed(1)}s
+                        `);
+                    } else {
+                        updateModelStatus(`
+                            📥 Loading ${displayName}...<br/>
+                            📊 ${(progress.loaded / 1024 / 1024).toFixed(1)}MB loaded<br/>
+                            ⏱️ Elapsed: ${currentLoadTime.toFixed(1)}s
+                        `);
+                    }
+                },
+                (error) => {
+                    const failTime = (performance.now() - loadingStartTime) / 1000;
+                    console.error(`${displayName} loading error:`, error);
+                    updateModelStatus(`
+                        ❌ Failed to load ${displayName}<br/>
+                        💥 Error: ${error.message}<br/>
+                        ⏱️ Failed after: ${failTime.toFixed(1)}s<br/>
+                        🌐 URL: ${url.substring(0, 50)}...
+                    `, true);
+                }
+            );
+        }
+        
+        function initMap() {
+            try {
+                updateModelStatus('🚀 Initializing 3D environment...');
+                
+                // Create container
+                const container = document.createElement('div');
+                container.id = 'map-3d-container';
+                container.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    z-index: -1;
+                    background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0E68C 100%);
+                `;
+                document.body.insertBefore(container, document.body.firstChild);
+                
+                // Create scene
+                scene = new THREE.Scene();
+                scene.fog = new THREE.Fog(0x87CEEB, 50, 1000);
+                
+                // Create camera
+                camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+                camera.position.set(0, 80, 150);
+                
+                // Create renderer
+                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                renderer.shadowMap.enabled = true;
+                renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                container.appendChild(renderer.domElement);
+                
+                // Add controls
+                controls = new OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.05;
+                controls.minDistance = 20;
+                controls.maxDistance = 800;
+                controls.maxPolarAngle = Math.PI / 2.1;
+                
+                // Add lighting
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+                scene.add(ambientLight);
+                
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+                directionalLight.position.set(200, 200, 100);
+                directionalLight.castShadow = true;
+                scene.add(directionalLight);
+                
+                const fillLight = new THREE.DirectionalLight(0x87ceeb, 0.4);
+                fillLight.position.set(-100, 50, -100);
+                scene.add(fillLight);
+                
+                // Animation loop with monitoring
+                function animate() {
+                    requestAnimationFrame(animate);
+                    
+                    if (controls) controls.update();
+                    if (renderer && scene && camera) renderer.render(scene, camera);
+                    
+                    // Update info displays
+                    updateCameraInfo();
+                    updatePerformanceInfo();
+                }
+                animate();
+                
+                // Handle resize
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+                
+                updateModelStatus('✅ 3D environment ready!<br/>🎮 Use controls to load and test models.');
+                
+            } catch (error) {
+                console.error('Init error:', error);
+                updateModelStatus(`❌ Initialization failed:<br/>${error.message}`, true);
+            }
+        }
+        
+        // Global functions
+        window.loadModel = loadModel;
+        
+        window.resetCamera = function() {
+            if (camera && controls) {
+                camera.position.set(0, 80, 150);
+                camera.lookAt(0, 0, 0);
+                controls.reset();
+                updateModelStatus('📷 Camera reset to default position');
+            }
+        };
+        
+        window.toggleWireframe = function() {
+            if (currentModel) {
+                let wireframe = false;
+                currentModel.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        child.material.wireframe = !child.material.wireframe;
+                        wireframe = child.material.wireframe;
+                    }
+                });
+                updateModelStatus(`🔧 Wireframe mode: ${wireframe ? 'ON' : 'OFF'}`);
+            }
+        };
+        
+        window.copyCurrentPosition = function() {
+            if (camera && controls) {
+                const pos = camera.position;
+                const target = controls.target;
+                const cameraData = {
+                    position: { x: pos.x, y: pos.y, z: pos.z },
+                    target: { x: target.x, y: target.y, z: target.z },
+                    distance: pos.distanceTo(target)
+                };
+                
+                const jsCode = `
+// Camera position for Webflow
+camera.position.set(${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)});
+camera.lookAt(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)});
+controls.target.set(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)});`;
+                
+                navigator.clipboard.writeText(jsCode).then(() => {
+                    updateModelStatus('📋 Camera position copied to clipboard!<br/>Ready to paste into your production code.');
+                });
+            }
+        };
+        
+        window.showFullDebugInfo = function() {
+            const info = [];
+            
+            if (camera && controls) {
+                const pos = camera.position;
+                const target = controls.target;
+                info.push(`📍 CAMERA POSITION:`);
+                info.push(`Position: (${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)})`);
+                info.push(`Target: (${target.x.toFixed(2)}, ${target.y.toFixed(2)}, ${target.z.toFixed(2)})`);
+                info.push(`Distance: ${pos.distanceTo(target).toFixed(2)}`);
+                info.push(``);
+            }
+            
+            if (renderer) {
+                const rInfo = renderer.info;
+                info.push(`⚡ PERFORMANCE:`);
+                info.push(`FPS: ${performanceMonitor.fps}`);
+                info.push(`Triangles: ${rInfo.render.triangles.toLocaleString()}`);
+                info.push(`Draw Calls: ${rInfo.render.calls}`);
+                info.push(`Geometries: ${rInfo.memory.geometries}`);
+                info.push(`Textures: ${rInfo.memory.textures}`);
+                info.push(``);
+            }
+            
+            info.push(`🌐 SYSTEM:`);
+            info.push(`Three.js: r${THREE.REVISION}`);
+            info.push(`WebGL: ${renderer.capabilities.isWebGL2 ? '2.0' : '1.0'}`);
+            info.push(`Max Texture Size: ${renderer.capabilities.maxTextureSize}`);
+            info.push(`Screen: ${window.innerWidth}x${window.innerHeight}`);
+            info.push(`Device Pixel Ratio: ${window.devicePixelRatio}`);
+            
+            alert(info.join('\n'));
+        };
+        
+        // Initialize
+        updateModelStatus('🚀 Starting enhanced 3D map environment...');
+        initMap();
+    </script>
+</body>
+</html>
