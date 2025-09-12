@@ -1399,7 +1399,7 @@
             hasPlayedWelcomeAnimation = true;
             console.log('🎬 Starting welcome animation...');
             
-            // Start position
+            // Start position (camera should already be here from initialization)
             const startPos = new THREE.Vector3(43.8, 38.1, 63.7);
             const startTarget = new THREE.Vector3(3.5, -35.4, -14.7);
             
@@ -1407,9 +1407,8 @@
             const endPos = new THREE.Vector3(15.2, 31.7, 17.3);
             const endTarget = new THREE.Vector3(-0.8, -33.2, -15.3);
             
-            // Set starting position
-            camera.position.copy(startPos);
-            controls.target.copy(startTarget);
+            // No need to set starting position - camera should already be there
+            // Just ensure controls are updated
             controls.update();
             
             // Animate to end position over 1 second
@@ -2197,9 +2196,9 @@
                 scene = new THREE.Scene();
                 scene.fog = new THREE.Fog(0x87CEEB, 50, 1000);
                 
-                // Create camera
+                // Create camera - Start at welcome animation start position
                 camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
-                camera.position.set(-23.8, 69.2, 89.3);
+                camera.position.set(43.8, 38.1, 63.7); // Welcome animation start position
                 
                 // Create renderer
                 renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -2550,7 +2549,7 @@
         
         window.resetCamera = function() {
             if (camera && controls) {
-                camera.position.set(-23.8, 69.2, 89.3);
+                camera.position.set(43.8, 38.1, 63.7); // Same as welcome animation start
                 controls.target.set(3.5, -35.4, -14.7);
                 camera.lookAt(3.5, -35.4, -14.7);
                 if (typeof controls.saveState === 'function') controls.saveState();
