@@ -104,15 +104,15 @@
             flex: 0 0 auto;
             width: 320px; /* default width */
             height: 300px; /* default height */
-            overflow-y: auto;
+            overflow-y: hidden; /* no scrollbar */
         }
 
         #model-status-panel {
             flex: 0 0 auto;
             width: 420px; /* default width */
-            height: auto; /* dynamic height */
-            max-height: none;
-            overflow-y: visible;
+            height: 300px; /* fixed height to match others */
+            max-height: 300px;
+            overflow-y: hidden;
         }
 
         /* Make status the last panel in the row */
@@ -1023,9 +1023,9 @@
             left: 32px; /* upper-left corner */
             background: rgba(31, 41, 55, 0.85);
             color: #e5e7eb;
-            padding: 14px 16px;
+            padding: 16px 16px;
             border-radius: 16px;
-            width: 240px;
+            width: auto;
             z-index: 110;
             border: 1px solid rgba(75, 85, 99, 0.4);
             box-shadow: 
@@ -1066,7 +1066,7 @@
         <!-- Floating Tips Panel -->
         <div class="tips-panel" id="tips-panel">
             <h3 onclick="togglePanel('tips-panel')">
-                <span>💡 Tips</span>
+                <span>💡 Usage Tips</span>
                 <button class="minimize-btn" id="tips-btn">−</button>
             </h3>
             <div class="panel-content">
