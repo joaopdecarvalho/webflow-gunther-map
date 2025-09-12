@@ -1399,7 +1399,7 @@
             hasPlayedWelcomeAnimation = true;
             console.log('🎬 Starting welcome animation...');
             
-            // Start position (camera should already be here from initialization)
+            // Start position - only set this for the welcome animation
             const startPos = new THREE.Vector3(43.8, 38.1, 63.7);
             const startTarget = new THREE.Vector3(3.5, -35.4, -14.7);
             
@@ -1407,8 +1407,9 @@
             const endPos = new THREE.Vector3(15.2, 31.7, 17.3);
             const endTarget = new THREE.Vector3(-0.8, -33.2, -15.3);
             
-            // No need to set starting position - camera should already be there
-            // Just ensure controls are updated
+            // Set the starting position immediately before animation (no jump because it's instant)
+            camera.position.copy(startPos);
+            controls.target.copy(startTarget);
             controls.update();
             
             // Animate to end position over 1 second
@@ -1431,6 +1432,8 @@
                     requestAnimationFrame(animate);
                 } else {
                     console.log('✅ Welcome animation complete');
+                    // After animation completes, reset to a neutral position for subsequent model loads
+                    // Don't modify camera position - let subsequent loads use their own positioning
                 }
             };
             
@@ -2113,8 +2116,18 @@
                     materialCount = materials.size;
                     scene.add(currentModel);
                     
-                    // Preserve current camera; only update info
-                    controls.update();
+                    // For first model, preserve camera (will be handled by welcome animation)
+                    // For subsequent models, reset to default position
+                    if (hasPlayedWelcomeAnimation) {
+                        // Reset camera to default position for all models after the first one
+                        camera.position.set(-23.8, 69.2, 89.3);
+                        controls.target.set(3.5, -35.4, -14.7);
+                        camera.lookAt(3.5, -35.4, -14.7);
+                        controls.update();
+                    } else {
+                        // First model - just update controls, welcome animation will handle positioning
+                        controls.update();
+                    }
                     const currentDistance = camera.position.distanceTo(controls.target);
                     
                     // Calculate file size estimate
@@ -2196,9 +2209,9 @@
                 scene = new THREE.Scene();
                 scene.fog = new THREE.Fog(0x87CEEB, 50, 1000);
                 
-                // Create camera - Start at welcome animation start position
+                // Create camera
                 camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
-                camera.position.set(43.8, 38.1, 63.7); // Welcome animation start position
+                camera.position.set(-23.8, 69.2, 89.3);
                 
                 // Create renderer
                 renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -2549,7 +2562,7 @@
         
         window.resetCamera = function() {
             if (camera && controls) {
-                camera.position.set(43.8, 38.1, 63.7); // Same as welcome animation start
+                camera.position.set(-23.8, 69.2, 89.3);
                 controls.target.set(3.5, -35.4, -14.7);
                 camera.lookAt(3.5, -35.4, -14.7);
                 if (typeof controls.saveState === 'function') controls.saveState();
