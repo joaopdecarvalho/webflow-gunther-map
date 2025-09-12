@@ -1412,6 +1412,9 @@
             controls.target.copy(startTarget);
             controls.update();
             
+            // Save this animation as "intro" for replay
+            saveIntroAnimation(startPos, startTarget, endPos, endTarget);
+            
             // Animate to end position over 1 second
             const duration = 1000; // 1 second
             const startTime = performance.now();
@@ -1439,6 +1442,80 @@
             
             requestAnimationFrame(animate);
         }
+        
+        // Save intro animation to animation helper library
+        function saveIntroAnimation(startPos, startTarget, endPos, endTarget) {
+            const introAnimation = {
+                keyframes: [
+                    {
+                        position: { x: startPos.x, y: startPos.y, z: startPos.z },
+                        target: { x: startTarget.x, y: startTarget.y, z: startTarget.z },
+                        timestamp: 0
+                    },
+                    {
+                        position: { x: endPos.x, y: endPos.y, z: endPos.z },
+                        target: { x: endTarget.x, y: endTarget.y, z: endTarget.z },
+                        timestamp: 1000
+                    }
+                ],
+                durations: [1000],
+                easing: 'easeInOut',
+                savedAt: Date.now()
+            };
+            
+            try {
+                const lib = JSON.parse(localStorage.getItem('animationHelperLibrary_v1') || '{}');
+                lib['intro'] = introAnimation;
+                localStorage.setItem('animationHelperLibrary_v1', JSON.stringify(lib));
+                console.log('💾 Intro animation saved for replay');
+                
+                // Refresh the dropdown if the animation helper is initialized
+                if (typeof populateSavedAnimations === 'function') {
+                    populateSavedAnimations();
+                }
+            } catch (e) {
+                console.warn('Failed to save intro animation:', e);
+            }
+        }
+        
+        // Function to replay the intro animation
+        window.replayIntro = function() {
+            if (!camera || !controls) return;
+            
+            const startPos = new THREE.Vector3(43.8, 38.1, 63.7);
+            const startTarget = new THREE.Vector3(3.5, -35.4, -14.7);
+            const endPos = new THREE.Vector3(15.2, 31.7, 17.3);
+            const endTarget = new THREE.Vector3(-0.8, -33.2, -15.3);
+            
+            // Set starting position
+            camera.position.copy(startPos);
+            controls.target.copy(startTarget);
+            controls.update();
+            
+            console.log('🎬 Replaying intro animation...');
+            
+            // Animate to end position
+            const duration = 1000;
+            const startTime = performance.now();
+            
+            const animate = () => {
+                const elapsed = performance.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easedProgress = EASING.easeInOut(progress);
+                
+                camera.position.lerpVectors(startPos, endPos, easedProgress);
+                controls.target.lerpVectors(startTarget, endTarget, easedProgress);
+                controls.update();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    console.log('✅ Intro animation replay complete');
+                }
+            };
+            
+            requestAnimationFrame(animate);
+        };
         
         // Comparison mode variables
         let isComparisonMode = false;
@@ -2211,7 +2288,8 @@
                 
                 // Create camera
                 camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
-                camera.position.set(-23.8, 69.2, 89.3);
+                // Start at welcome animation's starting position to avoid jump
+                camera.position.set(43.8, 38.1, 63.7);
                 
                 // Create renderer
                 renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -2228,7 +2306,7 @@
                 controls.minDistance = 20;
                 controls.maxDistance = 800;
                 controls.maxPolarAngle = Math.PI / 2.1;
-                // Set default camera target
+                // Set initial camera target to match welcome animation start
                 controls.target.set(3.5, -35.4, -14.7);
                 camera.lookAt(3.5, -35.4, -14.7);
                 // Persist as reset state
