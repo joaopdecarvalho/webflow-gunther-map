@@ -83,6 +83,24 @@
             gap: 24px;
             z-index: 100;
             align-items: flex-end;
+            /* Let empty background / gaps pass pointer events through */
+            pointer-events: none;
+        }
+        /* Panels themselves stay interactive */
+        .info-panels .info-panel { pointer-events: auto; }
+        /* Prevent accidental text selection while dragging over left-side panels */
+        .info-panels, .info-panels .info-panel, .info-panels .info-panel *:not(input):not(textarea):not(select) {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        /* Allow normal selection/editing inside form fields */
+        .info-panels input, .info-panels textarea, .info-panels select { 
+            -webkit-user-select: text; 
+            -moz-user-select: text; 
+            -ms-user-select: text; 
+            user-select: text; 
         }
         
         .info-panel {
@@ -111,8 +129,17 @@
         #performance-panel {
             flex: 0 0 auto;
             width: 320px; /* default width */
-            height: 300px; /* default height */
-            overflow-y: hidden; /* no scrollbar */
+            height: auto; /* dynamic height */
+            max-height: 340px;
+            overflow-y: auto; /* allow scroll if long */
+        }
+        /* Animation helper panel should expand to fit contents without its own scrollbar */
+        #animation-helper-panel {
+            flex: 0 0 auto;
+            width: 320px;
+            height: auto;
+            max-height: none;
+            overflow-y: visible;
         }
 
         #model-status-panel {
@@ -124,9 +151,10 @@
         }
 
         /* Make status the last panel in the row */
-        #camera-panel { order: 1; }
-        #performance-panel { order: 2; }
-        #model-status-panel { order: 3; }
+    #animation-helper-panel { order: 1; }
+    #camera-panel { order: 2; }
+    #performance-panel { order: 3; }
+    #model-status-panel { order: 4; }
         
     
         
@@ -178,6 +206,40 @@
             opacity: 0;
             overflow: hidden;
         }
+
+        /* Animation Helper specific styles (Phase 1) */
+        #animation-helper-panel .panel-content { display: flex; flex-direction: column; gap: 10px; }
+    #animation-helper-panel .kf-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+    #animation-helper-panel .kf-buttons .btn { flex: 1 1 auto; }
+    #animation-helper-panel ul.keyframe-list { list-style: none; padding: 0; margin: 6px 0 0; font-size: 11px; line-height: 1.35; }
+    #animation-helper-panel ul.keyframe-list li { padding: 6px 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; margin-bottom: 6px; display: flex; flex-direction: column; gap: 4px; position: relative; }
+    #animation-helper-panel ul.keyframe-list li .kf-row { display: flex; justify-content: space-between; gap: 6px; align-items: center; }
+    #animation-helper-panel ul.keyframe-list li span.meta { opacity: 0.7; font-size: 10px; }
+    #animation-helper-panel ul.keyframe-list li button.remove-kf { background: none; border: none; color: #f87171; cursor: pointer; font-size: 14px; line-height: 1; padding: 2px 4px; }
+    #animation-helper-panel ul.keyframe-list li button.remove-kf:hover { color: #dc2626; }
+    #animation-helper-panel .segment-settings { display: flex; align-items: center; gap: 6px; font-size: 10px; }
+    #animation-helper-panel .segment-settings input { width: 68px; padding: 2px 4px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: #eee; font-size: 10px; }
+    #animation-helper-panel .segment-settings input:focus { outline: none; border-color: #60a5fa; }
+    #animation-helper-panel .playback-controls { display: flex; gap: 6px; }
+    #animation-helper-panel .playback-row { display: flex; flex-direction: column; gap: 6px; }
+    #animation-helper-panel .playback-progress { display: flex; align-items: center; gap: 6px; }
+    #animation-helper-panel .playback-progress progress { flex: 1 1 auto; height: 8px; }
+    #animation-helper-panel progress { width: 100%; }
+    #animation-helper-panel .scrubber-row { display: flex; gap: 6px; align-items: center; }
+    #animation-helper-panel .scrubber-row input[type=range] { flex: 1 1 auto; }
+    #animation-helper-panel select#kf-ease { width: 100%; padding: 4px 6px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); color: #eee; border-radius: 4px; font-size: 11px; }
+    #animation-helper-panel select#kf-ease:focus { outline: none; border-color: #60a5fa; }
+        #animation-helper-panel .empty-state { font-size: 11px; opacity: 0.6; }
+        #animation-helper-panel .status-line { font-size: 10px; opacity: 0.7; }
+        #animation-helper-panel button.btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+    #animation-helper-panel .library-row { display:flex; gap:6px; margin-top:8px; }
+    #animation-helper-panel .library-row input { flex:1 1 auto; padding:4px 6px; background: rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.15); color:#eee; border-radius:4px; font-size:11px; }
+    #animation-helper-panel .library-row input:focus { outline:none; border-color:#60a5fa; }
+    #animation-helper-panel .saved-animations { margin-top:8px; }
+    #animation-helper-panel .saved-animations select { width:100%; padding:4px 6px; background: rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.15); color:#eee; border-radius:4px; font-size:11px; }
+    #animation-helper-panel .saved-animations select:focus { outline:none; border-color:#60a5fa; }
+    #animation-helper-panel .library-actions { display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
+    #animation-helper-panel .library-actions .btn { flex:1 1 auto; }
         
         .info-panel.minimized {
             min-height: auto;
@@ -255,6 +317,35 @@
             background: linear-gradient(90deg, #6b7280, #9ca3af);
             border-radius: 2px;
             transition: width 0.3s ease;
+        }
+
+        /* Quick UI hide mode */
+        body.ui-hidden .info-panels,
+        body.ui-hidden .controls-panel,
+        body.ui-hidden .test-header { display: none !important; }
+        body.ui-hidden #toast { display: none !important; }
+        body.ui-hidden::after {
+            content: 'UI Hidden (press H to toggle)';
+            position: fixed; top: 8px; right: 12px; z-index: 9999;
+            background: rgba(0,0,0,0.5); color:#fff; font: 12px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+            padding: 6px 10px; border-radius: 6px; letter-spacing: .5px;
+        }
+
+        /* Drag-through mode: keep UI visible but let pointer events fall through except on interactive elements */
+        body.drag-through-panels .info-panels .info-panel,
+        body.drag-through-panels .controls-panel,
+        body.drag-through-panels .test-header { pointer-events: none; }
+        body.drag-through-panels .info-panels .info-panel button,
+        body.drag-through-panels .info-panels .info-panel input,
+        body.drag-through-panels .info-panels .info-panel select,
+        body.drag-through-panels .controls-panel button,
+        body.drag-through-panels .controls-panel input,
+        body.drag-through-panels .controls-panel select { pointer-events: auto; }
+        body.drag-through-panels::after {
+            content: 'Drag-Through Mode (press D to toggle, H hides UI)';
+            position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
+            z-index: 9999; background: rgba(0,0,0,0.45); color:#fff; font: 11px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+            padding: 4px 10px; border-radius: 20px; letter-spacing: .4px; backdrop-filter: blur(4px);
         }
         
         .controls-panel:hover h3::after {
@@ -1109,6 +1200,67 @@
                     <div>Rotation: <span id="camera-rotation">--, --</span></div>
                 </div>
             </div>
+
+            <!-- Animation Helper Panel (Phase 2: Tasks 2.1 - 2.5) -->
+            <div class="info-panel" id="animation-helper-panel">
+                <h3 onclick="togglePanel('animation-helper-panel')">
+                    <span>🎬 Animation Helper</span>
+                    <button class="minimize-btn" id="animation-helper-btn">−</button>
+                </h3>
+                <div class="panel-content">
+                    <div class="kf-buttons">
+                        <button class="btn primary" id="kf-add">➕ Add Keyframe</button>
+                        <button class="btn secondary" id="kf-clear" title="Clear all keyframes">♻️ Clear</button>
+                        <button class="btn neutral" id="kf-reset-view" title="Go to first keyframe" disabled>⏮️ First</button>
+                    </div>
+                    <div>
+                        <strong style="font-size:12px;">Keyframes</strong>
+                        <ul class="keyframe-list" id="kf-list">
+                            <li class="empty-state" id="kf-empty">No keyframes set yet</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:11px;margin:6px 0 4px;opacity:.8;">Easing</label>
+                        <select id="kf-ease">
+                            <option value="linear">Linear</option>
+                            <option value="easeIn">Ease In</option>
+                            <option value="easeOut">Ease Out</option>
+                            <option value="easeInOut">Ease InOut</option>
+                            <option value="bounce">Bounce</option>
+                        </select>
+                    </div>
+                    <div class="scrubber-row">
+                        <span style="font-size:10px;opacity:.7;">Scrub</span>
+                        <input type="range" id="kf-scrub" min="0" max="1" step="0.0001" value="0" />
+                    </div>
+                    <div class="playback-row">
+                        <div class="playback-controls">
+                            <button class="btn success" id="kf-play" disabled>▶️</button>
+                            <button class="btn neutral" id="kf-pause" disabled>⏸️</button>
+                            <button class="btn danger" id="kf-stop" disabled>⏹️</button>
+                        </div>
+                        <div class="playback-progress">
+                            <progress id="kf-progress" value="0" max="1"></progress>
+                            <span id="kf-time" style="font-size:10px;opacity:.7;width:55px;text-align:right;">0.0s</span>
+                        </div>
+                    </div>
+                    <div class="library-row">
+                        <input id="anim-name" placeholder="Animation name" />
+                        <button class="btn primary" id="anim-save" title="Save current animation" disabled>💾</button>
+                    </div>
+                    <div class="saved-animations">
+                        <label style="display:block;font-size:11px;margin:6px 0 4px;opacity:.8;">Saved Animations</label>
+                        <select id="anim-list"><option value="">(none)</option></select>
+                        <div class="library-actions">
+                            <button class="btn neutral" id="anim-load" disabled>📂 Load</button>
+                            <button class="btn neutral" id="anim-rename" disabled>✏️ Rename</button>
+                            <button class="btn danger" id="anim-delete" disabled>🗑️ Delete</button>
+                            <button class="btn secondary" id="anim-refresh">🔄 Refresh</button>
+                        </div>
+                    </div>
+                    <div class="status-line" id="kf-status">Add 2+ keyframes to enable playback.</div>
+                </div>
+            </div>
             
             <div class="info-panel" id="performance-panel">
                 <h3 onclick="togglePanel('performance-panel')">
@@ -1237,8 +1389,19 @@
             // Optional: Add specific filenames here if auto-detection fails
         ];
         
-        // Keep track of latest loaded model for auto-loading
-        let latestModelKey = null;
+        // Keep track of preferred model for auto-loading
+        // Per request: always auto-load the smallest model first.
+        let smallestModelKey = null;
+
+        // Heuristic size ranking based on filename
+        function sizeRankForName(name) {
+            const n = (name || '').toLowerCase();
+            if (n.includes('webp15')) return 1; // smallest
+            if (n.includes('webp25')) return 2;
+            if (n.includes('webp')) return 3;
+            if (n.includes('with-textures') || n.includes('textures')) return 5; // likely largest
+            return 4; // default in between
+        }
         
         // Auto-discover models in public folder
         async function discoverModels() {
@@ -1303,14 +1466,24 @@
                     MODEL_URLS[key] = filePath;
                 });
                 
-                // Find the latest model by priority
+                // Determine the smallest model by heuristic
                 const localModels = availableModels.filter(m => m.source === 'Local');
                 if (localModels.length > 0) {
-                    const latestLocal = localModels.reduce((latest, current) => 
-                        (current.priority > latest.priority) ? current : latest
-                    );
-                    latestModelKey = latestLocal.key;
-                    console.log('🎯 Latest local model detected:', latestLocal.name, 'priority:', latestLocal.priority);
+                    const smallestLocal = localModels.reduce((smallest, current) => {
+                        const sRank = sizeRankForName(smallest.name);
+                        const cRank = sizeRankForName(current.name);
+                        if (cRank < sRank) return current;
+                        if (cRank === sRank) {
+                            // tie-breaker: prefer GLB over GLTF for speed, then by filename lexicographically
+                            const sType = smallest.type === 'GLB' ? 0 : 1;
+                            const cType = current.type === 'GLB' ? 0 : 1;
+                            if (cType < sType) return current;
+                            if (cType === sType && (current.name < smallest.name)) return current;
+                        }
+                        return smallest;
+                    });
+                    smallestModelKey = smallestLocal.key;
+                    console.log('🎯 Smallest local model detected:', smallestLocal.name, 'sizeRank:', sizeRankForName(smallestLocal.name));
                 }
                 
                 // Sort models by priority (newest first)
@@ -1323,12 +1496,12 @@
                 
                 updateModelStatus(`✅ Found ${modelCount} models! 🎮 Ready to test.`);
                 
-                // Auto-load the latest model if available
-                if (latestModelKey && availableModels.find(m => m.key === latestModelKey)) {
-                    const latestModel = availableModels.find(m => m.key === latestModelKey);
-                    updateModelStatus(`🚀 Auto-loading latest model: ${latestModel.name}...`);
+                // Auto-load the smallest model if available
+                if (smallestModelKey && availableModels.find(m => m.key === smallestModelKey)) {
+                    const smallestModel = availableModels.find(m => m.key === smallestModelKey);
+                    updateModelStatus(`🚀 Auto-loading smallest model: ${smallestModel.name}...`);
                     setTimeout(() => {
-                        loadModel(latestModelKey, latestModel.name);
+                        loadModel(smallestModelKey, smallestModel.name);
                     }, 1500);
                 }
                 
@@ -1357,6 +1530,18 @@
             
             populateModelSelectors();
             updateModelStatus('✅ Loaded fallback model list.<br/>🎮 Ready for testing!');
+
+            // Auto-load the smallest model in fallback as well
+            const smallest = availableModels.reduce((s, c) => {
+                const sRank = sizeRankForName(s.name);
+                const cRank = sizeRankForName(c.name);
+                return (cRank < sRank) ? c : s;
+            }, availableModels[0]);
+            smallestModelKey = smallest.key;
+            updateModelStatus(`🚀 Auto-loading smallest model: ${smallest.name}...`);
+            setTimeout(() => {
+                loadModel(smallestModelKey, smallest.name);
+            }, 1200);
         }
         
         // Populate model selector dropdowns with separated groups
@@ -1931,7 +2116,7 @@
                     left: 0;
                     width: 100vw;
                     height: 100vh;
-                    z-index: -1;
+                    z-index: 0; /* Raised so it can receive pointer events outside panels */
                     background: #000000;
                 `;
                 document.body.insertBefore(container, document.body.firstChild);
@@ -1998,10 +2183,73 @@
                     renderer.setSize(window.innerWidth, window.innerHeight);
                 });
 
+                // Detect user interaction to optionally stop animation playback (robust debounce)
+                let interactionTimeout = null;
+                animationHelper.suppressNextInteraction = false; // ignore Play click during activation
+                const canvasEl = renderer.domElement;
+                let pointerActive = false; // true only while user is physically dragging
+                let lastInteractionAt = 0;  // timestamp of last genuine interaction
+                const markInteracting = (source) => {
+                    if (animationHelper.suppressNextInteraction) return; // ignore suppressed events
+                    animationHelper._userInteracting = true;
+                    lastInteractionAt = performance.now();
+                    if (interactionTimeout) clearTimeout(interactionTimeout);
+                    interactionTimeout = setTimeout(() => { animationHelper._userInteracting = false; }, 650); // idle threshold
+                };
+                const pointerDownHandler = (e) => {
+                    if (canvasEl.contains(e.target) || e.target === canvasEl) {
+                        pointerActive = true;
+                        markInteracting('pointerdown');
+                    }
+                };
+                const pointerUpHandler = () => { pointerActive = false; };
+                window.addEventListener('pointerdown', pointerDownHandler, { passive: true });
+                window.addEventListener('pointerup', pointerUpHandler, { passive: true });
+                window.addEventListener('pointercancel', pointerUpHandler, { passive: true });
+                window.addEventListener('wheel', (e) => {
+                    if (canvasEl.contains(e.target) || e.target === canvasEl) markInteracting('wheel');
+                }, { passive: true });
+                window.addEventListener('pointermove', (e) => {
+                    if (!pointerActive) return;
+                    if (canvasEl.contains(e.target) || e.target === canvasEl) markInteracting('pointermove');
+                }, { passive: true });
+                // Touch support
+                window.addEventListener('touchstart', (e) => {
+                    if ([...e.touches].some(t => true)) { // basic truthy; rely on target check of first touch
+                        if (canvasEl.contains(e.target) || e.target === canvasEl) {
+                            pointerActive = true;
+                            markInteracting('touchstart');
+                        }
+                    }
+                }, { passive: true });
+                window.addEventListener('touchend', () => { pointerActive = false; }, { passive: true });
+                window.addEventListener('touchcancel', () => { pointerActive = false; }, { passive: true });
+                window.addEventListener('touchmove', (e) => {
+                    if (!pointerActive) return;
+                    if (canvasEl.contains(e.target) || e.target === canvasEl) markInteracting('touchmove');
+                }, { passive: true });
+                // Keyboard (restrict to camera-affecting keys)
+                window.addEventListener('keydown', (e) => {
+                    const tag = document.activeElement && document.activeElement.tagName;
+                    if (tag && ['INPUT','TEXTAREA','SELECT'].includes(tag)) return;
+                    if (['r','w'].includes(e.key.toLowerCase())) markInteracting('key');
+                }, { passive: true });
+                // OrbitControls change only counts while actively dragging (prevents inertia/damping from flagging)
+                if (controls) {
+                    controls.addEventListener('change', () => { if (pointerActive) markInteracting('controls'); });
+                }
+                // Expose for debugging if needed
+                window._ahDebugInteraction = () => ({ pointerActive, lastInteractionAt, userInteracting: animationHelper._userInteracting });
+
                 // Keyboard shortcuts for tips
                 window.addEventListener('keydown', (e) => {
                     if (e.key.toLowerCase() === 'r') { window.resetCamera(); }
                     if (e.key.toLowerCase() === 'w') { window.toggleWireframe(); }
+                    if (e.key.toLowerCase() === 'h') { document.body.classList.toggle('ui-hidden'); }
+                    if (e.key.toLowerCase() === 'd') { 
+                        document.body.classList.toggle('drag-through-panels'); 
+                        console.log('Drag-through panels:', document.body.classList.contains('drag-through-panels')); 
+                    }
                 });
                 
                 updateModelStatus('✅ 3D environment ready!<br/>🎮 Use controls to load and test models.');
@@ -2262,6 +2510,439 @@ controls.target.set(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.t
         updateModelStatus('🚀 Starting enhanced 3D map environment...');
         initMap();
         
+        // =============================
+    // 🎬 Animation Helper (Phase 2 & 3): Includes Tasks 2.1 - 2.5 & 3.1 - 3.5
+        // =============================
+        const animationHelper = {
+            keyframes: [], // { id, position: Vector3, target: Vector3, timestamp }
+            durations: [], // ms per segment (between i and i+1)
+            easing: 'linear',
+            playing: false,
+            paused: false,
+            startTime: 0,
+            elapsedBeforePause: 0,
+            rafId: null
+        };
+
+        const EASING = {
+            linear: t => t,
+            easeIn: t => t * t,
+            easeOut: t => t * (2 - t),
+            easeInOut: t => (t < 0.5) ? (2 * t * t) : (-1 + (4 - 2 * t) * t),
+            bounce: t => { // simple easeOutBounce
+                const n1 = 7.5625, d1 = 2.75;
+                if (t < 1 / d1) return n1 * t * t;
+                else if (t < 2 / d1) return n1 * (t -= 1.5 / d1) * t + 0.75;
+                else if (t < 2.5 / d1) return n1 * (t -= 2.25 / d1) * t + 0.9375;
+                else return n1 * (t -= 2.625 / d1) * t + 0.984375;
+            }
+        };
+
+        function totalDuration() {
+            return animationHelper.durations.reduce((a,b)=>a+b, 0) || 0;
+        }
+
+        function fmtVec(v) { return `${v.x.toFixed(1)},${v.y.toFixed(1)},${v.z.toFixed(1)}`; }
+
+        function addKeyframe() {
+            if (!camera || !controls) return;
+            const kf = {
+                id: Date.now() + Math.random(),
+                position: camera.position.clone(),
+                target: controls.target.clone(),
+                timestamp: Date.now()
+            };
+            animationHelper.keyframes.push(kf);
+            const count = animationHelper.keyframes.length;
+            if (count > 1 && animationHelper.durations.length < count - 1) {
+                animationHelper.durations.push(2000); // default 2s segment
+            }
+            status(`Keyframe ${count} added.`);
+            updateKeyframeList();
+            document.getElementById('kf-reset-view').disabled = animationHelper.keyframes.length === 0;
+        }
+
+        function removeKeyframe(id) {
+            if (animationHelper.playing) return;
+            const idx = animationHelper.keyframes.findIndex(k => k.id === id);
+            if (idx === -1) return;
+            animationHelper.keyframes.splice(idx,1);
+            if (idx < animationHelper.durations.length) {
+                animationHelper.durations.splice(idx,1); // remove corresponding segment
+            } else if (idx === animationHelper.keyframes.length) {
+                animationHelper.durations.pop();
+            }
+            status('Keyframe removed.');
+            updateKeyframeList();
+            if (animationHelper.keyframes.length === 0) {
+                document.getElementById('kf-reset-view').disabled = true;
+            }
+        }
+
+        function clearKeyframes() {
+            if (animationHelper.playing) return;
+            animationHelper.keyframes = [];
+            animationHelper.durations = [];
+            animationHelper.elapsedBeforePause = 0;
+            animationHelper.playing = false;
+            animationHelper.paused = false;
+            updateKeyframeList();
+            document.getElementById('kf-progress').value = 0;
+            document.getElementById('kf-scrub').value = 0;
+            document.getElementById('kf-time').textContent = '0.0s';
+            document.getElementById('kf-play').disabled = true;
+            document.getElementById('kf-pause').disabled = true;
+            document.getElementById('kf-stop').disabled = true;
+            document.getElementById('kf-reset-view').disabled = true;
+            status('All keyframes cleared.');
+        }
+
+        function updateKeyframeList() {
+            const list = document.getElementById('kf-list');
+            const empty = document.getElementById('kf-empty');
+            list.querySelectorAll('li:not(.empty-state)').forEach(li => li.remove());
+            const k = animationHelper.keyframes;
+            empty.style.display = k.length === 0 ? 'block' : 'none';
+            k.forEach((kf, i) => {
+                const li = document.createElement('li');
+                const row = document.createElement('div');
+                row.className = 'kf-row';
+                const label = document.createElement('span');
+                label.innerHTML = `KF ${i+1}`;
+                const meta = document.createElement('span');
+                meta.className = 'meta';
+                meta.textContent = `pos(${fmtVec(kf.position)}) → tgt(${fmtVec(kf.target)})`;
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-kf';
+                removeBtn.textContent = '✖';
+                removeBtn.title = 'Remove keyframe';
+                removeBtn.addEventListener('click', () => removeKeyframe(kf.id));
+                row.appendChild(label);
+                row.appendChild(meta);
+                row.appendChild(removeBtn);
+                li.appendChild(row);
+                // Segment settings except for last keyframe
+                if (i < k.length - 1) {
+                    const seg = document.createElement('div');
+                    seg.className = 'segment-settings';
+                    seg.innerHTML = `<span>→ KF ${i+2} duration</span>`;
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.min = '100';
+                    input.step = '100';
+                    input.value = animationHelper.durations[i] || 2000;
+                    input.title = 'Segment duration (ms)';
+                    input.addEventListener('change', () => {
+                        const v = parseInt(input.value) || 1000;
+                        animationHelper.durations[i] = Math.max(50, v);
+                        status(`Segment ${i+1} duration set to ${animationHelper.durations[i]} ms`);
+                    });
+                    seg.appendChild(input);
+                    li.appendChild(seg);
+                }
+                list.appendChild(li);
+            });
+            const canPlay = animationHelper.keyframes.length >= 2 && !animationHelper.playing;
+            document.getElementById('kf-play').disabled = !canPlay;
+            document.getElementById('kf-stop').disabled = animationHelper.keyframes.length < 2;
+            document.getElementById('kf-reset-view').disabled = animationHelper.keyframes.length === 0;
+        }
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+        function lerpVec(a, b, t) { return new THREE.Vector3( lerp(a.x,b.x,t), lerp(a.y,b.y,t), lerp(a.z,b.z,t) ); }
+
+        function evaluatePath(tNorm) {
+            // tNorm in [0,1]
+            const k = animationHelper.keyframes;
+            if (k.length === 0) return null;
+            if (k.length === 1) return { position: k[0].position.clone(), target: k[0].target.clone() };
+            const total = totalDuration();
+            if (!total) return { position: k[0].position.clone(), target: k[0].target.clone() };
+            const tAbs = tNorm * total;
+            let acc = 0;
+            for (let i=0; i<k.length-1; i++) {
+                const segDur = animationHelper.durations[i];
+                if (tAbs <= acc + segDur || i === k.length-2) {
+                    const localT = Math.min(1, (tAbs - acc) / segDur);
+                    const ease = EASING[animationHelper.easing] || EASING.linear;
+                    const et = ease(localT);
+                    return {
+                        position: lerpVec(k[i].position, k[i+1].position, et),
+                        target: lerpVec(k[i].target, k[i+1].target, et)
+                    };
+                }
+                acc += segDur;
+            }
+            return { position: k[k.length-1].position.clone(), target: k[k.length-1].target.clone() };
+        }
+
+        function applyPathSample(sample) {
+            if (!sample) return;
+            // Skip applying if user is actively interacting (prevents fighting controls)
+            if (animationHelper._userInteracting) return;
+            camera.position.copy(sample.position);
+            controls.target.copy(sample.target);
+            camera.lookAt(sample.target);
+            controls.update();
+        }
+
+        function playAnimation() {
+            if (animationHelper.keyframes.length < 2 || animationHelper.playing) return;
+            animationHelper.suppressNextInteraction = true; // ignore the click
+            setTimeout(() => { animationHelper.suppressNextInteraction = false; }, 150);
+            animationHelper._userInteracting = false;
+            animationHelper.playing = true;
+            animationHelper.paused = false;
+            animationHelper.startTime = performance.now();
+            animationHelper.interactionGraceUntil = animationHelper.startTime + 500; // grace period: prior drags won't cancel
+            animationHelper.elapsedBeforePause = 0;
+            document.getElementById('kf-play').disabled = true;
+            document.getElementById('kf-pause').disabled = false;
+            document.getElementById('kf-stop').disabled = false;
+            status('Playing animation...');
+            animatePlayback();
+        }
+
+        function pauseAnimation() {
+            if (!animationHelper.playing) return;
+            if (!animationHelper.paused) {
+                animationHelper.paused = true;
+                animationHelper.elapsedBeforePause += performance.now() - animationHelper.startTime;
+                if (animationHelper.rafId) cancelAnimationFrame(animationHelper.rafId);
+                status('Paused.');
+                document.getElementById('kf-pause').textContent = '▶️';
+            } else {
+                animationHelper.paused = false;
+                animationHelper.startTime = performance.now();
+                status('Resuming...');
+                document.getElementById('kf-pause').textContent = '⏸️';
+                animatePlayback();
+            }
+        }
+
+        function stopAnimation() {
+            if (animationHelper.rafId) cancelAnimationFrame(animationHelper.rafId);
+            animationHelper.playing = false;
+            animationHelper.paused = false;
+            animationHelper.elapsedBeforePause = 0;
+            document.getElementById('kf-play').disabled = animationHelper.keyframes.length < 2;
+            document.getElementById('kf-pause').disabled = true;
+            document.getElementById('kf-pause').textContent = '⏸️';
+            document.getElementById('kf-stop').disabled = animationHelper.keyframes.length < 2;
+            document.getElementById('kf-progress').value = 0;
+            document.getElementById('kf-scrub').value = 0;
+            document.getElementById('kf-time').textContent = '0.0s';
+            if (animationHelper.keyframes[0]) applyPathSample({ position: animationHelper.keyframes[0].position, target: animationHelper.keyframes[0].target });
+            status('Stopped.');
+        }
+
+        function animatePlayback() {
+            const progressEl = document.getElementById('kf-progress');
+            const scrubEl = document.getElementById('kf-scrub');
+            const timeEl = document.getElementById('kf-time');
+            const total = totalDuration();
+            let interactingFrames = 0; // consecutive frames seen as interacting
+            const step = (now) => {
+                if (!animationHelper.playing || animationHelper.paused) return;
+                // Respect grace window after pressing Play
+                const withinGrace = animationHelper.interactionGraceUntil && now < animationHelper.interactionGraceUntil;
+                if (animationHelper._userInteracting && !withinGrace) {
+                    interactingFrames++;
+                    if (interactingFrames >= 4) { // require sustained interaction (~4 rAF frames)
+                        stopAnimation();
+                        status('Animation stopped by user interaction.');
+                        return;
+                    }
+                } else {
+                    interactingFrames = 0;
+                }
+                const elapsed = animationHelper.elapsedBeforePause + (now - animationHelper.startTime);
+                const clamped = Math.min(elapsed, total);
+                const tNorm = total ? clamped / total : 0;
+                progressEl.value = tNorm;
+                scrubEl.value = tNorm;
+                timeEl.textContent = (clamped/1000).toFixed(1)+'s';
+                applyPathSample(evaluatePath(tNorm));
+                if (clamped >= total) {
+                    animationHelper.playing = false;
+                    document.getElementById('kf-play').disabled = false;
+                    document.getElementById('kf-pause').disabled = true;
+                    status('Animation complete.');
+                } else {
+                    animationHelper.rafId = requestAnimationFrame(step);
+                }
+            };
+            animationHelper.rafId = requestAnimationFrame(step);
+        }
+
+        function scrubTo(tNorm, fromUser=false) {
+            if (fromUser && animationHelper.playing) {
+                // Stop playback if user scrubs
+                stopAnimation();
+            }
+            tNorm = Math.min(1, Math.max(0, tNorm));
+            document.getElementById('kf-progress').value = tNorm;
+            document.getElementById('kf-scrub').value = tNorm;
+            const total = totalDuration();
+            document.getElementById('kf-time').textContent = (tNorm * total / 1000).toFixed(1)+'s';
+            applyPathSample(evaluatePath(tNorm));
+        }
+
+        function status(msg) {
+            const el = document.getElementById('kf-status');
+            if (el) el.textContent = msg;
+        }
+
+        function resetViewToFirst() {
+            if (animationHelper.keyframes[0]) {
+                applyPathSample(animationHelper.keyframes[0]);
+                document.getElementById('kf-progress').value = 0;
+                document.getElementById('kf-scrub').value = 0;
+                document.getElementById('kf-time').textContent = '0.0s';
+                status('Moved to first keyframe.');
+            }
+        }
+
+        function initAnimationHelperUI() {
+            const addBtn = document.getElementById('kf-add');
+            const clearBtn = document.getElementById('kf-clear');
+            const playBtn = document.getElementById('kf-play');
+            const pauseBtn = document.getElementById('kf-pause');
+            const stopBtn = document.getElementById('kf-stop');
+            const easeSelect = document.getElementById('kf-ease');
+            const scrub = document.getElementById('kf-scrub');
+            const resetBtn = document.getElementById('kf-reset-view');
+            // Phase 3 elements
+            const saveBtn = document.getElementById('anim-save');
+            const nameInput = document.getElementById('anim-name');
+            const listSelect = document.getElementById('anim-list');
+            const loadBtn = document.getElementById('anim-load');
+            const renameBtn = document.getElementById('anim-rename');
+            const deleteBtn = document.getElementById('anim-delete');
+            const refreshBtn = document.getElementById('anim-refresh');
+            if (!addBtn) return;
+            addBtn.addEventListener('click', addKeyframe);
+            clearBtn.addEventListener('click', clearKeyframes);
+            playBtn.addEventListener('click', playAnimation);
+            pauseBtn.addEventListener('click', pauseAnimation);
+            stopBtn.addEventListener('click', stopAnimation);
+            resetBtn.addEventListener('click', resetViewToFirst);
+            easeSelect.addEventListener('change', () => {
+                animationHelper.easing = easeSelect.value;
+                status(`Easing set to ${easeSelect.value}`);
+            });
+            scrub.addEventListener('input', (e) => scrubTo(parseFloat(e.target.value), true));
+            // Enable save when there are >=2 keyframes
+            const updateSaveState = () => { saveBtn.disabled = animationHelper.keyframes.length < 2; };
+            const origUpdateKF = updateKeyframeList;
+            updateKeyframeList = function() { origUpdateKF(); updateSaveState(); };
+            // Persistence logic
+            refreshBtn.addEventListener('click', populateSavedAnimations);
+            saveBtn.addEventListener('click', () => {
+                const name = (nameInput.value || '').trim();
+                if (!name) { status('Enter a name before saving.'); return; }
+                saveCurrentAnimation(name);
+            });
+            loadBtn.addEventListener('click', () => {
+                const sel = listSelect.value; if (!sel) return; loadAnimation(sel); });
+            renameBtn.addEventListener('click', () => {
+                const sel = listSelect.value; if (!sel) return;
+                const newName = prompt('New animation name:', sel);
+                if (newName && newName.trim() && newName !== sel) { renameAnimation(sel, newName.trim()); }
+            });
+            deleteBtn.addEventListener('click', () => {
+                const sel = listSelect.value; if (!sel) return;
+                if (confirm(`Delete animation "${sel}"?`)) { deleteAnimation(sel); }
+            });
+            listSelect.addEventListener('change', () => {
+                const has = !!listSelect.value;
+                loadBtn.disabled = !has;
+                renameBtn.disabled = !has;
+                deleteBtn.disabled = !has;
+            });
+            populateSavedAnimations();
+            updateKeyframeList();
+        }
+
+        // ---- Phase 3 persistence helpers ----
+        const STORAGE_KEY = 'animationHelperLibrary_v1';
+
+        function loadLibrary() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+        }
+        function saveLibrary(lib) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(lib)); } catch (e) { console.warn('Persist failed', e); }
+        }
+        function serializeCurrent() {
+            return {
+                keyframes: animationHelper.keyframes.map(k => ({
+                    position: { x:k.position.x, y:k.position.y, z:k.position.z },
+                    target: { x:k.target.x, y:k.target.y, z:k.target.z },
+                    timestamp: k.timestamp
+                })),
+                durations: [...animationHelper.durations],
+                easing: animationHelper.easing,
+                savedAt: Date.now()
+            };
+        }
+        function deserializeInto(data) {
+            if (!data) return;
+            animationHelper.keyframes = data.keyframes.map(k => ({
+                id: Date.now()+Math.random(),
+                position: new THREE.Vector3(k.position.x, k.position.y, k.position.z),
+                target: new THREE.Vector3(k.target.x, k.target.y, k.target.z),
+                timestamp: k.timestamp || Date.now()
+            }));
+            animationHelper.durations = Array.isArray(data.durations) ? data.durations.slice() : [];
+            animationHelper.easing = data.easing || 'linear';
+            document.getElementById('kf-ease').value = animationHelper.easing;
+            updateKeyframeList();
+            scrubTo(0);
+            status('Animation loaded.');
+        }
+        function saveCurrentAnimation(name) {
+            const lib = loadLibrary();
+            lib[name] = serializeCurrent();
+            saveLibrary(lib);
+            populateSavedAnimations(name);
+            status(`Saved animation "${name}".`);
+        }
+        function loadAnimation(name) {
+            const lib = loadLibrary();
+            if (!lib[name]) { status('Animation not found.'); return; }
+            deserializeInto(lib[name]);
+        }
+        function renameAnimation(oldName, newName) {
+            const lib = loadLibrary();
+            if (!lib[oldName]) { status('Animation not found.'); return; }
+            if (lib[newName]) { status('Name already exists.'); return; }
+            lib[newName] = lib[oldName];
+            delete lib[oldName];
+            saveLibrary(lib);
+            populateSavedAnimations(newName);
+            status(`Renamed to "${newName}".`);
+        }
+        function deleteAnimation(name) {
+            const lib = loadLibrary();
+            if (lib[name]) { delete lib[name]; saveLibrary(lib); }
+            populateSavedAnimations();
+            status(`Deleted "${name}".`);
+        }
+        function populateSavedAnimations(selectName='') {
+            const listSelect = document.getElementById('anim-list');
+            if (!listSelect) return;
+            const lib = loadLibrary();
+            const names = Object.keys(lib).sort((a,b)=>a.localeCompare(b));
+            listSelect.innerHTML = '<option value="">(none)</option>' + names.map(n=>`<option value="${n}">${n}</option>`).join('');
+            listSelect.value = names.includes(selectName) ? selectName : '';
+            const has = !!listSelect.value;
+            document.getElementById('anim-load').disabled = !has;
+            document.getElementById('anim-rename').disabled = !has;
+            document.getElementById('anim-delete').disabled = !has;
+        }
+
+        setTimeout(initAnimationHelperUI, 140);
+
         // Auto-discover models after initialization
         setTimeout(discoverModels, 1200);
     </script>

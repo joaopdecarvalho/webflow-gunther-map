@@ -38,3 +38,6 @@ logs
 # Claude Code settings
 .claude/settings.local.json
 .vercel
+
+
+.docs
