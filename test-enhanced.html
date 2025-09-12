@@ -289,6 +289,8 @@
             position: fixed;
             bottom: 32px;
             right: 32px;
+            z-index: 100;
+            pointer-events: auto; /* Explicitly enable pointer events */
             backdrop-filter: blur(12px);
             border: 1px solid rgba(75, 85, 99, 0.4);
             box-shadow: 
@@ -2276,6 +2278,9 @@
                 // Set up minimize button click handlers
                 setupMinimizeButtons();
                 
+                // Fix controls panel pointer events
+                setTimeout(() => fixControlsPanel(), 100);
+                
                 // Debug: Check current UI mode states
                 console.log('🐛 UI States after init:', {
                     uiHidden: document.body.classList.contains('ui-hidden'),
@@ -2289,6 +2294,39 @@
         }
         
         // Panel minimize/maximize functionality
+        window.testControlsPanel = function() {
+            console.log('🧪 Testing controls panel...');
+            
+            // Test if elements exist
+            const singleBtn = document.getElementById('single-mode-btn');
+            const comparisonBtn = document.getElementById('comparison-mode-btn');
+            const modelSelect = document.getElementById('model-a-select');
+            
+            console.log('Elements found:', {
+                singleBtn: !!singleBtn,
+                comparisonBtn: !!comparisonBtn,
+                modelSelect: !!modelSelect
+            });
+            
+            if (singleBtn) {
+                console.log('Single btn onclick:', singleBtn.onclick ? 'exists' : 'MISSING');
+                console.log('Single btn getAttribute onclick:', singleBtn.getAttribute('onclick'));
+            }
+            
+            // Try to programmatically trigger setMode
+            if (window.setMode) {
+                console.log('setMode function exists, testing...');
+                try {
+                    window.setMode('comparison');
+                    console.log('✅ setMode(comparison) successful');
+                } catch (e) {
+                    console.error('❌ setMode failed:', e);
+                }
+            } else {
+                console.error('❌ setMode function not found');
+            }
+        };
+
         window.debugPanelStates = function() {
             console.log('🐛 Panel Debug Info:');
             console.log('Body classes:', Array.from(document.body.classList));
@@ -2615,6 +2653,50 @@
                     };
                 }
             });
+        }
+
+        function fixControlsPanel() {
+            console.log('🔧 Fixing controls panel...');
+            
+            // Get the controls panel and log its state
+            const controlsPanel = document.getElementById('controls-panel');
+            if (!controlsPanel) {
+                console.error('❌ Controls panel not found!');
+                return;
+            }
+            
+            const style = window.getComputedStyle(controlsPanel);
+            console.log('Controls panel computed styles:', {
+                pointerEvents: style.pointerEvents,
+                zIndex: style.zIndex,
+                position: style.position,
+                display: style.display
+            });
+            
+            // Force enable pointer events on the entire panel
+            controlsPanel.style.pointerEvents = 'auto';
+            
+            // Check and fix all interactive elements
+            const selects = controlsPanel.querySelectorAll('select');
+            const buttons = controlsPanel.querySelectorAll('button');
+            const toggles = controlsPanel.querySelectorAll('.toggle-option');
+            const inputs = controlsPanel.querySelectorAll('input');
+            
+            console.log(`Found: ${selects.length} selects, ${buttons.length} buttons, ${toggles.length} toggles, ${inputs.length} inputs`);
+            
+            // Force enable pointer events on all interactive elements
+            [...selects, ...buttons, ...toggles, ...inputs].forEach(el => {
+                el.style.pointerEvents = 'auto';
+                el.style.cursor = 'pointer';
+            });
+            
+            // Test click handlers
+            toggles.forEach((toggle, i) => {
+                const currentHandler = toggle.onclick;
+                console.log(`Toggle ${i} onclick:`, currentHandler ? 'has handler' : 'NO HANDLER');
+            });
+            
+            console.log('✅ Controls panel fix complete');
         }
         
         window.showFullDebugInfo = function() {
