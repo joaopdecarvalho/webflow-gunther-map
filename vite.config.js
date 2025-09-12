@@ -41,6 +41,35 @@ export default defineConfig({
       'Access-Control-Allow-Headers': 'Content-Type',
     }
   },
+  plugins: [
+    {
+      name: 'models-list-endpoint',
+      configureServer(server) {
+        server.middlewares.use(async (req, res, next) => {
+          if (req.url === '/models-list.json') {
+            try {
+              const publicDir = path.join(process.cwd(), 'public');
+              const files = fs.existsSync(publicDir) ? fs.readdirSync(publicDir) : [];
+              const modelFiles = files.filter((f) =>
+                f.toLowerCase().endsWith('.glb') || f.toLowerCase().endsWith('.gltf')
+              );
+              res.setHeader('Content-Type', 'application/json');
+              res.end(
+                JSON.stringify({ success: true, models: modelFiles, count: modelFiles.length })
+              );
+            } catch (error) {
+              res.setHeader('Content-Type', 'application/json');
+              res.end(
+                JSON.stringify({ success: false, error: String(error), models: [], count: 0 })
+              );
+            }
+            return;
+          }
+          next();
+        });
+      },
+    },
+  ],
   build: {
     outDir: 'dist',
     rollupOptions: {

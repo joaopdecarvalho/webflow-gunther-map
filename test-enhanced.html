@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced 3D Map Controls</title>
+    <title>3D Testing Suite</title>
     <style>
         * {
             margin: 0;
@@ -12,9 +12,13 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             overflow-x: hidden;
-            background: #f5f5f5;
+            background: #000000;
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         .page_wrap {
@@ -25,123 +29,1011 @@
         
         .test-header {
             position: fixed;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            top: 24px;
+            left: 24px;
+            width: auto;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 24px 32px;
+            border-radius: 20px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.12),
+                0 8px 16px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
             z-index: 100;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .test-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .test-header p {
+            color: #6b7280;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        .test-header p:last-child {
+            margin-top: 4px;
+            font-weight: 500;
+            color: #374151;
         }
         
         .info-panels {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
+            bottom: 32px;
+            left: 32px;
             display: flex;
-            gap: 15px;
+            gap: 24px;
             z-index: 100;
+            align-items: flex-end;
         }
         
         .info-panel {
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            line-height: 1.4;
+            background: rgba(31, 41, 55, 0.85);
+            color: #e5e7eb;
+            padding: 28px 32px;
+            border-radius: 16px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.7;
             flex: 1;
-            min-width: 200px;
-            max-height: 300px;
+            width: auto;
+            max-height: auto;
+            overflow-y: auto;
+            border: 1px solid rgba(75, 85, 99, 0.4);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+            transform-origin: bottom;
+            backdrop-filter: blur(12px);
+        }
+
+        /* Specific sizing and ordering for panels */
+        #camera-panel,
+        #performance-panel {
+            flex: 0 0 auto;
+            width: 320px; /* default width */
+            height: 300px; /* default height */
             overflow-y: auto;
         }
+
+        #model-status-panel {
+            flex: 0 0 auto;
+            width: 420px; /* default width */
+            height: auto; /* dynamic height */
+            max-height: none;
+            overflow-y: visible;
+        }
+
+        /* Make status the last panel in the row */
+        #camera-panel { order: 1; }
+        #performance-panel { order: 2; }
+        #model-status-panel { order: 3; }
+        
+    
         
         .info-panel h3 {
-            color: #4CAF50;
-            margin-bottom: 8px;
+            color: #f9fafb;
+            margin-bottom: 20px;
+            font-size: 15px;
+            border-bottom: 2px solid rgba(107, 114, 128, 0.3);
+            padding-bottom: 12px;
+            font-weight: 700;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            letter-spacing: -0.2px;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .minimize-btn {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+        
+        .minimize-btn:hover {
+            background: rgba(156, 163, 175, 0.2);
+            color: #d1d5db;
+            transform: scale(1.1);
+        }
+        
+        .panel-content {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .panel-content.minimized {
+            height: 0 !important;
+            max-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            opacity: 0;
+            overflow: hidden;
+        }
+        
+        .info-panel.minimized {
+            min-height: auto;
+            height: auto !important;
+            padding: 12px 16px;
+        }
+        
+        .info-panel.minimized h3 {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+            font-size: 13px;
+        }
+        
+        .controls-panel.minimized {
+            padding: 12px 16px;
+        }
+        
+        .controls-panel.minimized h3 {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+            font-size: 16px;
+        }
+        
+        .controls-panel.minimized .refresh-icon {
+            top: 8px;
+            right: 52px;
+            width: 32px;
+            height: 32px;
             font-size: 14px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 4px;
         }
         
         .controls-panel {
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 15px;
+            background: rgba(31, 41, 55, 0.85);
+            color: #e5e7eb;
+            padding: 36px 40px;
+            border-radius: 20px;
+            width: 750px;
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(75, 85, 99, 0.4);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 4px 12px rgba(0, 0, 0, 0.2);
+            max-height: calc(100vh - 220px);
+            overflow-y: auto;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+        }
+        
+        .controls-panel h3 {
+            color: #f9fafb;
+            margin-bottom: 28px;
+            font-size: 22px;
+            font-weight: 800;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            border-bottom: 3px solid rgba(107, 114, 128, 0.3);
+            padding-bottom: 16px;
+            letter-spacing: -0.4px;
+            position: relative;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        
+        .controls-panel h3::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #6b7280, #9ca3af);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        .controls-panel:hover h3::after {
+            width: 80px;
+        }
+        
+        .mode-toggle {
+            margin-bottom: 28px;
+            padding: 24px;
+            background: rgba(55, 65, 81, 0.6);
+            border-radius: 16px;
+            border: 1px solid rgba(75, 85, 99, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+        }
+        
+        .mode-toggle:hover {
+            background: rgba(55, 65, 81, 0.8);
+            border-color: rgba(75, 85, 99, 0.6);
+            transform: translateY(-1px);
+        }
+        
+        .mode-toggle > div:first-child {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .toggle-switch {
+            display: flex;
+            background: rgba(17, 24, 39, 0.6);
+            border-radius: 12px;
+            padding: 4px;
+            margin-top: 0;
+        }
+
+        .tips-box {
+            margin-top: 12px;
+            padding: 12px 14px;
+            background: rgba(31, 41, 55, 0.5);
+            border: 1px dashed rgba(156, 163, 175, 0.35);
+            border-radius: 12px;
+            color: #e5e7eb;
+            font-size: 12px;
+        }
+        .tips-box b { color: #f9fafb; }
+        .tips-box ul { margin: 6px 0 0 16px; }
+        .tips-box li { margin: 4px 0; }
+        
+        .toggle-option {
+            flex: 1;
+            padding: 12px 16px;
+            text-align: center;
             border-radius: 8px;
-            min-width: 250px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .toggle-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .toggle-option:hover::before:not(.active) {
+            left: 100%;
+        }
+        
+        .toggle-option.active {
+            background: #374151;
+            color: white;
+            box-shadow: 
+                0 6px 16px rgba(55, 65, 81, 0.3),
+                0 3px 6px rgba(55, 65, 81, 0.2);
+            transform: translateY(-2px) scale(1.02);
+            animation: activeGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes activeGlow {
+            from {
+                box-shadow: 
+                    0 6px 16px rgba(31, 41, 55, 0.2),
+                    0 3px 6px rgba(31, 41, 55, 0.15);
+            }
+            to {
+                box-shadow: 
+                    0 8px 20px rgba(31, 41, 55, 0.25),
+                    0 4px 8px rgba(31, 41, 55, 0.2);
+            }
+        }
+        
+        .toggle-option:hover:not(.active) {
+            background: rgba(243, 244, 246, 0.8);
+            color: #374151;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .comparison-panel {
+            display: none;
+            margin-bottom: 28px;
+            padding: 24px;
+            background: rgba(243, 244, 246, 0.8);
+            border-radius: 16px;
+            border: 1px solid rgba(209, 213, 219, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+            animation: slideIn 0.4s ease-out when visible;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .model-selector {
+            margin-bottom: 16px;
+        }
+        
+        .model-selector label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: #4b5563;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .model-selector select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1f2937;
+            border: 1px solid rgba(209, 213, 219, 0.6);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .model-selector select:focus {
+            outline: none;
+            border-color: #1f2937;
+            box-shadow: 
+                0 0 0 4px rgba(31, 41, 55, 0.1),
+                0 4px 12px rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-1px);
+            animation: focusPulse 0.3s ease-out;
+        }
+        
+        @keyframes focusPulse {
+            0% {
+                box-shadow: 
+                    0 0 0 0 rgba(31, 41, 55, 0.4),
+                    0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+            50% {
+                box-shadow: 
+                    0 0 0 6px rgba(31, 41, 55, 0.2),
+                    0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+            100% {
+                box-shadow: 
+                    0 0 0 4px rgba(31, 41, 55, 0.1),
+                    0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+        }
+        
+        .model-selector select:hover {
+            border-color: #9ca3af;
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .model-group {
+            margin-bottom: 8px;
+        }
+        
+        .model-group-label {
+            font-size: 10px;
+            color: #6c757d;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 8px 0 4px 0;
+            padding-left: 4px;
+        }
+        
+        .opacity-slider {
+            margin: 20px 0;
+            padding: 16px;
+            background: rgba(229, 231, 235, 0.4);
+            border-radius: 8px;
+            border: 1px solid rgba(209, 213, 219, 0.3);
+        }
+        
+        .opacity-slider > div:first-child {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 0;
+        }
+        
+        .slider-label {
+            font-size: 11px;
+            color: #6b7280;
+            min-width: 60px;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #ef4444 0%, #06b6d4 100%);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .slider:hover {
+            height: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.2),
+                0 0 0 2px rgba(31, 41, 55, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+            position: relative;
+        }
+        
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 
+                0 8px 16px rgba(0, 0, 0, 0.3),
+                0 0 0 4px rgba(31, 41, 55, 0.2);
+            animation: thumbPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes thumbPulse {
+            0%, 100% {
+                box-shadow: 
+                    0 8px 16px rgba(0, 0, 0, 0.3),
+                    0 0 0 4px rgba(31, 41, 55, 0.2);
+            }
+            50% {
+                box-shadow: 
+                    0 8px 16px rgba(0, 0, 0, 0.3),
+                    0 0 0 6px rgba(31, 41, 55, 0.3);
+            }
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: none;
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.2),
+                0 0 0 2px rgba(31, 41, 55, 0.1);
+        }
+        
+        .comparison-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        
+        .comparison-controls .btn {
+            flex: 1;
+            padding: 10px 12px;
+            font-size: 12px;
+            margin: 0;
+        }
+        
+        .model-group-label {
+            font-size: 11px;
+            color: #6b7280;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin: 16px 0 12px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(156, 163, 175, 0.2);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .model-group-label:hover {
+            color: #374151;
+            letter-spacing: 1px;
+            transform: translateX(2px);
+        }
+        
+        .model-group-label::before {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 32px;
+            height: 2px;
+            background: #1f2937;
+            border-radius: 1px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+        }
+        
+        .model-group-label:hover::before {
+            width: 60px;
+        }
+        
+        .single-model-controls {
+            display: block;
+        }
+        
+        .models-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .model-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .utility-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 6px;
+            margin-top: 16px;
+        }
+        
+        .refresh-icon {
+            position: absolute;
+            top: 16px;
+            right: 60px;
+            background: rgba(107, 114, 128, 0.1);
+            border: 1px solid rgba(107, 114, 128, 0.2);
+            color: #6b7280;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            z-index: 110;
+        }
+        
+        .refresh-icon:hover {
+            background: rgba(107, 114, 128, 0.2);
+            border-color: rgba(107, 114, 128, 0.4);
+            transform: rotate(180deg) scale(1.1);
         }
         
         .btn {
-            background: #007bff;
-            color: white;
+            background: #374151;
+            color: #e5e7eb;
             border: none;
             padding: 8px 12px;
-            border-radius: 4px;
+            border-radius: 10px;
             cursor: pointer;
-            margin: 2px;
+            margin: 0 0 6px 0;
             display: block;
             width: 100%;
-            margin-bottom: 5px;
-            font-size: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.1, 1);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.2px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .btn.neutral {
+            background: #6b7280;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn.neutral:hover {
+            background: #9ca3af;
+            box-shadow: 
+                0 4px 12px rgba(107, 114, 128, 0.2),
+                0 2px 4px rgba(107, 114, 128, 0.15);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
         }
         
         .btn:hover {
-            background: #0056b3;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 8px 20px rgba(0, 0, 0, 0.3),
+                0 4px 8px rgba(0, 0, 0, 0.2);
+            background: #4b5563;
+            border-color: rgba(107, 114, 128, 0.4);
         }
         
-        .btn.success { background: #28a745; }
-        .btn.warning { background: #ffc107; color: #000; }
-        .btn.danger { background: #dc3545; }
+        .btn:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 
+                0 4px 8px rgba(75, 85, 99, 0.2);
+            transition: all 0.1s ease;
+        }
+        
+        .btn.success { 
+            background: #059669;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .btn.success:hover { 
+            background: #047857;
+            box-shadow: 
+                0 8px 20px rgba(5, 150, 105, 0.25),
+                0 4px 8px rgba(5, 150, 105, 0.15);
+        }
+        
+        .btn.warning { 
+            background: #d97706;
+            color: white;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .btn.warning:hover { 
+            background: #b45309;
+            box-shadow: 
+                0 8px 20px rgba(217, 119, 6, 0.25),
+                0 4px 8px rgba(217, 119, 6, 0.15);
+        }
+        
+        .btn.danger { 
+            background: #dc2626;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .btn.danger:hover { 
+            background: #b91c1c;
+            box-shadow: 
+                0 8px 20px rgba(220, 38, 38, 0.25),
+                0 4px 8px rgba(220, 38, 38, 0.15);
+        }
+        
+        .comparison-controls .btn {
+            font-size: 12px;
+            padding: 10px 16px;
+        }
         
         .camera-info {
-            color: #87CEEB;
+            color: #e5e7eb;
+            font-weight: 500;
+        }
+        
+        .camera-info div {
+            margin: 10px 0;
+            padding: 6px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(156, 163, 175, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .camera-info div:last-child {
+            border-bottom: none;
+        }
+        
+        .camera-info div:hover {
+            background: rgba(243, 244, 246, 0.3);
+            padding: 6px 8px;
+            border-radius: 6px;
+            margin: 10px -8px;
+        }
+        
+        .camera-info span {
+            font-weight: 600;
+            color: #059669;
         }
         
         .performance-info {
-            color: #FFB347;
+            color: #e5e7eb;
+            font-weight: 500;
+        }
+        
+        .performance-info div {
+            margin: 10px 0;
+            padding: 6px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(156, 163, 175, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .performance-info div:last-child {
+            border-bottom: none;
+        }
+        
+        .performance-info div:hover {
+            background: rgba(243, 244, 246, 0.3);
+            padding: 6px 8px;
+            border-radius: 6px;
+            margin: 10px -8px;
+        }
+        
+        .performance-info span {
+            font-weight: 600;
+            color: #d97706;
         }
         
         .model-info {
-            color: #98FB98;
+            color: #1f2937;
+            font-weight: 500;
         }
         
+        /* Loading States */
+        .loading-indicator {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(31, 41, 55, 0.1);
+            border-radius: 50%;
+            border-top-color: #1f2937;
+            animation: spin 1.2s cubic-bezier(0.4, 0, 0.1, 1) infinite;
+            margin-right: 10px;
+            position: relative;
+        }
+        
+        .loading-indicator::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px solid transparent;
+            border-top-color: rgba(31, 41, 55, 0.3);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite reverse;
+        }
+        
+        @keyframes spin {
+            0% { 
+                transform: rotate(0deg); 
+            }
+            50% { 
+                transform: rotate(180deg); 
+                border-width: 3px;
+            }
+            100% { 
+                transform: rotate(360deg); 
+                border-width: 2.5px;
+            }
+        }
+        
+        .status-success {
+            color: #059669;
+            font-weight: 600;
+        }
+        
+        .status-error {
+            color: #dc2626;
+            font-weight: 600;
+        }
+        
+        .status-loading {
+            color: #d97706;
+            font-weight: 600;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(156, 163, 175, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #059669, #10b981, #06b6d4);
+            border-radius: 3px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.1, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: progressShine 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Responsive Design */
         @media (max-width: 768px) {
             .info-panels {
                 flex-direction: column;
-                bottom: 10px;
-                left: 10px;
-                right: 10px;
+                bottom: 16px;
+                left: 16px;
+                right: 16px;
+                gap: 12px;
+            }
+            
+            /* On small screens, let panels size naturally */
+            #camera-panel,
+            #performance-panel,
+            #model-status-panel {
+                width: auto;
+                height: auto;
+                max-height: none;
+                order: initial;
+                flex: 1 1 auto;
+                overflow-y: auto;
+            }
+            
+            .controls-panel {
+                position: static;
+                width: auto;
+                margin-top: 12px;
             }
             
             .test-header {
                 position: static;
-                margin: 10px;
+                margin: 16px;
+                padding: 24px;
             }
+            
+            .test-header h1 {
+                font-size: 24px;
+            }
+        }
+        
+        /* Scrollbar Styling */
+        .info-panel::-webkit-scrollbar,
+        .controls-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .info-panel::-webkit-scrollbar-track,
+        .controls-panel::-webkit-scrollbar-track {
+            background: rgba(156, 163, 175, 0.1);
+            border-radius: 3px;
+        }
+        
+        .info-panel::-webkit-scrollbar-thumb,
+        .controls-panel::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.3);
+            border-radius: 3px;
+        }
+        
+        .info-panel::-webkit-scrollbar-thumb:hover,
+        .controls-panel::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 163, 175, 0.5);
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(31, 41, 55, 0.96);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 9999;
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
     </style>
 </head>
 <body>
     <div class="page_wrap">
-        <header class="test-header">
-            <h1>🗺️ Enhanced 3D Map Controls</h1>
-            <p>Complete testing environment with loading times, camera tracking, and performance monitoring.</p>
-            <p><strong>Perfect for setting up your Webflow deployment!</strong></p>
-        </header>
         
         <div class="info-panels">
-            <div class="info-panel">
-                <h3>📊 Model Status</h3>
-                <div id="model-status">Ready to load models...</div>
+            <div class="info-panel" id="model-status-panel">
+                <h3 onclick="togglePanel('model-status-panel')">
+                    <span>📊 Model Status</span>
+                    <button class="minimize-btn" id="model-status-btn">−</button>
+                </h3>
+                <div class="panel-content" id="model-status">Ready to load models...</div>
             </div>
             
-            <div class="info-panel">
-                <h3>📍 Camera Position</h3>
-                <div class="camera-info">
+            <div class="info-panel" id="camera-panel">
+                <h3 onclick="togglePanel('camera-panel')">
+                    <span>📍 Camera Position</span>
+                    <button class="minimize-btn" id="camera-btn">−</button>
+                </h3>
+                <div class="panel-content camera-info">
                     <div>Position: <span id="camera-position">--, --, --</span></div>
                     <div>Target: <span id="camera-target">--, --, --</span></div>
                     <div>Distance: <span id="camera-distance">--</span></div>
@@ -149,29 +1041,103 @@
                 </div>
             </div>
             
-            <div class="info-panel">
-                <h3>⚡ Performance</h3>
-                <div class="performance-info">
+            <div class="info-panel" id="performance-panel">
+                <h3 onclick="togglePanel('performance-panel')">
+                    <span>⚡ Performance</span>
+                    <button class="minimize-btn" id="performance-btn">−</button>
+                </h3>
+                <div class="panel-content performance-info">
                     <div>FPS: <span id="fps-counter">--</span></div>
                     <div>Triangles: <span id="triangle-count">--</span></div>
                     <div>Draw Calls: <span id="draw-calls">--</span></div>
                     <div>Memory: <span id="memory-usage">--</span></div>
                 </div>
             </div>
-            
-            <div class="controls-panel">
-                <h3>🎮 Model Controls</h3>
-                <button class="btn" onclick="loadModel('local', 'Local Bremerhaven')">🏠 Load Local Bremerhaven</button>
-                <button class="btn" onclick="loadModel('github', 'GitHub Bremerhaven')">🌐 Load GitHub Bremerhaven</button>
-                <button class="btn" onclick="loadModel('goetheviertel', 'Goetheviertel GLB')">🏘️ Load Goetheviertel</button>
-                <button class="btn" onclick="loadModel('goetheviertel_textures', 'Goetheviertel w/ Textures')">🎨 Load Goetheviertel + Textures</button>
-                <button class="btn" onclick="loadModel('goetheviertel_webp', 'Goetheviertel WebP')">🖼️ Load Goetheviertel WebP</button>
-                <hr style="margin: 10px 0; border-color: #333;">
-                <button class="btn success" onclick="resetCamera()">📷 Reset Camera</button>
-                <button class="btn warning" onclick="toggleWireframe()">🔧 Toggle Wireframe</button>
-                <button class="btn" onclick="copyCurrentPosition()">📋 Copy Camera Position</button>
-                <button class="btn danger" onclick="showFullDebugInfo()">🐛 Full Debug Info</button>
+
+        <!-- Toast container -->
+        <div id="toast"></div>
+
+        <div class="controls-panel" id="controls-panel">
+            <div class="refresh-icon" onclick="discoverModels()" title="Refresh Models">
+                🔄
             </div>
+            <h3 onclick="togglePanel('controls-panel')">
+                <span>Model Controls</span>
+                <button class="minimize-btn" id="controls-btn">−</button>
+            </h3>
+            <div class="panel-content" id="controls-content">
+                
+                <!-- Mode Toggle -->
+                <div class="mode-toggle">
+                    <div style="font-size: 11px; margin-bottom: 5px;">Testing Mode:</div>
+                    <div class="toggle-switch">
+                        <div class="toggle-option active" onclick="setMode('single')" id="single-mode-btn">🎯 Single Model</div>
+                        <div class="toggle-option" onclick="setMode('comparison')" id="comparison-mode-btn">🔄 Comparison</div>
+                    </div>
+                    <div class="tips-box">
+                        <b>Tips</b>
+                        <ul>
+                            <li>Left mouse: Orbit</li>
+                            <li>Right mouse: Pan</li>
+                            <li>Scroll: Zoom</li>
+                            <li>R: Reset camera</li>
+                            <li>W: Toggle wireframe</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Comparison Mode Panel -->
+                <div class="comparison-panel" id="comparison-panel">
+                    <div class="model-selector">
+                        <label>Model A (Red):</label>
+                        <select id="model-a-select">
+                            <!-- Options will be dynamically populated -->
+                        </select>
+                    </div>
+                    
+                    <div class="model-selector">
+                        <label>Model B (Blue):</label>
+                        <select id="model-b-select">
+                            <!-- Options will be dynamically populated -->
+                        </select>
+                    </div>
+                    
+                    <div class="opacity-slider">
+                        <div style="font-size: 11px; margin-bottom: 5px;">Quality Comparison:</div>
+                        <div class="slider-container">
+                            <span class="slider-label">Model A</span>
+                            <input type="range" class="slider" id="opacity-slider" min="0" max="100" value="50" oninput="updateOpacity(this.value)">
+                            <span class="slider-label">Model B</span>
+                        </div>
+                        <div style="text-align: center; font-size: 10px; color: #888; margin-top: 5px;">
+                            Opacity: <span id="opacity-display">50%</span> A / <span id="opacity-display-b">50%</span> B
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-controls">
+                        <button class="btn" onclick="loadBothModels()">⚡ Load Both</button>
+                        <button class="btn" onclick="swapModels()">🔄 Swap A↔B</button>
+                    </div>
+                    <div class="comparison-controls" style="margin-top: 5px;">
+                        <button class="btn" onclick="loadPreset('texture-comparison')" style="font-size: 9px;">🎨 Original vs Textures</button>
+                        <button class="btn" onclick="loadPreset('format-comparison')" style="font-size: 9px;">🖼️ PNG vs WebP</button>
+                    </div>
+                </div>
+                
+                <!-- Single Model Controls (Dynamically Generated) -->
+                <div class="single-model-controls" id="single-model-controls">
+                    <!-- Model buttons will be populated dynamically -->
+                </div>
+                
+                <hr style="margin: 16px 0; border-color: #333;">
+                <div class="utility-controls">
+                    <button class="btn neutral" onclick="resetCamera()">📷 Reset Camera</button>
+                    <button class="btn neutral" onclick="toggleWireframe()">🔧 Toggle Wireframe</button>
+                    <button class="btn neutral" onclick="copyCurrentPosition()">📋 Copy Camera Position</button>
+                    <button class="btn neutral" onclick="showFullDebugInfo()">🐛 Full Debug Info</button>
+                </div>
+            </div>
+        </div>
         </div>
     </div>
 
@@ -189,20 +1155,650 @@
             fps: 0
         };
         
-        // Model URLs
-        const MODEL_URLS = {
-            local: '/Bremerhaven_250731_local.gltf',
-            github: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Bremerhaven_250731_fixed.gltf',
-            goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb',
-            goetheviertel_textures: '/Goetheviertel_250812_with-textures.glb',
-            goetheviertel_webp: '/Goetheviertel_250812_with-textures_webp.glb'
-        };
+        // Comparison mode variables
+        let isComparisonMode = false;
+        let modelA = null;
+        let modelB = null;
+        let currentOpacity = 50;
         
+        // Dynamic model discovery
+        let MODEL_URLS = {};
+        let availableModels = [];
+        
+        // ========================================
+        // 📝 AUTOMATIC MODEL DETECTION:
+        // The interface will automatically detect ALL .glb and .gltf files
+        // in your public folder and display them with their exact filenames.
+        // No need to list them here - just drop files into public/ folder!
+        // ========================================
+        const USER_MODELS = [
+            // Optional: Add specific filenames here if auto-detection fails
+        ];
+        
+        // Keep track of latest loaded model for auto-loading
+        let latestModelKey = null;
+        
+        // Auto-discover models in public folder
+        async function discoverModels() {
+            try {
+                updateModelStatus('🔍 Scanning for 3D models...');
+                
+                let detectedFiles = [];
+                
+                // Method 1: Try to use our file listing API (served by Vite middleware)
+                try {
+                    const response = await fetch('/models-list.json');
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success && data.models) {
+                            detectedFiles = data.models.map(filename => '/' + filename);
+                            console.log('✅ Found via API:', detectedFiles);
+                        }
+                    }
+                } catch (error) {
+                    console.warn('API listing failed:', error);
+                }
+                
+                // Method 2: If API failed, directly check your known files
+                if (detectedFiles.length === 0) {
+                    updateModelStatus('🔍 Checking known model files...');
+                    
+                    // List of your actual files (from ls command)
+                    const knownFiles = [
+                        'Goetheviertel_250812_with-textures.glb',
+                        'Goetheviertel_250812_with-textures_webp.glb',
+                        'Goetheviertel_250812_with-textures_webp15.glb',
+                        'Goetheviertel_250812_with-textures_webp25.glb',
+                        ...USER_MODELS  // Add any user-defined files
+                    ];
+                    
+                    // Test each known file
+                    for (const fileName of knownFiles) {
+                        try {
+                            const response = await fetch('/' + fileName, { method: 'HEAD' });
+                            if (response.ok) {
+                                detectedFiles.push('/' + fileName);
+                                console.log(`✅ Confirmed: ${fileName}`);
+                            }
+                        } catch (error) {
+                            console.log(`❌ Not found: ${fileName}`);
+                        }
+                    }
+                }
+                
+                // Method 3: If still no files, try a broader scan of common patterns
+                if (detectedFiles.length === 0) {
+                    updateModelStatus('🔍 Broad scan for any .glb/.gltf files...');
+                    
+                    // Common filename patterns people might use
+                    const commonPatterns = [];
+                    
+                    // Single letter files (a.glb, b.glb, etc.)
+                    for (let i = 0; i < 26; i++) {
+                        const letter = String.fromCharCode(97 + i);
+                        commonPatterns.push(`${letter}.glb`, `${letter}.gltf`);
+                    }
+                    
+                    // Numbered files (1.glb, 2.glb, model1.glb, etc.)
+                    for (let i = 1; i <= 20; i++) {
+                        commonPatterns.push(`${i}.glb`, `${i}.gltf`);
+                        commonPatterns.push(`model${i}.glb`, `model${i}.gltf`);
+                        commonPatterns.push(`test${i}.glb`, `test${i}.gltf`);
+                    }
+                    
+                    // Common prefixes with common suffixes
+                    const prefixes = ['model', 'scene', 'building', 'city', 'test', 'demo', 'sample'];
+                    const suffixes = ['', '_final', '_v1', '_v2', '_optimized'];
+                    
+                    prefixes.forEach(prefix => {
+                        suffixes.forEach(suffix => {
+                            commonPatterns.push(`${prefix}${suffix}.glb`);
+                            commonPatterns.push(`${prefix}${suffix}.gltf`);
+                        });
+                    });
+                    
+                    // Test patterns in small batches
+                    const batchSize = 10;
+                    for (let i = 0; i < commonPatterns.length; i += batchSize) {
+                        const batch = commonPatterns.slice(i, i + batchSize);
+                        
+                        for (const fileName of batch) {
+                            try {
+                                const response = await fetch('/' + fileName, { method: 'HEAD' });
+                                if (response.ok && !detectedFiles.includes('/' + fileName)) {
+                                    detectedFiles.push('/' + fileName);
+                                    console.log(`✅ Found: ${fileName}`);
+                                }
+                            } catch (error) {
+                                // File doesn't exist, continue
+                            }
+                        }
+                        
+                        // Show progress
+                        const progress = Math.round((i + batchSize) / commonPatterns.length * 100);
+                        updateModelStatus(`🔍 Scanning... ${Math.min(progress, 100)}% (${detectedFiles.length} found)`);
+                        
+                        // Small delay to avoid overwhelming requests
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    }
+                }
+                
+                const modelFiles = detectedFiles;
+                
+                // Add known GitHub models (only ones that exist on GitHub)
+                const githubModels = [
+                    {
+                        name: 'GitHub Goetheviertel WebP',
+                        url: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp.glb',
+                        key: 'github_goetheviertel_webp'
+                    },
+                    {
+                        name: 'GitHub Goetheviertel WebP15',
+                        url: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp15.glb',
+                        key: 'github_goetheviertel_webp15'
+                    },
+                    {
+                        name: 'GitHub Goetheviertel WebP25',
+                        url: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp25.glb',
+                        key: 'github_goetheviertel_webp25'
+                    }
+                ];
+                
+                // Create model entries
+                availableModels = [];
+                MODEL_URLS = {};
+                
+                // Add local files (preserve exact original filenames)
+                modelFiles.forEach(filePath => {
+                    const fileName = filePath.split('/').pop();
+                    const displayName = fileName; // Use exact original filename as display name
+                    
+                    // Create unique key from filename but keep original name for display
+                    const key = fileName.replace(/\.(gltf|glb)$/i, '').toLowerCase().replace(/[^a-z0-9]/g, '_');
+                    
+                    // Smart ordering based on file modification time or filename numbers
+                    let priority = 0;
+                    const numbers = fileName.match(/\d+/g);
+                    if (numbers) {
+                        // Use last number in filename as priority (higher = newer)
+                        priority = parseInt(numbers[numbers.length - 1]) || 0;
+                    }
+                    
+                    // Special handling for webp quality files (webp15, webp25, etc.)
+                    const webpMatch = fileName.match(/webp(\d+)/i);
+                    if (webpMatch) {
+                        priority = parseInt(webpMatch[1]) + 1000; // Give webp files higher priority
+                    }
+                    
+                    // Special handling for date-based naming
+                    const dateMatch = fileName.match(/(\d{6})/); // YYMMDD format
+                    if (dateMatch) {
+                        priority = parseInt(dateMatch[1]) + 10000; // Date-based files get highest priority
+                    }
+                    
+                    const modelInfo = {
+                        key: key,
+                        name: displayName, // Original filename without any modification
+                        url: filePath,
+                        type: filePath.endsWith('.glb') ? 'GLB' : 'GLTF',
+                        source: 'Local',
+                        priority: priority,
+                        originalFileName: fileName
+                    };
+                    
+                    availableModels.push(modelInfo);
+                    MODEL_URLS[key] = filePath;
+                });
+                
+                // Find the latest model by priority
+                const localModels = availableModels.filter(m => m.source === 'Local');
+                if (localModels.length > 0) {
+                    const latestLocal = localModels.reduce((latest, current) => 
+                        (current.priority > latest.priority) ? current : latest
+                    );
+                    latestModelKey = latestLocal.key;
+                    console.log('🎯 Latest local model detected:', latestLocal.name, 'priority:', latestLocal.priority);
+                }
+                
+                // Add GitHub models
+                githubModels.forEach(model => {
+                    availableModels.push({
+                        key: model.key,
+                        name: model.name,
+                        url: model.url,
+                        type: model.url.endsWith('.glb') ? 'GLB' : 'GLTF',
+                        source: 'GitHub'
+                    });
+                    MODEL_URLS[model.key] = model.url;
+                });
+                
+                // Sort models: Local by priority (newest first), then GitHub by name
+                availableModels.sort((a, b) => {
+                    if (a.source === 'Local' && b.source === 'Local') {
+                        return (b.priority || 0) - (a.priority || 0); // Highest priority first
+                    }
+                    if (a.source !== b.source) {
+                        return a.source === 'Local' ? -1 : 1; // Local models first
+                    }
+                    return a.name.localeCompare(b.name);
+                });
+                
+                // Update UI
+                populateModelSelectors();
+                
+                const localCount = availableModels.filter(m => m.source === 'Local').length;
+                const githubCount = availableModels.filter(m => m.source === 'GitHub').length;
+                
+                updateModelStatus(`✅ Found ${availableModels.length} models! (${localCount} local, ${githubCount} GitHub)<br/>🎮 Ready to test any model you add to the public folder.`);
+                
+                // Auto-load the latest model if available
+                if (latestModelKey && availableModels.find(m => m.key === latestModelKey)) {
+                    const latestModel = availableModels.find(m => m.key === latestModelKey);
+                    updateModelStatus(`🚀 Auto-loading latest model: ${latestModel.name}...`);
+                    setTimeout(() => {
+                        loadModel(latestModelKey, latestModel.name);
+                    }, 1500);
+                }
+                
+                console.log('Discovered models:', availableModels);
+                
+            } catch (error) {
+                console.warn('Could not auto-discover models:', error);
+                // Fallback to hardcoded models
+                await loadFallbackModels();
+            }
+        }
+        
+        // Fallback to hardcoded models if discovery fails
+        async function loadFallbackModels() {
+            availableModels = [
+                { key: 'goetheviertel_textures', name: 'Goetheviertel With Textures', url: '/Goetheviertel_250812_with-textures.glb', type: 'GLB', source: 'Local' },
+                { key: 'goetheviertel_webp', name: 'Goetheviertel WebP', url: '/Goetheviertel_250812_with-textures_webp.glb', type: 'GLB', source: 'Local' },
+                { key: 'goetheviertel_webp15', name: 'Goetheviertel WebP15', url: '/Goetheviertel_250812_with-textures_webp15.glb', type: 'GLB', source: 'Local' },
+                { key: 'goetheviertel_webp25', name: 'Goetheviertel WebP25', url: '/Goetheviertel_250812_with-textures_webp25.glb', type: 'GLB', source: 'Local' }
+            ];
+            
+            MODEL_URLS = {};
+            availableModels.forEach(model => {
+                MODEL_URLS[model.key] = model.url;
+            });
+            
+            populateModelSelectors();
+            updateModelStatus('✅ Loaded fallback model list.<br/>🎮 Ready for testing!');
+        }
+        
+        // Populate model selector dropdowns with separated groups
+        function populateModelSelectors() {
+            const selectA = document.getElementById('model-a-select');
+            const selectB = document.getElementById('model-b-select');
+            
+            // Clear existing options
+            selectA.innerHTML = '';
+            selectB.innerHTML = '';
+            
+            // Separate models by source
+            const localModels = availableModels.filter(m => m.source === 'Local');
+            const githubModels = availableModels.filter(m => m.source === 'GitHub');
+            
+            // Helper function to add model group
+            function addModelGroup(select, models, groupName) {
+                if (models.length === 0) return;
+                
+                // Add group label
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = groupName;
+                
+                models.forEach(model => {
+                    const iconMap = {
+                        'GLTF': '📄',
+                        'GLB': '📦'
+                    };
+                    
+                    const icon = iconMap[model.type] || '📄';
+                    const displayText = `${icon} ${model.name}`;
+                    
+                    const option = document.createElement('option');
+                    option.value = model.key;
+                    option.textContent = displayText;
+                    optgroup.appendChild(option);
+                });
+                
+                select.appendChild(optgroup);
+            }
+            
+            // Add groups to both selectors
+            addModelGroup(selectA, localModels, '🏠 Local Models');
+            addModelGroup(selectA, githubModels, '🌐 GitHub Models');
+            
+            addModelGroup(selectB, localModels, '🏠 Local Models');
+            addModelGroup(selectB, githubModels, '🌐 GitHub Models');
+            
+            // Set default selections if models exist
+            if (availableModels.length >= 2) {
+                selectA.value = availableModels[0].key;
+                selectB.value = availableModels[1].key;
+            }
+            
+            // Update single model controls
+            updateSingleModelControls();
+        }
+        
+        // Update single model control buttons with two-column layout
+        function updateSingleModelControls() {
+            const container = document.getElementById('single-model-controls');
+            container.innerHTML = '';
+            
+            // Separate models by source
+            const localModels = availableModels.filter(m => m.source === 'Local');
+            const githubModels = availableModels.filter(m => m.source === 'GitHub');
+            
+            // Create grid container
+            const gridContainer = document.createElement('div');
+            gridContainer.className = 'models-grid';
+            
+            // Helper function to create model group
+            function createModelGroup(models, groupName) {
+                const group = document.createElement('div');
+                group.className = 'model-group';
+                
+                if (models.length === 0) return group;
+                
+                // Add group header
+                const groupHeader = document.createElement('div');
+                groupHeader.className = 'model-group-label';
+                groupHeader.textContent = groupName;
+                group.appendChild(groupHeader);
+                
+                // Add buttons for models
+                models.forEach(model => {
+                    const button = document.createElement('button');
+                    button.className = 'btn';
+                    button.onclick = () => loadModel(model.key, model.name);
+                    
+                    const iconMap = {
+                        'GLTF': '📄',
+                        'GLB': '📦'
+                    };
+                    
+                    const icon = iconMap[model.type] || '📄';
+                    // Use original filename without truncation for better readability
+                    button.innerHTML = `${icon} ${model.name}`;
+                    button.title = model.name; // Add tooltip for full name
+                    group.appendChild(button);
+                });
+                
+                return group;
+            }
+            
+            // Create both groups
+            const localGroup = createModelGroup(localModels, '🏠 Local Models');
+            const githubGroup = createModelGroup(githubModels, '🌐 GitHub Models');
+            
+            // Add groups to grid
+            gridContainer.appendChild(localGroup);
+            gridContainer.appendChild(githubGroup);
+            
+            container.appendChild(gridContainer);
+        }
+
         function updateModelStatus(msg, isError = false) {
             const statusEl = document.getElementById('model-status');
-            statusEl.innerHTML = msg;
-            statusEl.style.color = isError ? '#ff6b6b' : '#98FB98';
-            console.log(msg.replace(/<br\/>/g, '\n').replace(/<[^>]*>/g, ''));
+            // Reset to default color (no classes)
+            statusEl.classList.remove('status-success', 'status-error', 'status-loading');
+            statusEl.style.color = '';
+
+            // Only success (first line) should be green
+            if (msg && msg.includes('✅')) {
+                const parts = String(msg).split('<br/>');
+                const first = parts.shift();
+                const rebuilt = [`<span class="status-success">${first}</span>`, ...parts].join('<br/>');
+                statusEl.innerHTML = rebuilt;
+            } else {
+                statusEl.innerHTML = msg;
+            }
+
+            console.log(String(msg).replace(/<br\/>/g, '\n').replace(/<[^>]*>/g, ''));
+        }
+        
+        // Mode switching functions
+        function setMode(mode) {
+            isComparisonMode = (mode === 'comparison');
+            
+            // Update UI
+            document.getElementById('single-mode-btn').classList.toggle('active', !isComparisonMode);
+            document.getElementById('comparison-mode-btn').classList.toggle('active', isComparisonMode);
+            document.getElementById('comparison-panel').style.display = isComparisonMode ? 'block' : 'none';
+            document.getElementById('single-model-controls').style.display = isComparisonMode ? 'none' : 'block';
+            
+            // Clear existing models when switching modes
+            clearAllModels();
+            
+            if (isComparisonMode) {
+                updateModelStatus('🔄 Comparison mode activated!<br/>Select two models to compare quality differences.');
+            } else {
+                updateModelStatus('🎯 Single model mode activated!<br/>Click a button to load a model.');
+            }
+        }
+        
+        function clearAllModels() {
+            if (currentModel) {
+                scene.remove(currentModel);
+                currentModel = null;
+            }
+            if (modelA) {
+                scene.remove(modelA);
+                modelA = null;
+            }
+            if (modelB) {
+                scene.remove(modelB);
+                modelB = null;
+            }
+        }
+        
+        // Dual model loading function
+        async function loadBothModels() {
+            const modelAKey = document.getElementById('model-a-select').value;
+            const modelBKey = document.getElementById('model-b-select').value;
+            
+            if (modelAKey === modelBKey) {
+                updateModelStatus('⚠️ Please select different models for comparison!', true);
+                return;
+            }
+            
+            updateModelStatus('🔄 Loading both models for comparison...');
+            clearAllModels();
+            
+            try {
+                // Load both models in parallel
+                const [modelAResult, modelBResult] = await Promise.all([
+                    loadModelForComparison(modelAKey, 'Model A'),
+                    loadModelForComparison(modelBKey, 'Model B')
+                ]);
+                
+                modelA = modelAResult.model;
+                modelB = modelBResult.model;
+                
+                // Position and scale models identically
+                setupDualModels();
+                
+                // Apply initial opacity
+                updateOpacity(currentOpacity);
+                
+                updateModelStatus(`
+                    ✅ Comparison loaded successfully!<br/>
+                    📦 Model A: ${modelAResult.meshCount} meshes | ${modelAResult.loadTime}s<br/>
+                    📦 Model B: ${modelBResult.meshCount} meshes | ${modelBResult.loadTime}s<br/>
+                    🎛️ Use the slider to compare quality differences!
+                `);
+                
+            } catch (error) {
+                console.error('Dual model loading error:', error);
+                updateModelStatus(`❌ Failed to load models for comparison:<br/>${error.message}`, true);
+            }
+        }
+        
+        // Load single model for comparison
+        function loadModelForComparison(modelKey, displayName) {
+            return new Promise((resolve, reject) => {
+                const url = MODEL_URLS[modelKey];
+                if (!url) {
+                    reject(new Error(`Unknown model: ${modelKey}`));
+                    return;
+                }
+                
+                const loader = new GLTFLoader();
+                const dracoLoader = new DRACOLoader();
+                dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+                dracoLoader.preload();
+                loader.setDRACOLoader(dracoLoader);
+                
+                const startTime = performance.now();
+                
+                loader.load(
+                    url,
+                    (gltf) => {
+                        const loadTime = ((performance.now() - startTime) / 1000).toFixed(2);
+                        const model = gltf.scene;
+                        
+                        // Count meshes
+                        let meshCount = 0;
+                        model.traverse((child) => {
+                            if (child.isMesh) {
+                                meshCount++;
+                                child.castShadow = true;
+                                child.receiveShadow = true;
+                                
+                                if (child.material) {
+                                    child.material.needsUpdate = true;
+                                    if (child.material.map && renderer.capabilities) {
+                                        child.material.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                                    }
+                                }
+                            }
+                        });
+                        
+                        resolve({ model, meshCount, loadTime });
+                    },
+                    undefined,
+                    (error) => reject(error)
+                );
+            });
+        }
+        
+        // Setup dual models with identical positioning
+        function setupDualModels() {
+            if (!modelA || !modelB) return;
+            
+            // Calculate combined bounding box for consistent scaling
+            const boxA = new THREE.Box3().setFromObject(modelA);
+            const boxB = new THREE.Box3().setFromObject(modelB);
+            
+            const sizeA = boxA.getSize(new THREE.Vector3());
+            const sizeB = boxB.getSize(new THREE.Vector3());
+            
+            // Use the larger model as reference for scaling
+            const maxSizeA = Math.max(sizeA.x, sizeA.y, sizeA.z);
+            const maxSizeB = Math.max(sizeB.x, sizeB.y, sizeB.z);
+            const referenceSize = Math.max(maxSizeA, maxSizeB);
+            const scale = 100 / referenceSize;
+            
+            // Scale both models identically
+            modelA.scale.setScalar(scale);
+            modelB.scale.setScalar(scale);
+            
+            // Center both models at the same position
+            const centerA = boxA.getCenter(new THREE.Vector3());
+            const centerB = boxB.getCenter(new THREE.Vector3());
+            
+            modelA.position.set(-centerA.x * scale, -centerA.y * scale, -centerA.z * scale);
+            modelB.position.set(-centerB.x * scale, -centerB.y * scale, -centerB.z * scale);
+            
+            // Add both models to scene
+            scene.add(modelA);
+            scene.add(modelB);
+            
+            // Position camera for good view
+            const idealDistance = referenceSize * scale * 1.5;
+            camera.position.set(idealDistance * 0.5, idealDistance * 0.3, idealDistance);
+            camera.lookAt(0, 0, 0);
+            controls.update();
+        }
+        
+        // Opacity control functions
+        function updateOpacity(value) {
+            currentOpacity = parseInt(value);
+            const opacityA = (100 - currentOpacity) / 100;
+            const opacityB = currentOpacity / 100;
+            
+            // Update display
+            document.getElementById('opacity-display').textContent = `${Math.round(opacityA * 100)}%`;
+            document.getElementById('opacity-display-b').textContent = `${Math.round(opacityB * 100)}%`;
+            
+            // Apply opacity to models
+            if (modelA) {
+                modelA.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        child.material.transparent = true;
+                        child.material.opacity = opacityA;
+                        child.material.needsUpdate = true;
+                    }
+                });
+            }
+            
+            if (modelB) {
+                modelB.traverse((child) => {
+                    if (child.isMesh && child.material) {
+                        child.material.transparent = true;
+                        child.material.opacity = opacityB;
+                        child.material.needsUpdate = true;
+                    }
+                });
+            }
+        }
+        
+        // Swap models A and B
+        function swapModels() {
+            const selectA = document.getElementById('model-a-select');
+            const selectB = document.getElementById('model-b-select');
+            
+            const tempValue = selectA.value;
+            selectA.value = selectB.value;
+            selectB.value = tempValue;
+            
+            updateModelStatus('🔄 Models swapped! Click "Load Both" to apply changes.');
+        }
+        
+        // Load preset comparison pairs
+        function loadPreset(presetName) {
+            const selectA = document.getElementById('model-a-select');
+            const selectB = document.getElementById('model-b-select');
+            
+            switch (presetName) {
+                case 'texture-comparison':
+                    // Find best available models for texture comparison
+                    if (availableModels.find(m => m.key === 'goetheviertel_textures') && 
+                        availableModels.find(m => m.key === 'goetheviertel_webp')) {
+                        selectA.value = 'goetheviertel_textures';
+                        selectB.value = 'goetheviertel_webp';
+                        updateModelStatus('🎨 Texture comparison preset loaded!<br/>Full Textures vs WebP Compressed');
+                    } else {
+                        updateModelStatus('⚠️ Texture comparison models not available', true);
+                    }
+                    break;
+                case 'format-comparison':
+                    // Compare WebP compression levels
+                    if (availableModels.find(m => m.key === 'goetheviertel_webp15') && 
+                        availableModels.find(m => m.key === 'goetheviertel_webp25')) {
+                        selectA.value = 'goetheviertel_webp15';
+                        selectB.value = 'goetheviertel_webp25';
+                        updateModelStatus('🖼️ WebP comparison preset loaded!<br/>15% vs 25% Quality');
+                    } else {
+                        updateModelStatus('⚠️ WebP comparison models not available', true);
+                    }
+                    break;
+                default:
+                    updateModelStatus('⚠️ Unknown preset: ' + presetName, true);
+            }
         }
         
         function updateCameraInfo() {
@@ -393,7 +1989,7 @@
                     width: 100vw;
                     height: 100vh;
                     z-index: -1;
-                    background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0E68C 100%);
+                    background: #000000;
                 `;
                 document.body.insertBefore(container, document.body.firstChild);
                 
@@ -420,6 +2016,11 @@
                 controls.minDistance = 20;
                 controls.maxDistance = 800;
                 controls.maxPolarAngle = Math.PI / 2.1;
+                // Set default camera target
+                controls.target.set(34.7, -36.3, 7.8);
+                camera.lookAt(34.7, -36.3, 7.8);
+                // Persist as reset state
+                if (typeof controls.saveState === 'function') controls.saveState();
                 
                 // Add lighting
                 const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
@@ -456,20 +2057,51 @@
                 
                 updateModelStatus('✅ 3D environment ready!<br/>🎮 Use controls to load and test models.');
                 
+                // Enable click-to-copy on camera info rows
+                setupCameraCopyHandlers();
+                
             } catch (error) {
                 console.error('Init error:', error);
                 updateModelStatus(`❌ Initialization failed:<br/>${error.message}`, true);
             }
         }
         
+        // Panel minimize/maximize functionality
+        window.togglePanel = function(panelId) {
+            const panel = document.getElementById(panelId);
+            const content = panel.querySelector('.panel-content');
+            const btn = panel.querySelector('.minimize-btn');
+            
+            if (content.classList.contains('minimized')) {
+                // Expand
+                content.classList.remove('minimized');
+                panel.classList.remove('minimized');
+                btn.textContent = '−';
+                btn.title = 'Minimize panel';
+            } else {
+                // Minimize
+                content.classList.add('minimized');
+                panel.classList.add('minimized');
+                btn.textContent = '+';
+                btn.title = 'Expand panel';
+            }
+        };
+        
         // Global functions
         window.loadModel = loadModel;
+        window.setMode = setMode;
+        window.loadBothModels = loadBothModels;
+        window.updateOpacity = updateOpacity;
+        window.swapModels = swapModels;
+        window.loadPreset = loadPreset;
         
         window.resetCamera = function() {
             if (camera && controls) {
                 camera.position.set(0, 80, 150);
-                camera.lookAt(0, 0, 0);
-                controls.reset();
+                controls.target.set(34.7, -36.3, 7.8);
+                camera.lookAt(34.7, -36.3, 7.8);
+                if (typeof controls.saveState === 'function') controls.saveState();
+                controls.update();
                 updateModelStatus('📷 Camera reset to default position');
             }
         };
@@ -508,6 +2140,35 @@ controls.target.set(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.t
                 });
             }
         };
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1500);
+        }
+
+        function setupCameraCopyHandlers() {
+            const rows = document.querySelectorAll('#camera-panel .camera-info div');
+            rows.forEach((row) => {
+                row.style.cursor = 'pointer';
+                row.title = 'Click to copy';
+                row.addEventListener('click', () => {
+                    const labelNode = row.childNodes[0];
+                    const label = labelNode ? String(labelNode.textContent || '').replace(':','').trim() : 'Value';
+                    const span = row.querySelector('span');
+                    const value = span ? span.textContent.trim() : row.textContent.trim();
+                    const text = `${label}: ${value}`;
+                    navigator.clipboard.writeText(text)
+                        .then(() => showToast(`${label} copied to clipboard`))
+                        .catch(() => showToast('Copy failed'));
+                });
+            });
+        }
         
         window.showFullDebugInfo = function() {
             const info = [];
@@ -546,6 +2207,9 @@ controls.target.set(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.t
         // Initialize
         updateModelStatus('🚀 Starting enhanced 3D map environment...');
         initMap();
+        
+        // Auto-discover models after initialization
+        setTimeout(discoverModels, 1200);
     </script>
 </body>
 </html>
