@@ -1183,7 +1183,6 @@
                     </div>
                     
                     <div class="comparison-controls">
-                        <button class="btn" onclick="loadBothModels()">⚡ Load Both</button>
                     </div>
                 </div>
                 
@@ -2050,6 +2049,10 @@
             toggleA.classList.toggle('active', modelLetter === 'A');
             toggleB.classList.toggle('active', modelLetter === 'B');
             
+            // Save current camera position before clearing models
+            const savedCameraPosition = camera.position.clone();
+            const savedCameraTarget = controls.target.clone();
+            
             // Clear existing models
             clearAllModels();
             
@@ -2062,7 +2065,7 @@
                     loadModelForComparison(modelAKey, 'Model A').then(result => {
                         modelA = result.model;
                         modelB = null;
-                        setupSingleModel(modelA);
+                        setupSingleModelWithCamera(modelA, savedCameraPosition, savedCameraTarget);
                         updateModelStatus(`✅ Model A loaded: ${modelAInfo.name}<br/>📦 ${result.meshCount} meshes | ${result.loadTime}s`);
                     }).catch(error => {
                         updateModelStatus(`❌ Failed to load Model A: ${error.message}`, true);
@@ -2077,7 +2080,7 @@
                     loadModelForComparison(modelBKey, 'Model B').then(result => {
                         modelB = result.model;
                         modelA = null;
-                        setupSingleModel(modelB);
+                        setupSingleModelWithCamera(modelB, savedCameraPosition, savedCameraTarget);
                         updateModelStatus(`✅ Model B loaded: ${modelBInfo.name}<br/>📦 ${result.meshCount} meshes | ${result.loadTime}s`);
                     }).catch(error => {
                         updateModelStatus(`❌ Failed to load Model B: ${error.message}`, true);
@@ -2086,7 +2089,7 @@
             }
         };
         
-        // Setup single model in comparison mode
+        // Setup single model in comparison mode (preserves existing camera position)
         function setupSingleModel(model) {
             if (!model) return;
             
@@ -2104,10 +2107,37 @@
             // Add to scene
             scene.add(model);
             
-            // Position camera for good view
-            const idealDistance = maxSize * scale * 1.5;
-            camera.position.set(idealDistance * 0.5, idealDistance * 0.3, idealDistance);
-            camera.lookAt(0, 0, 0);
+            // Position camera for good view (only if camera hasn't been positioned yet)
+            if (!camera.position.length()) {
+                const idealDistance = maxSize * scale * 1.5;
+                camera.position.set(idealDistance * 0.5, idealDistance * 0.3, idealDistance);
+                camera.lookAt(0, 0, 0);
+            }
+            controls.update();
+        }
+        
+        // Setup single model with saved camera position
+        function setupSingleModelWithCamera(model, savedPosition, savedTarget) {
+            if (!model) return;
+            
+            // Calculate bounding box and scale
+            const box = new THREE.Box3().setFromObject(model);
+            const size = box.getSize(new THREE.Vector3());
+            const maxSize = Math.max(size.x, size.y, size.z);
+            const scale = 100 / maxSize;
+            
+            // Scale and center the model
+            model.scale.setScalar(scale);
+            const center = box.getCenter(new THREE.Vector3());
+            model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+            
+            // Add to scene
+            scene.add(model);
+            
+            // Restore saved camera position
+            camera.position.copy(savedPosition);
+            controls.target.copy(savedTarget);
+            camera.lookAt(savedTarget);
             controls.update();
         }
         
