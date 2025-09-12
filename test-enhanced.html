@@ -356,7 +356,12 @@
         body.drag-through-panels .controls-panel input,
         body.drag-through-panels .controls-panel select,
         body.drag-through-panels .controls-panel h3,
-        body.drag-through-panels .controls-panel .minimize-btn { pointer-events: auto; }
+        body.drag-through-panels .controls-panel .minimize-btn,
+        body.drag-through-panels .controls-panel .toggle-option,
+        body.drag-through-panels .controls-panel .slider,
+        body.drag-through-panels .controls-panel .refresh-icon,
+        body.drag-through-panels .controls-panel .model-selector,
+        body.drag-through-panels .controls-panel .opacity-slider { pointer-events: auto; }
         body.drag-through-panels::after {
             content: 'Drag-Through Mode (press D to toggle, H hides UI)';
             position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
@@ -2276,6 +2281,13 @@
                 // Set up minimize button click handlers
                 setupMinimizeButtons();
                 
+                // Debug: Check current UI mode states
+                console.log('🐛 UI States after init:', {
+                    dragThrough: document.body.classList.contains('drag-through-panels'),
+                    uiHidden: document.body.classList.contains('ui-hidden'),
+                    bodyClasses: Array.from(document.body.classList)
+                });
+                
             } catch (error) {
                 console.error('Init error:', error);
                 updateModelStatus(`❌ Initialization failed:<br/>${error.message}`, true);
@@ -2283,6 +2295,45 @@
         }
         
         // Panel minimize/maximize functionality
+        window.debugPanelStates = function() {
+            console.log('🐛 Panel Debug Info:');
+            console.log('Body classes:', Array.from(document.body.classList));
+            console.log('Drag-through mode:', document.body.classList.contains('drag-through-panels'));
+            console.log('UI hidden mode:', document.body.classList.contains('ui-hidden'));
+            
+            const panels = [
+                'model-status-panel',
+                'camera-panel', 
+                'animation-helper-panel',
+                'performance-panel',
+                'controls-panel'
+            ];
+            
+            panels.forEach(id => {
+                const panel = document.getElementById(id);
+                if (panel) {
+                    const computedStyle = window.getComputedStyle(panel);
+                    console.log(`${id}:`, {
+                        pointerEvents: computedStyle.pointerEvents,
+                        display: computedStyle.display,
+                        visibility: computedStyle.visibility
+                    });
+                }
+            });
+            
+            // Test controls panel elements
+            const selects = document.querySelectorAll('#controls-panel select');
+            const buttons = document.querySelectorAll('#controls-panel button');
+            console.log(`Controls panel: ${selects.length} selects, ${buttons.length} buttons`);
+            selects.forEach((select, i) => {
+                const style = window.getComputedStyle(select);
+                console.log(`Select ${i}:`, {
+                    pointerEvents: style.pointerEvents,
+                    disabled: select.disabled
+                });
+            });
+        };
+
         window.togglePanel = function(panelId) {
             const panel = document.getElementById(panelId);
             const content = panel.querySelector('.panel-content');
@@ -2521,8 +2572,9 @@
         }
 
         function setupCameraCopyHandlers() {
-            const rows = document.querySelectorAll('#camera-panel .camera-info div');
-            rows.forEach((row) => {
+            // Set up camera panel copyable rows
+            const cameraRows = document.querySelectorAll('#camera-panel .camera-info div');
+            cameraRows.forEach((row) => {
                 row.style.cursor = 'pointer';
                 row.title = 'Click to copy';
                 row.classList.add('copyable');
@@ -2536,6 +2588,19 @@
                     showToast(ok ? `${label} copied` : 'Copy failed');
                 });
             });
+            
+            // Set up model status panel as copyable
+            const modelStatus = document.getElementById('model-status');
+            if (modelStatus) {
+                modelStatus.style.cursor = 'pointer';
+                modelStatus.title = 'Click to copy model status';
+                modelStatus.classList.add('copyable');
+                modelStatus.addEventListener('click', async () => {
+                    const text = modelStatus.textContent || modelStatus.innerText || '';
+                    const ok = await safeCopy(text.trim());
+                    showToast(ok ? 'Model status copied' : 'Copy failed');
+                });
+            }
         }
         
         function setupMinimizeButtons() {
