@@ -1,0 +1,52 @@
+{
+  "version": 2,
+  "name": "webflow-gunther-map",
+  "builds": [
+    {
+      "src": "**/*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.glb",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "**/*.gltf",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/test",
+      "dest": "/test-enhanced.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "**/*.glb",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000"
+        }
+      ]
+    },
+    {
+      "source": "**/*.gltf",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000"
+        }
+      ]
+    }
+  ]
+}
