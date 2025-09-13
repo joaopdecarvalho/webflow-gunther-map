@@ -13,6 +13,7 @@
     "test-connection": "webflow-scripts test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.0",
     "vite": "^5.0.0"
   },
   "dependencies": {

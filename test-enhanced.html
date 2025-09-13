@@ -942,89 +942,312 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Lighting Controls Styles */
+        /* Lighting Controls Redesign */
         .lighting-controls {
             color: #E5E7EB;
+            display: grid;
+            gap: 16px;
         }
         
-        .lighting-section {
-            margin-bottom: 24px;
-            padding: 16px;
-            background: rgba(17, 24, 39, 0.3);
-            border-radius: 12px;
-            border: 1px solid rgba(75, 85, 99, 0.2);
+        .light-card {
+            background: rgba(17, 24, 39, 0.4);
+            border-radius: 16px;
+            border: 2px solid transparent;
+            padding: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+            position: relative;
+            overflow: hidden;
         }
         
-        .lighting-section h4 {
-            margin: 0 0 16px 0;
-            font-size: 14px;
-            font-weight: 600;
-            color: #F9FAFB;
-            border-bottom: 1px solid rgba(75, 85, 99, 0.3);
-            padding-bottom: 8px;
+        .light-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-color);
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
         }
         
-        .slider-group, .color-group, .checkbox-group {
+        .light-card.disabled {
+            opacity: 0.5;
+            background: rgba(17, 24, 39, 0.2);
+        }
+        
+        .light-card.disabled::before {
+            opacity: 0.3;
+        }
+        
+        /* Color coding for different light types */
+        .warm-light {
+            --accent-color: linear-gradient(90deg, #FFA500, #FF6347);
+            border-color: rgba(255, 165, 0, 0.2);
+        }
+        
+        .main-light {
+            --accent-color: linear-gradient(90deg, #FFD700, #FFA500);
+            border-color: rgba(255, 215, 0, 0.2);
+        }
+        
+        .fill-light {
+            --accent-color: linear-gradient(90deg, #87CEEB, #4682B4);
+            border-color: rgba(135, 206, 235, 0.2);
+        }
+        
+        .ambient-light {
+            --accent-color: linear-gradient(90deg, #9370DB, #6A5ACD);
+            border-color: rgba(147, 112, 219, 0.2);
+        }
+        
+        .light-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .light-title {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 12px;
         }
         
-        .slider-group label, .color-group label {
-            min-width: 80px;
-            font-size: 12px;
+        .light-icon {
+            font-size: 24px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        
+        .light-title h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #F9FAFB;
+            letter-spacing: -0.2px;
+        }
+        
+        /* Custom Toggle Switch */
+        .light-toggle {
+            position: relative;
+            display: inline-block;
+            width: 56px;
+            height: 28px;
+            cursor: pointer;
+        }
+        
+        .light-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(55, 65, 81, 0.8);
+            border: 2px solid rgba(75, 85, 99, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+            border-radius: 28px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background: #9CA3AF;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .light-toggle input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #10B981, #059669);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+        
+        .light-toggle input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+            background: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .light-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .intensity-control {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .intensity-control label {
+            font-size: 13px;
+            font-weight: 500;
             color: #D1D5DB;
         }
         
-        .slider-group input[type="range"] {
+        .slider-with-value {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .slider-with-value input[type="range"] {
             flex: 1;
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(75, 85, 99, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(55, 65, 81, 0.8);
             outline: none;
             -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
         }
         
-        .slider-group input[type="range"]::-webkit-slider-thumb {
+        .slider-with-value input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
-            background: #60A5FA;
+            background: linear-gradient(135deg, #60A5FA, #3B82F6);
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+            border: 2px solid #FFFFFF;
         }
         
-        .slider-group span {
-            min-width: 35px;
-            text-align: right;
-            font-size: 11px;
+        .slider-with-value input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #60A5FA, #3B82F6);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+            border: 2px solid #FFFFFF;
+        }
+        
+        .value-display {
+            min-width: 40px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: #60A5FA;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .color-controls {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .color-input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .color-input-group label {
+            font-size: 12px;
+            font-weight: 500;
             color: #9CA3AF;
         }
         
-        .color-group input[type="color"] {
-            width: 40px;
-            height: 30px;
-            border: none;
-            border-radius: 6px;
+        .color-picker-wrapper {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
             cursor: pointer;
+        }
+        
+        .color-picker-wrapper:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .color-picker-wrapper input[type="color"] {
+            width: 100%;
+            height: 100%;
+            border: none;
             background: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
         }
         
-        .checkbox-group {
-            justify-content: flex-start;
+        .color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
         }
         
-        .checkbox-group input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: #60A5FA;
+        .color-picker-wrapper input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 8px;
         }
         
-        .checkbox-group label {
-            min-width: auto;
+        .feature-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            background: rgba(55, 65, 81, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #D1D5DB;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #6B7280;
+            border-radius: 4px;
+            background: rgba(17, 24, 39, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .checkbox-label input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+            border-color: #8B5CF6;
+        }
+        
+        .checkbox-label input[type="checkbox"]:checked::before {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
         }
         
         .lighting-presets {
@@ -1042,6 +1265,76 @@
             margin: 0;
             font-size: 11px;
             padding: 8px 12px;
+        }
+        
+        /* Mode Toggle Redesign */
+        .mode-toggle {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            position: relative;
+        }
+        
+        .mode-toggle::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3));
+            border-radius: 16px;
+            z-index: -1;
+            opacity: 0.5;
+        }
+        
+        .mode-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #E0E7FF;
+            margin-bottom: 12px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        
+        .mode-switch {
+            display: flex;
+            gap: 6px;
+            background: rgba(17, 24, 39, 0.6);
+            border-radius: 12px;
+            padding: 6px;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+        
+        .mode-option {
+            flex: 1;
+            padding: 12px 20px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+            color: #9CA3AF;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+        
+        .mode-option.active {
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            color: #FFFFFF;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .mode-option:hover:not(.active) {
+            background: rgba(59, 130, 246, 0.1);
+            color: #E5E7EB;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            transform: translateY(-1px);
         }
         
         .performance-info div:hover {
@@ -1439,10 +1732,10 @@
                 
                 <!-- Mode Toggle -->
                 <div class="mode-toggle">
-                    <div style="font-size: 11px; margin-bottom: 5px;">Testing Mode:</div>
-                    <div class="toggle-switch">
-                        <div class="toggle-option active" onclick="setMode('single')" id="single-mode-btn">🎯 Single Model</div>
-                        <div class="toggle-option" onclick="setMode('comparison')" id="comparison-mode-btn">🔄 Comparison</div>
+                    <div class="mode-label">Testing Mode:</div>
+                    <div class="mode-switch">
+                        <div class="mode-option active" onclick="setMode('single')" id="single-mode-btn">🎯 Single Model</div>
+                        <div class="mode-option" onclick="setMode('comparison')" id="comparison-mode-btn">🔄 Comparison</div>
                     </div>
                 </div>
                 
@@ -1505,70 +1798,124 @@
                 <div class="tab-content" id="lighting-tab-content" style="display: none;">
                     <div class="lighting-controls">
                         
-                        <!-- Warm Light Controls -->
-                        <div class="lighting-section">
-                            <h4>🌅 Warm Ambient Light</h4>
-                            <div class="slider-group">
-                                <label>Intensity:</label>
-                                <input type="range" id="warm-intensity" min="0" max="2" step="0.1" value="1.0" oninput="updateWarmLight()">
-                                <span id="warm-intensity-value">1.0</span>
+                        <!-- Warm Light Card -->
+                        <div class="light-card warm-light" id="warm-light-card">
+                            <div class="light-header">
+                                <div class="light-title">
+                                    <span class="light-icon">🌅</span>
+                                    <h4>Warm Ambient</h4>
+                                </div>
+                                <label class="light-toggle">
+                                    <input type="checkbox" id="warm-enabled" checked onchange="updateWarmLight()">
+                                    <span class="toggle-slider"></span>
+                                </label>
                             </div>
-                            <div class="color-group">
-                                <label>Sky Color:</label>
-                                <input type="color" id="warm-sky-color" value="#ffd4a3" onchange="updateWarmLight()">
-                            </div>
-                            <div class="color-group">
-                                <label>Ground Color:</label>
-                                <input type="color" id="warm-ground-color" value="#ff8c42" onchange="updateWarmLight()">
-                            </div>
-                        </div>
-                        
-                        <!-- Directional Light Controls -->
-                        <div class="lighting-section">
-                            <h4>☀️ Main Light</h4>
-                            <div class="slider-group">
-                                <label>Intensity:</label>
-                                <input type="range" id="main-intensity" min="0" max="2" step="0.1" value="1.0" oninput="updateMainLight()">
-                                <span id="main-intensity-value">1.0</span>
-                            </div>
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="shadows-enabled" onchange="updateShadows()">
-                                <label for="shadows-enabled">Enable Shadows</label>
-                            </div>
-                        </div>
-                        
-                        <!-- Fill Light Controls -->
-                        <div class="lighting-section">
-                            <h4>🌊 Fill Light</h4>
-                            <div class="slider-group">
-                                <label>Intensity:</label>
-                                <input type="range" id="fill-intensity" min="0" max="1" step="0.1" value="0.4" oninput="updateFillLight()">
-                                <span id="fill-intensity-value">0.4</span>
-                            </div>
-                            <div class="color-group">
-                                <label>Color:</label>
-                                <input type="color" id="fill-color" value="#87ceeb" onchange="updateFillLight()">
+                            <div class="light-controls">
+                                <div class="intensity-control">
+                                    <label>Intensity</label>
+                                    <div class="slider-with-value">
+                                        <input type="range" id="warm-intensity" min="0" max="5" step="0.1" value="1.0" oninput="updateWarmLight()">
+                                        <span class="value-display" id="warm-intensity-value">1.0</span>
+                                    </div>
+                                </div>
+                                <div class="color-controls">
+                                    <div class="color-input-group">
+                                        <label>Sky</label>
+                                        <div class="color-picker-wrapper">
+                                            <input type="color" id="warm-sky-color" value="#ffd4a3" onchange="updateWarmLight()">
+                                        </div>
+                                    </div>
+                                    <div class="color-input-group">
+                                        <label>Ground</label>
+                                        <div class="color-picker-wrapper">
+                                            <input type="color" id="warm-ground-color" value="#ff8c42" onchange="updateWarmLight()">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
-                        <!-- Ambient Light Controls -->
-                        <div class="lighting-section">
-                            <h4>🌙 Ambient Light</h4>
-                            <div class="slider-group">
-                                <label>Intensity:</label>
-                                <input type="range" id="ambient-intensity" min="0" max="1" step="0.1" value="0.6" oninput="updateAmbientLight()">
-                                <span id="ambient-intensity-value">0.6</span>
+                        <!-- Main Light Card -->
+                        <div class="light-card main-light" id="main-light-card">
+                            <div class="light-header">
+                                <div class="light-title">
+                                    <span class="light-icon">☀️</span>
+                                    <h4>Main Light</h4>
+                                </div>
+                                <label class="light-toggle">
+                                    <input type="checkbox" id="main-enabled" checked onchange="updateMainLight()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="light-controls">
+                                <div class="intensity-control">
+                                    <label>Intensity</label>
+                                    <div class="slider-with-value">
+                                        <input type="range" id="main-intensity" min="0" max="5" step="0.1" value="1.0" oninput="updateMainLight()">
+                                        <span class="value-display" id="main-intensity-value">1.0</span>
+                                    </div>
+                                </div>
+                                <div class="feature-toggle">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="shadows-enabled" onchange="updateShadows()">
+                                        <span class="checkmark"></span>
+                                        Enable Shadows
+                                    </label>
+                                </div>
                             </div>
                         </div>
                         
-                        <!-- Preset Buttons -->
-                        <div class="lighting-presets">
-                            <h4>🎨 Presets</h4>
-                            <div class="preset-buttons">
-                                <button class="btn primary" onclick="setLightingPreset('warm')">Warm Cozy</button>
-                                <button class="btn primary" onclick="setLightingPreset('cool')">Cool Studio</button>
-                                <button class="btn primary" onclick="setLightingPreset('dramatic')">Dramatic</button>
-                                <button class="btn neutral" onclick="setLightingPreset('reset')">Reset Default</button>
+                        <!-- Fill Light Card -->
+                        <div class="light-card fill-light" id="fill-light-card">
+                            <div class="light-header">
+                                <div class="light-title">
+                                    <span class="light-icon">🌊</span>
+                                    <h4>Fill Light</h4>
+                                </div>
+                                <label class="light-toggle">
+                                    <input type="checkbox" id="fill-enabled" checked onchange="updateFillLight()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="light-controls">
+                                <div class="intensity-control">
+                                    <label>Intensity</label>
+                                    <div class="slider-with-value">
+                                        <input type="range" id="fill-intensity" min="0" max="5" step="0.1" value="0.4" oninput="updateFillLight()">
+                                        <span class="value-display" id="fill-intensity-value">0.4</span>
+                                    </div>
+                                </div>
+                                <div class="color-controls">
+                                    <div class="color-input-group">
+                                        <label>Color</label>
+                                        <div class="color-picker-wrapper">
+                                            <input type="color" id="fill-color" value="#87ceeb" onchange="updateFillLight()">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Ambient Light Card -->
+                        <div class="light-card ambient-light" id="ambient-light-card">
+                            <div class="light-header">
+                                <div class="light-title">
+                                    <span class="light-icon">🌙</span>
+                                    <h4>Ambient Light</h4>
+                                </div>
+                                <label class="light-toggle">
+                                    <input type="checkbox" id="ambient-enabled" checked onchange="updateAmbientLight()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="light-controls">
+                                <div class="intensity-control">
+                                    <label>Intensity</label>
+                                    <div class="slider-with-value">
+                                        <input type="range" id="ambient-intensity" min="0" max="5" step="0.1" value="0.6" oninput="updateAmbientLight()">
+                                        <span class="value-display" id="ambient-intensity-value">0.6</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
@@ -2518,25 +2865,48 @@
         function updateWarmLight() {
             if (!warmHemisphereLight) return;
             
+            const enabled = document.getElementById('warm-enabled').checked;
             const intensity = parseFloat(document.getElementById('warm-intensity').value);
             const skyColor = document.getElementById('warm-sky-color').value;
             const groundColor = document.getElementById('warm-ground-color').value;
             
-            warmHemisphereLight.intensity = intensity;
+            warmHemisphereLight.intensity = enabled ? intensity : 0;
             warmHemisphereLight.color.setHex(parseInt(skyColor.replace('#', ''), 16));
             warmHemisphereLight.groundColor.setHex(parseInt(groundColor.replace('#', ''), 16));
             
             document.getElementById('warm-intensity-value').textContent = intensity.toFixed(1);
+            
+            // Update card visual state
+            const card = document.querySelector('.warm-light');
+            if (card) {
+                if (enabled) {
+                    card.classList.remove('disabled');
+                } else {
+                    card.classList.add('disabled');
+                }
+            }
         }
         
         // Update main directional light
         function updateMainLight() {
             if (!directionalLight) return;
             
+            const enabled = document.getElementById('main-enabled').checked;
             const intensity = parseFloat(document.getElementById('main-intensity').value);
-            directionalLight.intensity = intensity;
+            
+            directionalLight.intensity = enabled ? intensity : 0;
             
             document.getElementById('main-intensity-value').textContent = intensity.toFixed(1);
+            
+            // Update card visual state
+            const card = document.querySelector('.main-light');
+            if (card) {
+                if (enabled) {
+                    card.classList.remove('disabled');
+                } else {
+                    card.classList.add('disabled');
+                }
+            }
         }
         
         // Toggle shadows
@@ -2566,110 +2936,48 @@
         function updateFillLight() {
             if (!fillLight) return;
             
+            const enabled = document.getElementById('fill-enabled').checked;
             const intensity = parseFloat(document.getElementById('fill-intensity').value);
             const color = document.getElementById('fill-color').value;
             
-            fillLight.intensity = intensity;
+            fillLight.intensity = enabled ? intensity : 0;
             fillLight.color.setHex(parseInt(color.replace('#', ''), 16));
             
             document.getElementById('fill-intensity-value').textContent = intensity.toFixed(1);
+            
+            // Update card visual state
+            const card = document.querySelector('.fill-light');
+            if (card) {
+                if (enabled) {
+                    card.classList.remove('disabled');
+                } else {
+                    card.classList.add('disabled');
+                }
+            }
         }
         
         // Update ambient light
         function updateAmbientLight() {
             if (!ambientLight) return;
             
+            const enabled = document.getElementById('ambient-enabled').checked;
             const intensity = parseFloat(document.getElementById('ambient-intensity').value);
-            ambientLight.intensity = intensity;
+            const color = document.getElementById('ambient-color').value;
+            
+            ambientLight.intensity = enabled ? intensity : 0;
+            ambientLight.color.setHex(parseInt(color.replace('#', ''), 16));
             
             document.getElementById('ambient-intensity-value').textContent = intensity.toFixed(1);
-        }
-        
-        // Lighting presets
-        function setLightingPreset(preset) {
-            if (!warmHemisphereLight || !directionalLight || !fillLight || !ambientLight) return;
             
-            switch (preset) {
-                case 'warm':
-                    // Warm cozy preset
-                    setLightingValues({
-                        warmIntensity: 1.3,
-                        warmSky: '#ffcc85',
-                        warmGround: '#ff7733',
-                        mainIntensity: 0.8,
-                        fillIntensity: 0.2,
-                        fillColor: '#ffd4a3',
-                        ambientIntensity: 0.4,
-                        shadows: false
-                    });
-                    break;
-                case 'cool':
-                    // Cool studio preset
-                    setLightingValues({
-                        warmIntensity: 0.3,
-                        warmSky: '#e6f3ff',
-                        warmGround: '#b3d9ff',
-                        mainIntensity: 1.2,
-                        fillIntensity: 0.6,
-                        fillColor: '#87ceeb',
-                        ambientIntensity: 0.8,
-                        shadows: true
-                    });
-                    break;
-                case 'dramatic':
-                    // Dramatic preset
-                    setLightingValues({
-                        warmIntensity: 0.2,
-                        warmSky: '#ffaa44',
-                        warmGround: '#ff4400',
-                        mainIntensity: 1.5,
-                        fillIntensity: 0.1,
-                        fillColor: '#4444aa',
-                        ambientIntensity: 0.3,
-                        shadows: true
-                    });
-                    break;
-                case 'reset':
-                default:
-                    // Reset to default
-                    setLightingValues({
-                        warmIntensity: 1.0,
-                        warmSky: '#ffd4a3',
-                        warmGround: '#ff8c42',
-                        mainIntensity: 1.0,
-                        fillIntensity: 0.4,
-                        fillColor: '#87ceeb',
-                        ambientIntensity: 0.6,
-                        shadows: false
-                    });
-                    break;
+            // Update card visual state
+            const card = document.querySelector('.ambient-light');
+            if (card) {
+                if (enabled) {
+                    card.classList.remove('disabled');
+                } else {
+                    card.classList.add('disabled');
+                }
             }
-        }
-        
-        // Helper function to set lighting values and update UI
-        function setLightingValues(values) {
-            // Update warm light
-            document.getElementById('warm-intensity').value = values.warmIntensity;
-            document.getElementById('warm-sky-color').value = values.warmSky;
-            document.getElementById('warm-ground-color').value = values.warmGround;
-            updateWarmLight();
-            
-            // Update main light
-            document.getElementById('main-intensity').value = values.mainIntensity;
-            updateMainLight();
-            
-            // Update shadows
-            document.getElementById('shadows-enabled').checked = values.shadows;
-            updateShadows();
-            
-            // Update fill light
-            document.getElementById('fill-intensity').value = values.fillIntensity;
-            document.getElementById('fill-color').value = values.fillColor;
-            updateFillLight();
-            
-            // Update ambient light
-            document.getElementById('ambient-intensity').value = values.ambientIntensity;
-            updateAmbientLight();
         }
         
         // Make functions global
@@ -2679,7 +2987,6 @@
         window.updateShadows = updateShadows;
         window.updateFillLight = updateFillLight;
         window.updateAmbientLight = updateAmbientLight;
-        window.setLightingPreset = setLightingPreset;
         
         function initMap() {
             try {
