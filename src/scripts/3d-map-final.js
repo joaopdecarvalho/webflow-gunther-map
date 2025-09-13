@@ -30,24 +30,24 @@
       {
         name: 'GLTFLoader',
         urls: [
-          'https://unpkg.com/three@0.158.0/examples/js/loaders/GLTFLoader.js',
-          'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/GLTFLoader.js'
+          'https://threejs.org/examples/js/loaders/GLTFLoader.js',
+          'https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/GLTFLoader.js'
         ],
         check: () => typeof THREE !== 'undefined' && THREE.GLTFLoader
       },
       {
         name: 'DRACOLoader',
         urls: [
-          'https://unpkg.com/three@0.158.0/examples/js/loaders/DRACOLoader.js',
-          'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/DRACOLoader.js'
+          'https://threejs.org/examples/js/loaders/DRACOLoader.js',
+          'https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/DRACOLoader.js'
         ],
         check: () => typeof THREE !== 'undefined' && THREE.DRACOLoader
       },
       {
         name: 'OrbitControls',
         urls: [
-          'https://unpkg.com/three@0.158.0/examples/js/controls/OrbitControls.js',
-          'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/controls/OrbitControls.js'
+          'https://threejs.org/examples/js/controls/OrbitControls.js',
+          'https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/controls/OrbitControls.js'
         ],
         check: () => typeof THREE !== 'undefined' && THREE.OrbitControls
       }
