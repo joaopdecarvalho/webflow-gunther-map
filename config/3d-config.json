@@ -1,0 +1,61 @@
+{
+  "version": "1.0.0",
+  "camera": {
+    "position": [15.2, 31.7, 17.3],
+    "target": [-0.8, -33.2, -15.3],
+    "fov": 60,
+    "minDistance": 20,
+    "maxDistance": 800
+  },
+  "lighting": {
+    "warmAmbient": {
+      "enabled": true,
+      "intensity": 3.9,
+      "skyColor": "#fff5f5",
+      "groundColor": "#bd9a1f"
+    },
+    "mainLight": {
+      "enabled": false,
+      "intensity": 1.0,
+      "castShadows": false
+    },
+    "fillLight": {
+      "enabled": false,
+      "intensity": 0.4,
+      "color": "#87ceeb"
+    },
+    "ambientLight": {
+      "enabled": false,
+      "intensity": 0.6
+    }
+  },
+  "models": {
+    "primary": "goetheviertel"
+  },
+  "animations": {
+    "welcomeAnimation": {
+      "enabled": true,
+      "duration": 1700,
+      "easing": "easeInOut"
+    }
+  },
+  "performance": {
+    "qualityLevel": "high",
+    "targetFPS": 60,
+    "enableAntialiasing": true,
+    "pixelRatio": 1
+  },
+  "ui": {
+    "showLoadingProgress": true,
+    "enableControls": true,
+    "enableZoom": true,
+    "enableRotate": true,
+    "enablePan": true
+  },
+  "accessibility": {
+    "respectMotionPreference": true,
+    "keyboardControls": true,
+    "ariaLabels": true
+  },
+  "exportedAt": "2025-09-13T00:00:00.000Z"
+}

@@ -4,7 +4,8 @@
   "description": "Webflow scripts with hot reload development",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev-server.js",
+    "dev:force": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "npm run build && git add dist && git commit -m \"Deploy build\" && git push",

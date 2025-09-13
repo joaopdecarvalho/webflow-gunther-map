@@ -15,7 +15,7 @@ async function testWebsite() {
     console.log('Navigating to test-enhanced.html...');
     
     // Navigate to your test page
-    await page.goto('http://127.0.0.1:8081/test-enhanced.html');
+    await page.goto('http://localhost:8081/test-enhanced.html');
     
     // Wait for the page to load
     await page.waitForTimeout(3000);

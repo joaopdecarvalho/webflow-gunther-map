@@ -11,7 +11,7 @@ This project implements a 3D interactive map for a Webflow homepage using Three.
 
 ### Development Commands
 - `npm run dev` - Start Vite development server on http://localhost:5173
-- Main testing interface: **http://127.0.0.1:8080/test-enhanced.html**
+- Main testing interface: **http://localhost:8080/test-enhanced.html**
 
 ### Key Files
 - `test-enhanced.html` - **Primary testing interface** with comprehensive controls

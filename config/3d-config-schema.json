@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "3D Map Configuration Schema",
+  "description": "Configuration format for 3D map settings that can be exported from test interface and loaded in production",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Configuration format version",
+      "default": "1.0.0"
+    },
+    "camera": {
+      "type": "object",
+      "properties": {
+        "position": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "Camera position [x, y, z]"
+        },
+        "target": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "Camera target [x, y, z]"
+        },
+        "fov": {
+          "type": "number",
+          "minimum": 10,
+          "maximum": 120,
+          "default": 60,
+          "description": "Field of view in degrees"
+        },
+        "minDistance": {
+          "type": "number",
+          "minimum": 1,
+          "default": 20,
+          "description": "Minimum zoom distance"
+        },
+        "maxDistance": {
+          "type": "number",
+          "minimum": 50,
+          "default": 800,
+          "description": "Maximum zoom distance"
+        }
+      },
+      "required": ["position", "target"]
+    },
+    "lighting": {
+      "type": "object",
+      "properties": {
+        "warmAmbient": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "intensity": { "type": "number", "minimum": 0, "maximum": 10, "default": 3.9 },
+            "skyColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#fff5f5" },
+            "groundColor": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#bd9a1f" }
+          }
+        },
+        "mainLight": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "intensity": { "type": "number", "minimum": 0, "maximum": 10, "default": 1.0 },
+            "castShadows": { "type": "boolean", "default": false }
+          }
+        },
+        "fillLight": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "intensity": { "type": "number", "minimum": 0, "maximum": 10, "default": 0.4 },
+            "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "default": "#87ceeb" }
+          }
+        },
+        "ambientLight": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "intensity": { "type": "number", "minimum": 0, "maximum": 10, "default": 0.6 }
+          }
+        }
+      }
+    },
+    "models": {
+      "type": "object",
+      "properties": {
+        "primary": {
+          "type": "string",
+          "enum": ["goetheviertel"],
+          "default": "goetheviertel",
+          "description": "Primary model to load"
+        }
+      }
+    },
+    "animations": {
+      "type": "object",
+      "properties": {
+        "welcomeAnimation": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "duration": { "type": "number", "minimum": 500, "default": 1700 },
+            "easing": { 
+              "type": "string", 
+              "enum": ["linear", "easeIn", "easeOut", "easeInOut", "bounce"],
+              "default": "easeInOut" 
+            }
+          }
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "qualityLevel": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "default": "high"
+        },
+        "targetFPS": {
+          "type": "number",
+          "minimum": 15,
+          "maximum": 120,
+          "default": 60
+        },
+        "enableAntialiasing": { "type": "boolean", "default": true },
+        "pixelRatio": { "type": "number", "minimum": 0.5, "maximum": 2, "default": 1 }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "properties": {
+        "showLoadingProgress": { "type": "boolean", "default": true },
+        "enableControls": { "type": "boolean", "default": true },
+        "enableZoom": { "type": "boolean", "default": true },
+        "enableRotate": { "type": "boolean", "default": true },
+        "enablePan": { "type": "boolean", "default": true }
+      }
+    },
+    "accessibility": {
+      "type": "object",
+      "properties": {
+        "respectMotionPreference": { "type": "boolean", "default": true },
+        "keyboardControls": { "type": "boolean", "default": true },
+        "ariaLabels": { "type": "boolean", "default": true }
+      }
+    },
+    "exportedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when configuration was exported"
+    }
+  },
+  "required": ["version", "camera", "lighting"]
+}

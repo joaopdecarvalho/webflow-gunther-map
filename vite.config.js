@@ -25,7 +25,7 @@ const getScriptEntries = () => {
 export default defineConfig({
   server: {
     port: 8080,
-    host: '127.0.0.1',
+    host: 'localhost',
     cors: {
       origin: [
         'http://localhost:*',
@@ -69,6 +69,28 @@ export default defineConfig({
         });
       },
     },
+    {
+      name: 'copy-config-files',
+      writeBundle() {
+        // Copy config directory to dist
+        const configSrc = path.join(process.cwd(), 'config');
+        const configDest = path.join(process.cwd(), 'dist', 'config');
+        
+        if (fs.existsSync(configSrc)) {
+          if (!fs.existsSync(configDest)) {
+            fs.mkdirSync(configDest, { recursive: true });
+          }
+          
+          const files = fs.readdirSync(configSrc);
+          files.forEach(file => {
+            const srcFile = path.join(configSrc, file);
+            const destFile = path.join(configDest, file);
+            fs.copyFileSync(srcFile, destFile);
+            console.log(`Copied config file: ${file}`);
+          });
+        }
+      }
+    }
   ],
   build: {
     outDir: 'dist',

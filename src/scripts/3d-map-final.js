@@ -97,32 +97,343 @@
           goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb'
         };
         
-        // Default to Goetheviertel model
-        this.currentModelUrl = this.modelUrls.goetheviertel;
+        // Default configuration (fallback)
+        this.config = {
+          version: "1.0.0",
+          camera: {
+            position: [0, 80, 150],
+            target: [0, 0, 0],
+            fov: 60,
+            minDistance: 20,
+            maxDistance: 800,
+            enablePan: true,
+            enableZoom: true,
+            enableRotate: true,
+            enableDamping: true,
+            dampingFactor: 0.05,
+            minPolarAngle: 0,
+            maxPolarAngle: 1.5707963267948966,
+            autoRotate: false,
+            autoRotateSpeed: 0.5
+          },
+          lighting: {
+            warmAmbient: { enabled: false, intensity: 0.6, skyColor: "#404040", groundColor: "#404040" },
+            mainLight: { enabled: false, intensity: 1.0, castShadows: false },
+            fillLight: { enabled: false, intensity: 0.4, color: "#87ceeb" },
+            ambientLight: { enabled: true, intensity: 0.6 }
+          },
+          models: { primary: "goetheviertel" },
+          animations: {
+            welcomeAnimation: {
+              enabled: false,
+              duration: 3000,
+              easing: "easeInOutCubic",
+              startPosition: [200, 200, 200],
+              endPosition: [0, 80, 150],
+              startTarget: [0, 0, 0],
+              endTarget: [0, 0, 0]
+            }
+          },
+          performance: { 
+            qualityLevel: "high", 
+            targetFPS: 60, 
+            enableAntialiasing: true, 
+            pixelRatio: 1,
+            shadowMapEnabled: false,
+            shadowMapType: "PCFSoftShadowMap"
+          },
+          ui: { 
+            showLoadingProgress: true, 
+            enableControls: true, 
+            enableZoom: true, 
+            enableRotate: true, 
+            enablePan: true,
+            showPerformanceStats: false,
+            theme: "light"
+          },
+          accessibility: { 
+            respectMotionPreference: true, 
+            keyboardControls: true, 
+            ariaLabels: true,
+            screenReaderSupport: true,
+            focusManagement: true,
+            colorContrast: "high"
+          }
+        };
+        
+        // Configuration URL from GitHub Pages
+        this.configUrl = 'https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json';
+        
+        this.currentModelUrl = this.modelUrls[this.config.models.primary];
         this.isInitialized = false;
         
         console.log('Map3D constructor called');
         this.init();
       }
 
-      init() {
-        try {
-          console.log('Starting Map3D initialization...');
-          this.createContainer();
-          this.setupScene();
-          this.setupCamera();
-          this.setupRenderer();
-          this.setupControls();
-          this.setupLighting();
-          this.loadModel();
-          this.setupEventListeners();
-          this.animate();
-          
-          this.isInitialized = true;
-          console.log('3D Map initialized successfully');
-        } catch (error) {
-          console.error('Failed to initialize 3D Map:', error);
+      async init() {
+        const initSteps = [
+          { name: 'Configuration Loading', fn: () => this.loadConfiguration() },
+          { name: 'Container Creation', fn: () => this.createContainer() },
+          { name: 'Scene Setup', fn: () => this.setupScene() },
+          { name: 'Camera Setup', fn: () => this.setupCamera() },
+          { name: 'Renderer Setup', fn: () => this.setupRenderer() },
+          { name: 'Controls Setup', fn: () => this.setupControls() },
+          { name: 'Lighting Setup', fn: () => this.setupLighting() },
+          { name: 'Model Loading', fn: () => this.loadModel() },
+          { name: 'Event Listeners', fn: () => this.setupEventListeners() },
+          { name: 'Animation Start', fn: () => this.animate() },
+          { name: 'Welcome Animation', fn: () => this.playWelcomeAnimation() }
+        ];
+        
+        let criticalError = false;
+        let completedSteps = 0;
+        
+        console.log('Starting Map3D initialization...');
+        
+        for (const [index, step] of initSteps.entries()) {
+          try {
+            console.log(`${index + 1}/${initSteps.length} - ${step.name}...`);
+            
+            // Handle async steps
+            if (step.name === 'Configuration Loading' || 
+                step.name === 'Model Loading' || 
+                step.name === 'Welcome Animation') {
+              await step.fn();
+            } else {
+              step.fn();
+            }
+            
+            completedSteps++;
+            console.log(`✅ ${step.name} completed`);
+            
+          } catch (error) {
+            const isCritical = ['Scene Setup', 'Camera Setup', 'Renderer Setup'].includes(step.name);
+            
+            if (isCritical) {
+              console.error(`❌ Critical error in ${step.name}:`, error);
+              criticalError = true;
+              this.showErrorFallback(`Failed to initialize 3D Map: ${step.name} error`);
+              return;
+            } else {
+              console.warn(`⚠️  Non-critical error in ${step.name}:`, error.message);
+              // Continue with remaining steps
+            }
+          }
         }
+        
+        if (!criticalError) {
+          this.isInitialized = true;
+          console.log(`🎉 3D Map initialized successfully! (${completedSteps}/${initSteps.length} steps completed)`);
+          
+          // Dispatch initialization event for other scripts
+          window.dispatchEvent(new CustomEvent('map3dInitialized', {
+            detail: { 
+              instance: this,
+              completedSteps,
+              totalSteps: initSteps.length,
+              config: this.config
+            }
+          }));
+        }
+      }
+      
+      showErrorFallback(message) {
+        console.error('Showing error fallback:', message);
+        
+        // Create error display
+        if (this.container) {
+          this.container.innerHTML = `
+            <div style="
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              height: 100%;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: white;
+              font-family: Arial, sans-serif;
+              text-align: center;
+              padding: 20px;
+            ">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">🏗️</div>
+              <h3 style="margin: 0 0 1rem 0; font-size: 1.5rem;">3D Map Temporarily Unavailable</h3>
+              <p style="margin: 0 0 1.5rem 0; opacity: 0.9; max-width: 400px; line-height: 1.4;">
+                We're experiencing technical difficulties loading the interactive 3D map. 
+                Please try refreshing the page.
+              </p>
+              <button 
+                onclick="window.location.reload()" 
+                style="
+                  background: rgba(255,255,255,0.2);
+                  border: 2px solid rgba(255,255,255,0.3);
+                  color: white;
+                  padding: 12px 24px;
+                  border-radius: 25px;
+                  cursor: pointer;
+                  font-size: 1rem;
+                  transition: all 0.3s ease;
+                "
+                onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                onmouseout="this.style.background='rgba(255,255,255,0.2)'"
+              >
+                Refresh Page
+              </button>
+              <p style="margin: 2rem 0 0 0; font-size: 0.8rem; opacity: 0.6;">
+                Error: ${message}
+              </p>
+            </div>
+          `;
+        }
+      }
+
+      async loadConfiguration(maxRetries = 2) {
+        const attemptLoad = async (attempt) => {
+          try {
+            console.log(`Loading configuration from: ${this.configUrl} (attempt ${attempt + 1})`);
+            
+            // Add cache busting to ensure we get the latest configuration
+            const cacheBuster = `?v=${Date.now()}&attempt=${attempt}`;
+            const response = await fetch(this.configUrl + cacheBuster, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache'
+              },
+              timeout: 5000 // 5 second timeout
+            });
+            
+            if (response.ok) {
+              const externalConfig = await response.json();
+              
+              // Validate basic structure
+              if (!externalConfig || typeof externalConfig !== 'object') {
+                throw new Error('Invalid configuration format received');
+              }
+              
+              // Merge external configuration with defaults (external config takes precedence)
+              this.config = this.mergeConfiguration(this.config, externalConfig);
+              
+              // Update model URL based on configuration
+              if (this.config.models?.primary && this.modelUrls[this.config.models.primary]) {
+                this.currentModelUrl = this.modelUrls[this.config.models.primary];
+              }
+              
+              console.log('✅ Configuration loaded successfully:', {
+                version: this.config.version,
+                source: 'external',
+                camera: this.config.camera,
+                lighting: Object.keys(this.config.lighting).filter(key => this.config.lighting[key]?.enabled),
+                animations: this.config.animations?.welcomeAnimation?.enabled ? 'enabled' : 'disabled'
+              });
+              
+              return true; // Success
+              
+            } else if (response.status === 404) {
+              console.warn(`⚠️  Configuration file not found (404), using defaults`);
+              return false; // Don't retry on 404
+            } else {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+          } catch (error) {
+            if (error.name === 'AbortError') {
+              throw new Error('Configuration loading timeout');
+            }
+            throw error;
+          }
+        };
+        
+        // Try to load configuration with retries
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+          try {
+            const success = await attemptLoad(attempt);
+            if (success) return; // Configuration loaded successfully
+            if (attempt === 0) break; // Don't retry on 404
+          } catch (error) {
+            const isLastAttempt = attempt === maxRetries;
+            if (isLastAttempt) {
+              console.error(`❌ Configuration loading failed after ${maxRetries + 1} attempts:`, error.message);
+              break;
+            } else {
+              console.warn(`⚠️  Attempt ${attempt + 1} failed, retrying... (${error.message})`);
+              // Wait before retry (exponential backoff)
+              await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+            }
+          }
+        }
+        
+        // Fallback: ensure we have a valid configuration
+        this.validateAndRepairConfiguration();
+        
+        console.log('ℹ️  Using fallback configuration:', {
+          version: this.config.version,
+          source: 'default',
+          camera: this.config.camera,
+          lighting: Object.keys(this.config.lighting).filter(key => this.config.lighting[key]?.enabled),
+          animations: this.config.animations?.welcomeAnimation?.enabled ? 'enabled' : 'disabled'
+        });
+      }
+      
+      validateAndRepairConfiguration() {
+        console.log('Validating and repairing configuration...');
+        
+        // Ensure essential properties exist with safe defaults
+        if (!this.config.camera) {
+          this.config.camera = { position: [0, 80, 150], target: [0, 0, 0], fov: 60 };
+        }
+        
+        if (!this.config.lighting) {
+          this.config.lighting = { ambientLight: { enabled: true, intensity: 0.6 } };
+        }
+        
+        if (!this.config.models) {
+          this.config.models = { primary: "goetheviertel" };
+        }
+        
+        // Ensure at least one light is enabled
+        const hasEnabledLight = Object.values(this.config.lighting).some(light => light?.enabled);
+        if (!hasEnabledLight) {
+          console.log('No lights enabled, enabling ambient light as fallback');
+          if (!this.config.lighting.ambientLight) {
+            this.config.lighting.ambientLight = {};
+          }
+          this.config.lighting.ambientLight.enabled = true;
+          this.config.lighting.ambientLight.intensity = 0.6;
+        }
+        
+        // Ensure model URL is valid
+        if (this.config.models.primary && this.modelUrls[this.config.models.primary]) {
+          this.currentModelUrl = this.modelUrls[this.config.models.primary];
+        } else {
+          this.currentModelUrl = this.modelUrls.goetheviertel;
+          this.config.models.primary = "goetheviertel";
+        }
+        
+        console.log('✅ Configuration validated and repaired');
+      }
+      
+      mergeConfiguration(defaultConfig, externalConfig) {
+        // Deep merge function to combine configurations
+        function deepMerge(target, source) {
+          const output = { ...target };
+          if (source && typeof source === 'object' && !Array.isArray(source)) {
+            Object.keys(source).forEach(key => {
+              if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+                if (!(key in target)) {
+                  output[key] = source[key];
+                } else {
+                  output[key] = deepMerge(target[key], source[key]);
+                }
+              } else {
+                output[key] = source[key];
+              }
+            });
+          }
+          return output;
+        }
+        
+        return deepMerge(defaultConfig, externalConfig);
       }
 
       createContainer() {
@@ -177,14 +488,34 @@
       }
 
       setupCamera() {
+        const camConfig = this.config.camera;
+        
         this.camera = new THREE.PerspectiveCamera(
-          60,
+          camConfig.fov || 60,
           window.innerWidth / window.innerHeight,
           0.1,
           2000
         );
-        this.camera.position.set(0, 80, 150);
-        this.camera.lookAt(0, 0, 0);
+        
+        // Set camera position from configuration
+        if (camConfig.position && Array.isArray(camConfig.position) && camConfig.position.length === 3) {
+          this.camera.position.set(camConfig.position[0], camConfig.position[1], camConfig.position[2]);
+        } else {
+          this.camera.position.set(0, 80, 150);
+        }
+        
+        // Set camera target from configuration
+        if (camConfig.target && Array.isArray(camConfig.target) && camConfig.target.length === 3) {
+          this.camera.lookAt(camConfig.target[0], camConfig.target[1], camConfig.target[2]);
+        } else {
+          this.camera.lookAt(0, 0, 0);
+        }
+        
+        console.log('Camera configured:', {
+          position: this.camera.position,
+          fov: this.camera.fov,
+          target: camConfig.target
+        });
       }
 
       setupRenderer() {
@@ -222,44 +553,198 @@
         
         console.log('Setting up camera controls...');
         this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        
+        const camConfig = this.config.camera;
+        const uiConfig = this.config.ui;
+        
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.05;
         this.controls.screenSpacePanning = false;
-        this.controls.minDistance = 20;
-        this.controls.maxDistance = 800;
+        
+        // Use configuration values for distance limits
+        this.controls.minDistance = camConfig.minDistance || 20;
+        this.controls.maxDistance = camConfig.maxDistance || 800;
         this.controls.maxPolarAngle = Math.PI / 2.1;
         
-        this.controls.enableZoom = true;
-        this.controls.enableRotate = true;
-        this.controls.enablePan = true;
+        // Set camera target for controls
+        if (camConfig.target && Array.isArray(camConfig.target) && camConfig.target.length === 3) {
+          this.controls.target.set(camConfig.target[0], camConfig.target[1], camConfig.target[2]);
+        }
+        
+        // Configure interaction based on UI settings
+        this.controls.enableZoom = uiConfig.enableZoom !== false;
+        this.controls.enableRotate = uiConfig.enableRotate !== false;
+        this.controls.enablePan = uiConfig.enablePan !== false;
+        
+        console.log('Controls configured:', {
+          minDistance: this.controls.minDistance,
+          maxDistance: this.controls.maxDistance,
+          target: this.controls.target,
+          zoom: this.controls.enableZoom,
+          rotate: this.controls.enableRotate,
+          pan: this.controls.enablePan
+        });
       }
 
       setupLighting() {
         console.log('Setting up scene lighting...');
         
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
-        this.scene.add(ambientLight);
-
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
-        directionalLight.position.set(200, 200, 100);
+        const lightingConfig = this.config.lighting;
         
-        if (directionalLight.shadow) {
-          directionalLight.castShadow = true;
-          directionalLight.shadow.mapSize.width = 2048;
-          directionalLight.shadow.mapSize.height = 2048;
-          directionalLight.shadow.camera.near = 0.5;
-          directionalLight.shadow.camera.far = 1000;
-          directionalLight.shadow.camera.left = -200;
-          directionalLight.shadow.camera.right = 200;
-          directionalLight.shadow.camera.top = 200;
-          directionalLight.shadow.camera.bottom = -200;
+        // Store light references for potential future updates
+        this.lights = {};
+        
+        // Warm Ambient Light (Hemisphere Light)
+        if (lightingConfig.warmAmbient && lightingConfig.warmAmbient.enabled) {
+          const skyColor = lightingConfig.warmAmbient.skyColor || '#fff5f5';
+          const groundColor = lightingConfig.warmAmbient.groundColor || '#bd9a1f';
+          const intensity = lightingConfig.warmAmbient.intensity || 3.9;
+          
+          this.lights.warmAmbient = new THREE.HemisphereLight(
+            new THREE.Color(skyColor),
+            new THREE.Color(groundColor),
+            intensity
+          );
+          this.scene.add(this.lights.warmAmbient);
+          console.log('✅ Warm ambient light added:', { skyColor, groundColor, intensity });
         }
         
-        this.scene.add(directionalLight);
+        // Main Directional Light
+        if (lightingConfig.mainLight && lightingConfig.mainLight.enabled) {
+          const intensity = lightingConfig.mainLight.intensity || 1.0;
+          const castShadows = lightingConfig.mainLight.castShadows || false;
+          
+          this.lights.mainLight = new THREE.DirectionalLight(0xffffff, intensity);
+          this.lights.mainLight.position.set(200, 200, 100);
+          
+          if (castShadows && this.lights.mainLight.shadow) {
+            this.lights.mainLight.castShadow = true;
+            this.lights.mainLight.shadow.mapSize.width = 2048;
+            this.lights.mainLight.shadow.mapSize.height = 2048;
+            this.lights.mainLight.shadow.camera.near = 0.5;
+            this.lights.mainLight.shadow.camera.far = 1000;
+            this.lights.mainLight.shadow.camera.left = -200;
+            this.lights.mainLight.shadow.camera.right = 200;
+            this.lights.mainLight.shadow.camera.top = 200;
+            this.lights.mainLight.shadow.camera.bottom = -200;
+          }
+          
+          this.scene.add(this.lights.mainLight);
+          console.log('✅ Main directional light added:', { intensity, castShadows });
+        }
+        
+        // Fill Light
+        if (lightingConfig.fillLight && lightingConfig.fillLight.enabled) {
+          const color = lightingConfig.fillLight.color || '#87ceeb';
+          const intensity = lightingConfig.fillLight.intensity || 0.4;
+          
+          this.lights.fillLight = new THREE.DirectionalLight(new THREE.Color(color), intensity);
+          this.lights.fillLight.position.set(-100, 50, -100);
+          this.scene.add(this.lights.fillLight);
+          console.log('✅ Fill light added:', { color, intensity });
+        }
+        
+        // Ambient Light (basic)
+        if (lightingConfig.ambientLight && lightingConfig.ambientLight.enabled) {
+          const intensity = lightingConfig.ambientLight.intensity || 0.6;
+          
+          this.lights.ambientLight = new THREE.AmbientLight(0x404040, intensity);
+          this.scene.add(this.lights.ambientLight);
+          console.log('✅ Ambient light added:', { intensity });
+        }
+        
+        // If no lights are enabled, add a basic fallback
+        const hasAnyLight = Object.keys(this.lights).length > 0;
+        if (!hasAnyLight) {
+          console.warn('⚠️  No lights enabled in configuration, adding fallback ambient light');
+          this.lights.fallback = new THREE.AmbientLight(0x404040, 0.6);
+          this.scene.add(this.lights.fallback);
+        }
+        
+        console.log('Lighting configuration applied:', Object.keys(this.lights));
+      }
 
-        const fillLight = new THREE.DirectionalLight(0x87ceeb, 0.4);
-        fillLight.position.set(-100, 50, -100);
-        this.scene.add(fillLight);
+      playWelcomeAnimation() {
+        const animConfig = this.config.animations?.welcomeAnimation;
+        
+        // Check if animation is enabled and motion preference is respected
+        if (!animConfig?.enabled) {
+          console.log('Welcome animation disabled in configuration');
+          return Promise.resolve();
+        }
+        
+        // Respect motion preference
+        if (this.config.accessibility?.respectMotionPreference && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          console.log('Welcome animation skipped due to reduced motion preference');
+          return Promise.resolve();
+        }
+        
+        console.log('Starting welcome animation...');
+        
+        return new Promise((resolve) => {
+          const duration = animConfig.duration || 3000;
+          const easing = animConfig.easing || 'easeInOutCubic';
+          
+          // Get start and end positions from configuration
+          const startPos = animConfig.startPosition || [200, 200, 200];
+          const endPos = animConfig.endPosition || this.config.camera.position || [100, 100, 100];
+          const startTarget = animConfig.startTarget || [0, 0, 0];
+          const endTarget = animConfig.endTarget || this.config.camera.target || [0, 0, 0];
+          
+          // Set initial camera position
+          this.camera.position.set(...startPos);
+          if (this.controls && this.controls.target) {
+            this.controls.target.set(...startTarget);
+          }
+          
+          const startTime = Date.now();
+          
+          const animateFrame = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Apply easing function
+            let easedProgress = progress;
+            if (easing === 'easeInOut' || easing === 'easeInOutCubic') {
+              easedProgress = progress < 0.5 
+                ? 4 * progress * progress * progress 
+                : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+            } else if (easing === 'easeOut') {
+              easedProgress = 1 - Math.pow(1 - progress, 3);
+            } else if (easing === 'easeIn') {
+              easedProgress = progress * progress * progress;
+            }
+            
+            // Interpolate camera position
+            const currentPos = [
+              startPos[0] + (endPos[0] - startPos[0]) * easedProgress,
+              startPos[1] + (endPos[1] - startPos[1]) * easedProgress,
+              startPos[2] + (endPos[2] - startPos[2]) * easedProgress
+            ];
+            
+            const currentTarget = [
+              startTarget[0] + (endTarget[0] - startTarget[0]) * easedProgress,
+              startTarget[1] + (endTarget[1] - startTarget[1]) * easedProgress,
+              startTarget[2] + (endTarget[2] - startTarget[2]) * easedProgress
+            ];
+            
+            // Update camera and controls
+            this.camera.position.set(...currentPos);
+            if (this.controls && this.controls.target) {
+              this.controls.target.set(...currentTarget);
+              this.controls.update();
+            }
+            
+            if (progress < 1) {
+              requestAnimationFrame(animateFrame);
+            } else {
+              console.log('Welcome animation completed');
+              resolve();
+            }
+          };
+          
+          requestAnimationFrame(animateFrame);
+        });
       }
 
       async loadModel() {

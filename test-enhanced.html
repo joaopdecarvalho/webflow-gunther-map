@@ -2163,6 +2163,7 @@
                     <div class="tab-button active" onclick="switchControlsTab('models')" id="models-tab">🎯 Models</div>
                     <div class="tab-button" onclick="switchControlsTab('animation')" id="animation-tab">🎬 Animation</div>
                     <div class="tab-button" onclick="switchControlsTab('lighting')" id="lighting-tab">💡 Lighting</div>
+                    <div class="tab-button" onclick="switchControlsTab('config')" id="config-tab">⚙️ Config</div>
                 </div>
                 
                 <!-- Models Tab Content -->
@@ -2519,6 +2520,108 @@
                                             Refresh
                                         </button>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <!-- Configuration Tab Content -->
+                <div class="tab-content" id="config-tab-content" style="display: none;">
+                    
+                    <div class="config-controls">
+                        
+                        <!-- Export Configuration Card -->
+                        <div class="animation-card export-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">📤</span>
+                                    <h4>Export Configuration</h4>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <p style="margin-bottom: 16px; color: #9CA3AF; font-size: 13px;">
+                                    Export current camera, lighting, and animation settings as JSON configuration file for production use.
+                                </p>
+                                
+                                <div class="export-actions">
+                                    <button class="action-btn primary" id="config-export" title="Export current configuration as JSON">
+                                        <span class="btn-icon">💾</span>
+                                        Export Configuration
+                                    </button>
+                                    <button class="action-btn secondary" id="config-preview" title="Preview configuration JSON">
+                                        <span class="btn-icon">👁️</span>
+                                        Preview JSON
+                                    </button>
+                                </div>
+                                
+                                <!-- Configuration Preview Area -->
+                                <div class="config-preview" id="config-preview-area" style="display: none;">
+                                    <label class="setting-label">Configuration JSON Preview</label>
+                                    <pre id="config-json-display" style="background: rgba(0, 0, 0, 0.4); padding: 16px; border-radius: 8px; font-size: 11px; color: #E5E7EB; overflow-x: auto; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; border: 1px solid rgba(75, 85, 99, 0.3);"></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Import Configuration Card -->
+                        <div class="animation-card import-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">📥</span>
+                                    <h4>Import Configuration</h4>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <p style="margin-bottom: 16px; color: #9CA3AF; font-size: 13px;">
+                                    Load previously saved configuration to restore camera, lighting, and animation settings.
+                                </p>
+                                
+                                <div class="import-actions">
+                                    <div class="file-input-wrapper" style="margin-bottom: 12px;">
+                                        <input type="file" id="config-import-file" accept=".json" style="display: none;">
+                                        <button class="action-btn neutral" id="config-import-btn" title="Select JSON configuration file">
+                                            <span class="btn-icon">📂</span>
+                                            Select File
+                                        </button>
+                                        <span id="config-file-name" style="margin-left: 12px; font-size: 12px; color: #9CA3AF;"></span>
+                                    </div>
+                                    
+                                    <button class="action-btn secondary" id="config-load" title="Load selected configuration" disabled>
+                                        <span class="btn-icon">⚡</span>
+                                        Load Configuration
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Push to Production Card -->
+                        <div class="animation-card push-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">🚀</span>
+                                    <h4>Push to Production</h4>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <p style="margin-bottom: 16px; color: #9CA3AF; font-size: 13px;">
+                                    Push current configuration to GitHub repository for automatic deployment to Webflow production site.
+                                </p>
+                                
+                                <div class="push-actions">
+                                    <div class="commit-message-wrapper" style="margin-bottom: 12px;">
+                                        <label class="setting-label">Commit Message</label>
+                                        <input id="commit-message" placeholder="Update 3D configuration..." class="animation-input" value="Update 3D configuration from test interface">
+                                    </div>
+                                    
+                                    <button class="action-btn primary" id="config-push" title="Push configuration to GitHub and deploy to production">
+                                        <span class="btn-icon">🌐</span>
+                                        Push to Webflow
+                                    </button>
+                                </div>
+                                
+                                <div class="push-status" id="push-status" style="margin-top: 12px; font-size: 12px; color: #9CA3AF; display: none;">
+                                    Ready to push configuration
                                 </div>
                             </div>
                         </div>
@@ -4763,6 +4866,394 @@
 
         // Auto-discover models after initialization
         setTimeout(discoverModels, 1200);
+        
+        // =============================
+        // 🔧 Configuration Export/Import System (Phase 2 Tasks 2.1-2.5)
+        // =============================
+        
+        // Initialize configuration system
+        function initConfigurationSystem() {
+            const exportBtn = document.getElementById('config-export');
+            const previewBtn = document.getElementById('config-preview');
+            const importFileInput = document.getElementById('config-import-file');
+            const importBtn = document.getElementById('config-import-btn');
+            const loadBtn = document.getElementById('config-load');
+            const pushBtn = document.getElementById('config-push');
+            const pushStatus = document.getElementById('push-status');
+            
+            if (!exportBtn || !previewBtn || !importFileInput || !importBtn || !loadBtn || !pushBtn) {
+                console.warn('Configuration controls not found, retrying...');
+                setTimeout(initConfigurationSystem, 200);
+                return;
+            }
+            
+            // Export Configuration
+            exportBtn.addEventListener('click', exportConfiguration);
+            
+            // Preview Configuration
+            previewBtn.addEventListener('click', previewConfiguration);
+            
+            // Import Configuration File Selection
+            importBtn.addEventListener('click', () => importFileInput.click());
+            
+            // Handle file selection
+            importFileInput.addEventListener('change', handleConfigFileSelection);
+            
+            // Load Configuration
+            loadBtn.addEventListener('click', loadConfiguration);
+            
+            // Push to Production (with PIN protection)
+            pushBtn.addEventListener('click', pushToProductionWithPIN);
+            
+            console.log('Configuration system initialized');
+        }
+        
+        // Export current configuration as JSON
+        function exportConfiguration() {
+            try {
+                const config = generateCurrentConfiguration();
+                const jsonString = JSON.stringify(config, null, 2);
+                
+                // Create and download file
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `3d-config-${new Date().toISOString().slice(0, 16).replace('T', '_').replace(':', '-')}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showToast('✅ Configuration exported successfully!', 'success');
+                console.log('Configuration exported:', config);
+            } catch (error) {
+                console.error('Failed to export configuration:', error);
+                showToast('❌ Failed to export configuration', 'error');
+            }
+        }
+        
+        // Preview configuration JSON
+        function previewConfiguration() {
+            try {
+                const config = generateCurrentConfiguration();
+                const jsonString = JSON.stringify(config, null, 2);
+                
+                const previewArea = document.getElementById('config-preview-area');
+                const jsonDisplay = document.getElementById('config-json-display');
+                
+                if (previewArea && jsonDisplay) {
+                    jsonDisplay.textContent = jsonString;
+                    previewArea.style.display = previewArea.style.display === 'none' ? 'block' : 'none';
+                    
+                    // Update button text
+                    const previewBtn = document.getElementById('config-preview');
+                    if (previewBtn) {
+                        const isVisible = previewArea.style.display === 'block';
+                        previewBtn.innerHTML = `<span class="btn-icon">${isVisible ? '🙈' : '👁️'}</span> ${isVisible ? 'Hide' : 'Preview'} JSON`;
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to preview configuration:', error);
+                showToast('❌ Failed to preview configuration', 'error');
+            }
+        }
+        
+        // Generate configuration from current interface state
+        function generateCurrentConfiguration() {
+            // Get current camera position
+            const cameraPosition = camera ? [
+                parseFloat(camera.position.x.toFixed(1)),
+                parseFloat(camera.position.y.toFixed(1)),
+                parseFloat(camera.position.z.toFixed(1))
+            ] : [0, 80, 150];
+            
+            const cameraTarget = controls ? [
+                parseFloat(controls.target.x.toFixed(1)),
+                parseFloat(controls.target.y.toFixed(1)),
+                parseFloat(controls.target.z.toFixed(1))
+            ] : [0, 0, 0];
+            
+            // Get lighting settings
+            const warmEnabled = document.getElementById('warm-enabled')?.checked || false;
+            const warmIntensity = parseFloat(document.getElementById('warm-intensity')?.value || 3.9);
+            const warmSkyColor = document.getElementById('warm-sky-color')?.value || '#fff5f5';
+            const warmGroundColor = document.getElementById('warm-ground-color')?.value || '#bd9a1f';
+            
+            const mainEnabled = document.getElementById('main-enabled')?.checked || false;
+            const mainIntensity = parseFloat(document.getElementById('main-intensity')?.value || 1.0);
+            const shadowsEnabled = document.getElementById('shadows-enabled')?.checked || false;
+            
+            const fillEnabled = document.getElementById('fill-enabled')?.checked || false;
+            const fillIntensity = parseFloat(document.getElementById('fill-intensity')?.value || 0.4);
+            const fillColor = document.getElementById('fill-color')?.value || '#87ceeb';
+            
+            const ambientEnabled = document.getElementById('ambient-enabled')?.checked || false;
+            const ambientIntensity = parseFloat(document.getElementById('ambient-intensity')?.value || 0.6);
+            
+            return {
+                version: "1.0.0",
+                camera: {
+                    position: cameraPosition,
+                    target: cameraTarget,
+                    fov: 60,
+                    minDistance: 20,
+                    maxDistance: 800
+                },
+                lighting: {
+                    warmAmbient: {
+                        enabled: warmEnabled,
+                        intensity: warmIntensity,
+                        skyColor: warmSkyColor,
+                        groundColor: warmGroundColor
+                    },
+                    mainLight: {
+                        enabled: mainEnabled,
+                        intensity: mainIntensity,
+                        castShadows: shadowsEnabled
+                    },
+                    fillLight: {
+                        enabled: fillEnabled,
+                        intensity: fillIntensity,
+                        color: fillColor
+                    },
+                    ambientLight: {
+                        enabled: ambientEnabled,
+                        intensity: ambientIntensity
+                    }
+                },
+                models: {
+                    primary: "goetheviertel"
+                },
+                animations: {
+                    welcomeAnimation: {
+                        enabled: true,
+                        duration: 1700,
+                        easing: "easeInOut"
+                    }
+                },
+                performance: {
+                    qualityLevel: "high",
+                    targetFPS: 60,
+                    enableAntialiasing: true,
+                    pixelRatio: Math.min(window.devicePixelRatio || 1, 2)
+                },
+                ui: {
+                    showLoadingProgress: true,
+                    enableControls: true,
+                    enableZoom: true,
+                    enableRotate: true,
+                    enablePan: true
+                },
+                accessibility: {
+                    respectMotionPreference: true,
+                    keyboardControls: true,
+                    ariaLabels: true
+                },
+                exportedAt: new Date().toISOString()
+            };
+        }
+        
+        // Handle configuration file selection
+        function handleConfigFileSelection(event) {
+            const file = event.target.files[0];
+            const fileName = document.getElementById('config-file-name');
+            const loadBtn = document.getElementById('config-load');
+            
+            if (file && fileName && loadBtn) {
+                fileName.textContent = file.name;
+                loadBtn.disabled = false;
+            }
+        }
+        
+        // Load configuration from selected file
+        function loadConfiguration() {
+            const fileInput = document.getElementById('config-import-file');
+            const file = fileInput?.files[0];
+            
+            if (!file) {
+                showToast('❌ Please select a configuration file', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const config = JSON.parse(e.target.result);
+                    applyConfiguration(config);
+                    showToast('✅ Configuration loaded successfully!', 'success');
+                } catch (error) {
+                    console.error('Failed to parse configuration file:', error);
+                    showToast('❌ Invalid configuration file format', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // Apply configuration to current interface
+        function applyConfiguration(config) {
+            try {
+                // Apply camera settings
+                if (config.camera && camera && controls) {
+                    if (config.camera.position) {
+                        camera.position.set(
+                            config.camera.position[0],
+                            config.camera.position[1],
+                            config.camera.position[2]
+                        );
+                    }
+                    if (config.camera.target) {
+                        controls.target.set(
+                            config.camera.target[0],
+                            config.camera.target[1],
+                            config.camera.target[2]
+                        );
+                    }
+                    controls.update();
+                }
+                
+                // Apply lighting settings
+                if (config.lighting) {
+                    const lighting = config.lighting;
+                    
+                    // Warm ambient light
+                    if (lighting.warmAmbient) {
+                        const warmEnabled = document.getElementById('warm-enabled');
+                        const warmIntensity = document.getElementById('warm-intensity');
+                        const warmSkyColor = document.getElementById('warm-sky-color');
+                        const warmGroundColor = document.getElementById('warm-ground-color');
+                        
+                        if (warmEnabled) warmEnabled.checked = lighting.warmAmbient.enabled || false;
+                        if (warmIntensity) warmIntensity.value = lighting.warmAmbient.intensity || 3.9;
+                        if (warmSkyColor) warmSkyColor.value = lighting.warmAmbient.skyColor || '#fff5f5';
+                        if (warmGroundColor) warmGroundColor.value = lighting.warmAmbient.groundColor || '#bd9a1f';
+                        
+                        if (typeof updateWarmLight === 'function') updateWarmLight();
+                    }
+                    
+                    // Main light
+                    if (lighting.mainLight) {
+                        const mainEnabled = document.getElementById('main-enabled');
+                        const mainIntensity = document.getElementById('main-intensity');
+                        const shadowsEnabled = document.getElementById('shadows-enabled');
+                        
+                        if (mainEnabled) mainEnabled.checked = lighting.mainLight.enabled || false;
+                        if (mainIntensity) mainIntensity.value = lighting.mainLight.intensity || 1.0;
+                        if (shadowsEnabled) shadowsEnabled.checked = lighting.mainLight.castShadows || false;
+                        
+                        if (typeof updateMainLight === 'function') updateMainLight();
+                        if (typeof updateShadows === 'function') updateShadows();
+                    }
+                    
+                    // Fill light
+                    if (lighting.fillLight) {
+                        const fillEnabled = document.getElementById('fill-enabled');
+                        const fillIntensity = document.getElementById('fill-intensity');
+                        const fillColor = document.getElementById('fill-color');
+                        
+                        if (fillEnabled) fillEnabled.checked = lighting.fillLight.enabled || false;
+                        if (fillIntensity) fillIntensity.value = lighting.fillLight.intensity || 0.4;
+                        if (fillColor) fillColor.value = lighting.fillLight.color || '#87ceeb';
+                        
+                        if (typeof updateFillLight === 'function') updateFillLight();
+                    }
+                    
+                    // Ambient light
+                    if (lighting.ambientLight) {
+                        const ambientEnabled = document.getElementById('ambient-enabled');
+                        const ambientIntensity = document.getElementById('ambient-intensity');
+                        
+                        if (ambientEnabled) ambientEnabled.checked = lighting.ambientLight.enabled || false;
+                        if (ambientIntensity) ambientIntensity.value = lighting.ambientLight.intensity || 0.6;
+                        
+                        if (typeof updateAmbientLight === 'function') updateAmbientLight();
+                    }
+                }
+                
+                console.log('Configuration applied successfully:', config);
+            } catch (error) {
+                console.error('Failed to apply configuration:', error);
+                throw error;
+            }
+        }
+        
+        // Push configuration with PIN protection
+        function pushToProductionWithPIN() {
+            // Request PIN verification
+            const pin = prompt('🔐 Enter PIN to deploy configuration to Webflow production:');
+            
+            if (!pin) {
+                showToast('❌ Deployment cancelled', 'error');
+                return;
+            }
+            
+            if (pin !== '9984') {
+                showToast('❌ Invalid PIN. Deployment cancelled.', 'error');
+                return;
+            }
+            
+            showToast('✅ PIN verified. Deploying configuration...', 'success');
+            
+            // Proceed with the actual deployment
+            pushToProduction();
+        }
+        
+        // Push configuration to production (placeholder - would integrate with GitHub API)
+        function pushToProduction() {
+            const pushBtn = document.getElementById('config-push');
+            const pushStatus = document.getElementById('push-status');
+            const commitMessage = document.getElementById('commit-message')?.value || 'Update 3D configuration from test interface';
+            
+            if (pushBtn && pushStatus) {
+                pushBtn.disabled = true;
+                pushStatus.style.display = 'block';
+                pushStatus.textContent = '🚀 Pushing configuration to GitHub...';
+                pushStatus.style.color = '#60A5FA';
+                
+                try {
+                    const config = generateCurrentConfiguration();
+                    
+                    // For now, we'll simulate the push and provide instructions
+                    setTimeout(() => {
+                        const configJson = JSON.stringify(config, null, 2);
+                        
+                        // Copy to clipboard
+                        if (navigator.clipboard) {
+                            navigator.clipboard.writeText(configJson).then(() => {
+                                pushStatus.innerHTML = `
+                                    ✅ Configuration copied to clipboard!<br>
+                                    <small style="color: #9CA3AF;">
+                                    Manual step: Create <code>config/3d-config.json</code> in your GitHub repo with this content, then push to trigger deployment.
+                                    </small>
+                                `;
+                                pushStatus.style.color = '#10B981';
+                                showToast('📋 Configuration copied to clipboard for manual deployment', 'info');
+                            }).catch(() => {
+                                pushStatus.textContent = '⚠️ Could not copy to clipboard. Use Export button instead.';
+                                pushStatus.style.color = '#F59E0B';
+                            });
+                        } else {
+                            pushStatus.innerHTML = `
+                                ⚠️ Clipboard not available.<br>
+                                <small style="color: #9CA3AF;">Use the Export button to download the configuration file manually.</small>
+                            `;
+                            pushStatus.style.color = '#F59E0B';
+                        }
+                        
+                        pushBtn.disabled = false;
+                    }, 1500);
+                    
+                } catch (error) {
+                    console.error('Failed to push configuration:', error);
+                    pushStatus.textContent = '❌ Failed to generate configuration';
+                    pushStatus.style.color = '#EF4444';
+                    pushBtn.disabled = false;
+                }
+            }
+        }
+        
+        // Initialize configuration system
+        setTimeout(initConfigurationSystem, 600);
     </script>
 </body>
 </html>
