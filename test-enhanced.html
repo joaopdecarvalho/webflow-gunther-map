@@ -3463,6 +3463,13 @@
                 content.style.display = 'none';
             });
             document.getElementById(tabName + '-tab-content').style.display = 'block';
+            
+            // Initialize animation helper UI when animation tab is shown
+            if (tabName === 'animation') {
+                setTimeout(() => {
+                    initAnimationHelperUI();
+                }, 50);
+            }
         }
         
         // Update warm hemisphere light
@@ -4459,7 +4466,9 @@
         }
 
         function playAnimation() {
+            console.log('playAnimation called, keyframes:', animationHelper.keyframes.length, 'playing:', animationHelper.playing);
             if (animationHelper.keyframes.length < 2 || animationHelper.playing) return;
+            console.log('Starting animation playback...');
             animationHelper.suppressNextInteraction = true; // ignore the click
             setTimeout(() => { animationHelper.suppressNextInteraction = false; }, 150);
             animationHelper._userInteracting = false;
@@ -4476,14 +4485,17 @@
         }
 
         function pauseAnimation() {
+            console.log('pauseAnimation called, playing:', animationHelper.playing, 'paused:', animationHelper.paused);
             if (!animationHelper.playing) return;
             if (!animationHelper.paused) {
+                console.log('Pausing animation...');
                 animationHelper.paused = true;
                 animationHelper.elapsedBeforePause += performance.now() - animationHelper.startTime;
                 if (animationHelper.rafId) cancelAnimationFrame(animationHelper.rafId);
                 status('Paused.');
                 document.getElementById('kf-pause').textContent = '▶️';
             } else {
+                console.log('Resuming animation...');
                 animationHelper.paused = false;
                 animationHelper.startTime = performance.now();
                 status('Resuming...');
@@ -4509,7 +4521,7 @@
         }
 
         function animatePlayback() {
-            const progressEl = document.getElementById('kf-progress');
+            const progressFillEl = document.getElementById('kf-progress-fill');
             const scrubEl = document.getElementById('kf-scrub');
             const timeEl = document.getElementById('kf-time');
             const total = totalDuration();
@@ -4531,7 +4543,7 @@
                 const elapsed = animationHelper.elapsedBeforePause + (now - animationHelper.startTime);
                 const clamped = Math.min(elapsed, total);
                 const tNorm = total ? clamped / total : 0;
-                progressEl.value = tNorm;
+                if (progressFillEl) progressFillEl.style.width = (tNorm * 100) + '%';
                 scrubEl.value = tNorm;
                 timeEl.textContent = (clamped/1000).toFixed(1)+'s';
                 applyPathSample(evaluatePath(tNorm));
@@ -4575,7 +4587,15 @@
             }
         }
 
+        let animationHelperInitialized = false;
+
         function initAnimationHelperUI() {
+            // Prevent multiple initializations
+            if (animationHelperInitialized) {
+                console.log('Animation helper already initialized');
+                return;
+            }
+            
             const addBtn = document.getElementById('kf-add');
             const clearBtn = document.getElementById('kf-clear');
             const playBtn = document.getElementById('kf-play');
@@ -4604,9 +4624,11 @@
             
             addBtn.addEventListener('click', addKeyframe);
             clearBtn.addEventListener('click', clearKeyframes);
+            console.log('Attaching play/pause event listeners...');
             playBtn.addEventListener('click', playAnimation);
             pauseBtn.addEventListener('click', pauseAnimation);
             stopBtn.addEventListener('click', stopAnimation);
+            console.log('Play/pause event listeners attached');
             if (resetBtn) resetBtn.addEventListener('click', resetViewToFirst);
             easeSelect.addEventListener('change', () => {
                 animationHelper.easing = easeSelect.value;
@@ -4643,6 +4665,10 @@
             });
             populateSavedAnimations();
             updateKeyframeList();
+            
+            // Mark as initialized
+            animationHelperInitialized = true;
+            console.log('Animation helper UI initialized successfully');
         }
 
         // ---- Phase 3 persistence helpers ----
