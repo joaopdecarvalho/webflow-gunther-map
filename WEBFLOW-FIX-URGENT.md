@@ -97,10 +97,10 @@ Go to: **Site Settings → Custom Code → Head Code** and replace with:
   
   window.globalScripts = ['alert'];
   
-  // 🔥 CRITICAL FIX: Use 3d-map-final instead of 3d-map
+  // 🔥 FULL 3D MAP: Use real GLTF model version
   const isHomePage = window.location.pathname === '/' || window.location.pathname === '';
   if (isHomePage) {
-    window.pageScripts = ['3d-map-final'];  // ✅ FIXED: Use production script
+    window.pageScripts = ['3d-map-final'];  // ✅ REAL MAP: Use full version with GLTF models
     window.pageStyles = ['3d-map'];
     setTimeout(initConfigMonitoring, 2000);
   }

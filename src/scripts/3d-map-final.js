@@ -6,7 +6,7 @@
 (function() {
   'use strict';
 
-  // Load Three.js and required modules from CDN
+  // Load Three.js and required modules from CDN with multiple fallbacks
   function loadThreeJS() {
     if (typeof THREE !== 'undefined') {
       console.log('Three.js already loaded, initializing map...');
@@ -14,61 +14,101 @@
       return;
     }
 
-    console.log('Loading Three.js from CDN...');
+    console.log('Loading Three.js from CDN with fallbacks...');
+    
+    // Multiple CDN sources for better reliability - using ES modules for r158+
     const scripts = [
       {
-        url: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js',
+        name: 'THREE.js Core',
+        urls: [
+          'https://unpkg.com/three@0.158.0/build/three.min.js',
+          'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js',
+          'https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js'
+        ],
         check: () => typeof THREE !== 'undefined'
       },
       {
-        url: 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/GLTFLoader.js',
+        name: 'GLTFLoader',
+        urls: [
+          'https://unpkg.com/three@0.158.0/examples/js/loaders/GLTFLoader.js',
+          'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/GLTFLoader.js'
+        ],
         check: () => typeof THREE !== 'undefined' && THREE.GLTFLoader
       },
       {
-        url: 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/DRACOLoader.js',
+        name: 'DRACOLoader',
+        urls: [
+          'https://unpkg.com/three@0.158.0/examples/js/loaders/DRACOLoader.js',
+          'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/DRACOLoader.js'
+        ],
         check: () => typeof THREE !== 'undefined' && THREE.DRACOLoader
       },
       {
-        url: 'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/controls/OrbitControls.js',
+        name: 'OrbitControls',
+        urls: [
+          'https://unpkg.com/three@0.158.0/examples/js/controls/OrbitControls.js',
+          'https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/controls/OrbitControls.js'
+        ],
         check: () => typeof THREE !== 'undefined' && THREE.OrbitControls
       }
     ];
 
-    let loadedCount = 0;
+    let scriptIndex = 0;
     
     function loadNextScript() {
-      if (loadedCount >= scripts.length) {
+      if (scriptIndex >= scripts.length) {
         console.log('All Three.js scripts loaded successfully');
         setTimeout(initializeMap, 100);
         return;
       }
 
-      const scriptInfo = scripts[loadedCount];
-      const script = document.createElement('script');
-      script.src = scriptInfo.url;
+      const scriptInfo = scripts[scriptIndex];
+      let urlIndex = 0;
       
-      script.onload = () => {
-        console.log(`Loaded: ${scriptInfo.url}`);
-        loadedCount++;
-        
-        if (scriptInfo.check()) {
+      function tryNextUrl() {
+        if (urlIndex >= scriptInfo.urls.length) {
+          console.error(`❌ Failed to load ${scriptInfo.name} from all CDN sources`);
+          scriptIndex++;
           loadNextScript();
-        } else {
-          console.warn(`Script loaded but dependency not available: ${scriptInfo.url}`);
-          setTimeout(() => {
-            loadedCount++;
-            loadNextScript();
-          }, 500);
+          return;
         }
-      };
+        
+        const script = document.createElement('script');
+        script.src = scriptInfo.urls[urlIndex];
+        
+        const timeout = setTimeout(() => {
+          console.warn(`⏰ Timeout loading ${scriptInfo.name} from ${scriptInfo.urls[urlIndex]}`);
+          document.head.removeChild(script);
+          urlIndex++;
+          tryNextUrl();
+        }, 8000); // 8 second timeout
+        
+        script.onload = () => {
+          clearTimeout(timeout);
+          console.log(`✅ Loaded ${scriptInfo.name} from ${scriptInfo.urls[urlIndex]}`);
+          
+          // Verify the script loaded what we expected
+          if (scriptInfo.check()) {
+            scriptIndex++;
+            setTimeout(loadNextScript, 100);
+          } else {
+            console.warn(`⚠️ ${scriptInfo.name} loaded but dependency not available, trying next URL`);
+            urlIndex++;
+            tryNextUrl();
+          }
+        };
+        
+        script.onerror = () => {
+          clearTimeout(timeout);
+          console.warn(`❌ Failed to load ${scriptInfo.name} from ${scriptInfo.urls[urlIndex]}`);
+          urlIndex++;
+          tryNextUrl();
+        };
+        
+        document.head.appendChild(script);
+      }
       
-      script.onerror = (error) => {
-        console.error(`Failed to load: ${scriptInfo.url}`, error);
-        loadedCount++;
-        loadNextScript();
-      };
-      
-      document.head.appendChild(script);
+      tryNextUrl();
     }
 
     loadNextScript();
