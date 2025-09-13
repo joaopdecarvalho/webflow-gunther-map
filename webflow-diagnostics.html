@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webflow Integration Diagnostics</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0,0,0,0.2);
+            padding: 30px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        .test-result {
+            margin: 15px 0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .success { background: rgba(16, 185, 129, 0.2); border-color: #10B981; }
+        .error { background: rgba(239, 68, 68, 0.2); border-color: #EF4444; }
+        .warning { background: rgba(245, 158, 11, 0.2); border-color: #F59E0B; }
+        .info { background: rgba(59, 130, 246, 0.2); border-color: #3B82F6; }
+        .test-button {
+            background: #10B981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: background 0.2s;
+        }
+        .test-button:hover {
+            background: #059669;
+        }
+        .code {
+            background: rgba(0,0,0,0.4);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Webflow Integration Diagnostics</h1>
+        <p>Use this tool to diagnose and fix issues with your Webflow 3D integration.</p>
+        
+        <div>
+            <button class="test-button" onclick="testWebflowSite()">🌐 Test Webflow Site</button>
+            <button class="test-button" onclick="testLocalServer()">🔧 Test Local Server</button>
+            <button class="test-button" onclick="testGitHubPages()">📡 Test GitHub Pages</button>
+            <button class="test-button" onclick="runFullDiagnostic()">🔍 Full Diagnostic</button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const results = document.getElementById('results');
+        const WEBFLOW_URL = 'https://go-goethe-quartier-ebde32.webflow.io/';
+        const LOCAL_SERVER = 'http://localhost:8080';
+        const GITHUB_PAGES = 'https://joaopdecarvalho.github.io/webflow-gunther-map';
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+        
+        function clearResults() {
+            results.innerHTML = '';
+        }
+        
+        async function testURL(url, description) {
+            try {
+                const response = await fetch(url, { method: 'HEAD', cache: 'no-cache' });
+                const status = response.status;
+                const statusText = response.statusText;
+                
+                if (status >= 200 && status < 300) {
+                    addResult(`✅ ${description}: <strong>OK (${status})</strong>`, 'success');
+                    return true;
+                } else {
+                    addResult(`❌ ${description}: <strong>Error ${status} ${statusText}</strong>`, 'error');
+                    return false;
+                }
+            } catch (error) {
+                addResult(`❌ ${description}: <strong>${error.message}</strong>`, 'error');
+                return false;
+            }
+        }
+        
+        async function testWebflowSite() {
+            clearResults();
+            addResult('🌐 <strong>Testing Webflow Site Integration...</strong>', 'info');
+            
+            // Test main site
+            await testURL(WEBFLOW_URL, 'Webflow Site Access');
+            
+            // Test if we can iframe it (CORS check)
+            try {
+                const iframe = document.createElement('iframe');
+                iframe.src = WEBFLOW_URL;
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+                
+                iframe.onload = () => {
+                    addResult('✅ Webflow Site: <strong>Can be embedded/tested</strong>', 'success');
+                    document.body.removeChild(iframe);
+                };
+                
+                iframe.onerror = () => {
+                    addResult('⚠️ Webflow Site: <strong>Embedding restricted (normal)</strong>', 'warning');
+                    document.body.removeChild(iframe);
+                };
+                
+            } catch (error) {
+                addResult(`⚠️ Webflow Site: <strong>${error.message}</strong>`, 'warning');
+            }
+            
+            // Instructions
+            addResult(`
+                <strong>Webflow Site Test Instructions:</strong><br>
+                1. Open <a href="${WEBFLOW_URL}" target="_blank" style="color: #60a5fa;">${WEBFLOW_URL}</a><br>
+                2. Open browser Developer Tools (F12)<br>
+                3. Check Console for error messages<br>
+                4. Look for '#webgl-container' element in Elements tab
+            `, 'info');
+        }
+        
+        async function testLocalServer() {
+            clearResults();
+            addResult('🔧 <strong>Testing Local Development Server...</strong>', 'info');
+            
+            const endpoints = [
+                { url: `${LOCAL_SERVER}/src/router.js`, desc: 'Router Script' },
+                { url: `${LOCAL_SERVER}/src/scripts/3d-map-final.js`, desc: '3D Map Final Script' },
+                { url: `${LOCAL_SERVER}/src/scripts/3d-map.js`, desc: '3D Map Old Script' },
+                { url: `${LOCAL_SERVER}/src/scripts/alert.js`, desc: 'Alert Script' },
+                { url: `${LOCAL_SERVER}/src/styles/3d-map.css`, desc: '3D Map Styles' },
+                { url: `${LOCAL_SERVER}/config/3d-config.json`, desc: 'Configuration File' },
+                { url: `${LOCAL_SERVER}/test-enhanced.html`, desc: 'Test Interface' },
+                { url: `${LOCAL_SERVER}/validation-dashboard.html`, desc: 'Validation Dashboard' }
+            ];
+            
+            let allOk = true;
+            for (const endpoint of endpoints) {
+                const ok = await testURL(endpoint.url, endpoint.desc);
+                if (!ok) allOk = false;
+            }
+            
+            if (allOk) {
+                addResult('🎉 <strong>All local server endpoints are working!</strong>', 'success');
+            } else {
+                addResult('⚠️ <strong>Some local server issues detected. Make sure "npm run dev" is running.</strong>', 'warning');
+            }
+        }
+        
+        async function testGitHubPages() {
+            clearResults();
+            addResult('📡 <strong>Testing GitHub Pages Deployment...</strong>', 'info');
+            
+            const endpoints = [
+                { url: `${GITHUB_PAGES}/`, desc: 'GitHub Pages Root' },
+                { url: `${GITHUB_PAGES}/src/router.js`, desc: 'Router Script (Production)' },
+                { url: `${GITHUB_PAGES}/src/scripts/3d-map-final.js`, desc: '3D Map Final (Production)' },
+                { url: `${GITHUB_PAGES}/config/3d-config.json`, desc: 'Configuration (Production)' },
+                { url: `${GITHUB_PAGES}/public/Goetheviertel_250812_with-textures_webp.glb`, desc: '3D Model File' }
+            ];
+            
+            let allOk = true;
+            for (const endpoint of endpoints) {
+                const ok = await testURL(endpoint.url, endpoint.desc);
+                if (!ok) allOk = false;
+            }
+            
+            if (allOk) {
+                addResult('🎉 <strong>GitHub Pages deployment is fully functional!</strong>', 'success');
+            } else {
+                addResult('⚠️ <strong>GitHub Pages deployment issues detected.</strong>', 'warning');
+                addResult(`
+                    <strong>Deployment Fix Steps:</strong><br>
+                    1. Check if repository is public<br>
+                    2. Verify GitHub Pages is enabled in repository settings<br>
+                    3. Ensure latest commit has been deployed<br>
+                    4. Check GitHub Actions tab for deployment status
+                `, 'info');
+            }
+        }
+        
+        async function runFullDiagnostic() {
+            clearResults();
+            addResult('🔍 <strong>Running Full Integration Diagnostic...</strong>', 'info');
+            
+            // Test all components
+            addResult('<h3>📍 Testing Local Development Server:</h3>', 'info');
+            await testLocalServer();
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            addResult('<h3>📍 Testing GitHub Pages Deployment:</h3>', 'info');
+            await testGitHubPages();
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            addResult('<h3>📍 Testing Webflow Site:</h3>', 'info');
+            await testWebflowSite();
+            
+            // Final recommendations
+            addResult(`
+                <h3>🔧 Next Steps:</h3>
+                <strong>If all tests pass:</strong><br>
+                1. Your integration should be working<br>
+                2. Check Webflow site browser console for specific errors<br><br>
+                
+                <strong>If tests fail:</strong><br>
+                1. Red errors need immediate attention<br>
+                2. Yellow warnings may indicate configuration issues<br>
+                3. Check the WEBFLOW-FIX-URGENT.md file for common solutions
+            `, 'info');
+        }
+        
+        // Auto-run basic test on load
+        window.onload = () => {
+            addResult('🔧 <strong>Diagnostic Tool Ready</strong> - Click buttons above to run tests', 'info');
+        };
+    </script>
+</body>
+</html>
