@@ -94,12 +94,11 @@
         
         // Production model URLs from GitHub (with absolute texture and bin file URLs)
         this.modelUrls = {
-          bremerhaven: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Bremerhaven_250731_fixed.gltf',
           goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb'
         };
         
-        // Default to Bremerhaven model
-        this.currentModelUrl = this.modelUrls.bremerhaven;
+        // Default to Goetheviertel model
+        this.currentModelUrl = this.modelUrls.goetheviertel;
         this.isInitialized = false;
         
         console.log('Map3D constructor called');

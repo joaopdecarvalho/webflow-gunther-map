@@ -7,7 +7,7 @@ This project implements a 3D interactive map for a Webflow homepage using Three.
 - Real-time 3D model loading from GitHub
 - Interactive camera controls with OrbitControls  
 - Professional performance monitoring and debugging tools
-- Multiple model support (Bremerhaven GLTF and Goetheviertel GLB)
+- Goetheviertel GLB model support
 
 ### Development Commands
 - `npm run dev` - Start Vite development server on http://localhost:5173
@@ -16,11 +16,9 @@ This project implements a 3D interactive map for a Webflow homepage using Three.
 ### Key Files
 - `test-enhanced.html` - **Primary testing interface** with comprehensive controls
 - `src/scripts/3d-map-final.js` - Production-ready 3D map implementation
-- `public/Bremerhaven_250731_fixed.gltf` - Main 3D model with absolute texture URLs
-- `public/Goetheviertel_250812.glb` - Secondary 3D model (GLB format)
+- `public/Goetheviertel_250812.glb` - Main 3D model (GLB format)
 
 ### Model URLs (GitHub CDN)
-- Bremerhaven: `https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Bremerhaven_250731_fixed.gltf`
 - Goetheviertel: `https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb`
 
 ### Testing Features (test-enhanced.html)

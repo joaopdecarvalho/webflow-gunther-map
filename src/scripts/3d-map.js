@@ -95,7 +95,7 @@
         this.animationId = null;
         
         // Configuration
-        this.modelUrl = 'https://d3uoa9ify8080u.cloudfront.net/Bremerhaven_250731.gltf';
+        this.modelUrl = 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb';
         this.isInitialized = false;
         
         console.log('Map3D constructor called');
