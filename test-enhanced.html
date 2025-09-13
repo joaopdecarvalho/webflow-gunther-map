@@ -1814,21 +1814,21 @@
                                 <div class="intensity-control">
                                     <label>Intensity</label>
                                     <div class="slider-with-value">
-                                        <input type="range" id="warm-intensity" min="0" max="5" step="0.1" value="1.0" oninput="updateWarmLight()">
-                                        <span class="value-display" id="warm-intensity-value">1.0</span>
+                                        <input type="range" id="warm-intensity" min="0" max="5" step="0.1" value="3.9" oninput="updateWarmLight()">
+                                        <span class="value-display" id="warm-intensity-value">3.9</span>
                                     </div>
                                 </div>
                                 <div class="color-controls">
                                     <div class="color-input-group">
                                         <label>Sky</label>
                                         <div class="color-picker-wrapper">
-                                            <input type="color" id="warm-sky-color" value="#ffd4a3" onchange="updateWarmLight()">
+                                            <input type="color" id="warm-sky-color" value="#fff5f5" onchange="updateWarmLight()">
                                         </div>
                                     </div>
                                     <div class="color-input-group">
                                         <label>Ground</label>
                                         <div class="color-picker-wrapper">
-                                            <input type="color" id="warm-ground-color" value="#ff8c42" onchange="updateWarmLight()">
+                                            <input type="color" id="warm-ground-color" value="#bd9a1f" onchange="updateWarmLight()">
                                         </div>
                                     </div>
                                 </div>
@@ -1843,7 +1843,7 @@
                                     <h4>Main Light</h4>
                                 </div>
                                 <label class="light-toggle">
-                                    <input type="checkbox" id="main-enabled" checked onchange="updateMainLight()">
+                                    <input type="checkbox" id="main-enabled" onchange="updateMainLight()">
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -1873,7 +1873,7 @@
                                     <h4>Fill Light</h4>
                                 </div>
                                 <label class="light-toggle">
-                                    <input type="checkbox" id="fill-enabled" checked onchange="updateFillLight()">
+                                    <input type="checkbox" id="fill-enabled" onchange="updateFillLight()">
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -1904,7 +1904,7 @@
                                     <h4>Ambient Light</h4>
                                 </div>
                                 <label class="light-toggle">
-                                    <input type="checkbox" id="ambient-enabled" checked onchange="updateAmbientLight()">
+                                    <input type="checkbox" id="ambient-enabled" onchange="updateAmbientLight()">
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -3056,7 +3056,15 @@
 
                 fillLight = new THREE.DirectionalLight(0x87ceeb, 0.4);
                 fillLight.position.set(-100, 50, -100);
-                scene.add(fillLight);                // Animation loop with monitoring
+                scene.add(fillLight);
+                
+                // Initialize lighting controls to match UI defaults
+                updateWarmLight();
+                updateMainLight();
+                updateFillLight();
+                updateAmbientLight();
+                
+                // Animation loop with monitoring
                 function animate() {
                     requestAnimationFrame(animate);
                     
