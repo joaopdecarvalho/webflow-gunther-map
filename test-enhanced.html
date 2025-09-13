@@ -5198,57 +5198,88 @@
             pushToProduction();
         }
         
-        // Push configuration to production (placeholder - would integrate with GitHub API)
-        function pushToProduction() {
+        // Push configuration to production (now with API integration)
+        async function pushToProduction() {
             const pushBtn = document.getElementById('config-push');
             const pushStatus = document.getElementById('push-status');
             const commitMessage = document.getElementById('commit-message')?.value || 'Update 3D configuration from test interface';
             
-            if (pushBtn && pushStatus) {
-                pushBtn.disabled = true;
-                pushStatus.style.display = 'block';
-                pushStatus.textContent = '🚀 Pushing configuration to GitHub...';
-                pushStatus.style.color = '#60A5FA';
+            if (!pushBtn || !pushStatus) return;
+            
+            pushBtn.disabled = true;
+            pushStatus.style.display = 'block';
+            pushStatus.textContent = '🚀 Pushing configuration to GitHub...';
+            pushStatus.style.color = '#60A5FA';
+            
+            try {
+                const config = generateCurrentConfiguration();
                 
+                // Try to push to the development server API
+                const response = await fetch('/api/github/commit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        config: config,
+                        commitMessage: commitMessage
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    pushStatus.innerHTML = `
+                        ✅ Configuration prepared successfully!<br>
+                        <small style="color: #9CA3AF;">
+                        ${result.action || 'Configuration saved to config/3d-config.json'}<br>
+                        Next: Git commit and push to trigger deployment.
+                        </small>
+                    `;
+                    pushStatus.style.color = '#10B981';
+                    showToast('✅ Configuration ready for deployment', 'success');
+                    
+                    // Also copy to clipboard as fallback
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(JSON.stringify(config, null, 2)).catch(() => {});
+                    }
+                } else {
+                    throw new Error(result.error || 'Failed to prepare configuration');
+                }
+                
+            } catch (error) {
+                console.error('Failed to push configuration:', error);
+                
+                // Fallback to manual process if API fails
                 try {
                     const config = generateCurrentConfiguration();
+                    const configJson = JSON.stringify(config, null, 2);
                     
-                    // For now, we'll simulate the push and provide instructions
-                    setTimeout(() => {
-                        const configJson = JSON.stringify(config, null, 2);
-                        
-                        // Copy to clipboard
-                        if (navigator.clipboard) {
-                            navigator.clipboard.writeText(configJson).then(() => {
-                                pushStatus.innerHTML = `
-                                    ✅ Configuration copied to clipboard!<br>
-                                    <small style="color: #9CA3AF;">
-                                    Manual step: Create <code>config/3d-config.json</code> in your GitHub repo with this content, then push to trigger deployment.
-                                    </small>
-                                `;
-                                pushStatus.style.color = '#10B981';
-                                showToast('📋 Configuration copied to clipboard for manual deployment', 'info');
-                            }).catch(() => {
-                                pushStatus.textContent = '⚠️ Could not copy to clipboard. Use Export button instead.';
-                                pushStatus.style.color = '#F59E0B';
-                            });
-                        } else {
-                            pushStatus.innerHTML = `
-                                ⚠️ Clipboard not available.<br>
-                                <small style="color: #9CA3AF;">Use the Export button to download the configuration file manually.</small>
-                            `;
-                            pushStatus.style.color = '#F59E0B';
-                        }
-                        
-                        pushBtn.disabled = false;
-                    }, 1500);
-                    
-                } catch (error) {
-                    console.error('Failed to push configuration:', error);
+                    if (navigator.clipboard) {
+                        await navigator.clipboard.writeText(configJson);
+                        pushStatus.innerHTML = `
+                            ⚠️ API unavailable - Configuration copied to clipboard!<br>
+                            <small style="color: #9CA3AF;">
+                            Manual step: Create <code>config/3d-config.json</code> in your GitHub repo with this content, then push to trigger deployment.
+                            </small>
+                        `;
+                        pushStatus.style.color = '#F59E0B';
+                        showToast('📋 Configuration copied to clipboard for manual deployment', 'info');
+                    } else {
+                        pushStatus.innerHTML = `
+                            ❌ Push failed and clipboard unavailable.<br>
+                            <small style="color: #9CA3AF;">Use the Export button to download the configuration file manually.</small>
+                        `;
+                        pushStatus.style.color = '#EF4444';
+                        showToast('❌ Push failed - use Export button instead', 'error');
+                    }
+                } catch (fallbackError) {
                     pushStatus.textContent = '❌ Failed to generate configuration';
                     pushStatus.style.color = '#EF4444';
-                    pushBtn.disabled = false;
+                    showToast('❌ Configuration generation failed', 'error');
                 }
+            } finally {
+                pushBtn.disabled = false;
             }
         }
         

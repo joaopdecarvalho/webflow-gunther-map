@@ -948,6 +948,64 @@
         
         window.removeEventListener('resize', this.onWindowResize);
       }
+      
+      // Hot-reload configuration method for live updates
+      async reload() {
+        console.log('🔄 Reloading 3D configuration...');
+        
+        try {
+          // Pause current animations
+          this.pauseAnimation();
+          
+          // Reload configuration from server
+          await this.loadConfiguration();
+          
+          // Apply new lighting settings
+          this.setupLighting();
+          
+          // Update camera position if specified in config
+          if (this.config && this.config.camera) {
+            const { position, target, fov, distance } = this.config.camera;
+            
+            if (position && this.camera) {
+              this.camera.position.set(position[0], position[1], position[2]);
+            }
+            
+            if (fov && this.camera) {
+              this.camera.fov = fov;
+              this.camera.updateProjectionMatrix();
+            }
+            
+            if (this.controls) {
+              if (target) {
+                this.controls.target.set(target[0], target[1], target[2]);
+              }
+              
+              if (distance) {
+                this.controls.minDistance = this.config.camera.minDistance || distance * 0.5;
+                this.controls.maxDistance = this.config.camera.maxDistance || distance * 3;
+              }
+              
+              this.controls.update();
+            }
+          }
+          
+          // Restart welcome animation if enabled
+          if (this.config.animations && this.config.animations.autoplay) {
+            setTimeout(() => this.playWelcomeAnimation(), 500);
+          }
+          
+          console.log('✅ Configuration reloaded successfully');
+          
+          // Dispatch custom event for external listeners
+          window.dispatchEvent(new CustomEvent('3d-config-reloaded', {
+            detail: { config: this.config }
+          }));
+          
+        } catch (error) {
+          console.error('❌ Failed to reload configuration:', error);
+        }
+      }
     }
 
     // Initialize the 3D map
@@ -959,6 +1017,12 @@
       if (isHomePage && !map3d) {
         console.log('Initializing Map3D instance for homepage...');
         map3d = new Map3D();
+        
+        // Update global references
+        window.map3dInstance = map3d;
+        if (window.webflow3DScene) {
+          window.webflow3DScene.getInstance = () => map3d;
+        }
       }
     }
 
@@ -971,6 +1035,20 @@
     // Expose globally for debugging and external control
     window.Map3D = Map3D;
     window.map3dInstance = map3d;
+    
+    // Global interface for Webflow embed code integration
+    window.webflow3DScene = {
+      getInstance: () => map3d,
+      reload: async () => {
+        if (map3d && map3d.reload) {
+          await map3d.reload();
+        } else {
+          console.warn('3D scene not yet initialized or reload method not available');
+        }
+      },
+      isReady: () => map3d !== null,
+      getConfig: () => map3d ? map3d.config : null
+    };
 
     // Clean up on page unload
     window.addEventListener('beforeunload', () => {

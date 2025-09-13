@@ -70,6 +70,134 @@ export default defineConfig({
       },
     },
     {
+      name: 'configuration-upload-endpoint',
+      configureServer(server) {
+        server.middlewares.use(async (req, res, next) => {
+          if (req.url === '/api/config/upload' && req.method === 'POST') {
+            try {
+              let body = '';
+              req.on('data', chunk => {
+                body += chunk.toString();
+              });
+              
+              req.on('end', () => {
+                try {
+                  const configData = JSON.parse(body);
+                  
+                  // Validate configuration structure
+                  if (!configData.version || !configData.camera) {
+                    throw new Error('Invalid configuration structure');
+                  }
+                  
+                  // Write to config directory
+                  const configDir = path.join(process.cwd(), 'config');
+                  if (!fs.existsSync(configDir)) {
+                    fs.mkdirSync(configDir, { recursive: true });
+                  }
+                  
+                  const configFile = path.join(configDir, '3d-config.json');
+                  fs.writeFileSync(configFile, JSON.stringify(configData, null, 2));
+                  
+                  console.log('✅ Configuration uploaded successfully');
+                  
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ 
+                    success: true, 
+                    message: 'Configuration uploaded successfully',
+                    timestamp: new Date().toISOString()
+                  }));
+                } catch (error) {
+                  console.error('❌ Configuration upload error:', error);
+                  res.setHeader('Content-Type', 'application/json');
+                  res.statusCode = 400;
+                  res.end(JSON.stringify({ 
+                    success: false, 
+                    error: error.message 
+                  }));
+                }
+              });
+            } catch (error) {
+              console.error('❌ Configuration upload error:', error);
+              res.setHeader('Content-Type', 'application/json');
+              res.statusCode = 500;
+              res.end(JSON.stringify({ 
+                success: false, 
+                error: 'Internal server error' 
+              }));
+            }
+            return;
+          }
+          next();
+        });
+      },
+    },
+    {
+      name: 'github-commit-endpoint',
+      configureServer(server) {
+        server.middlewares.use(async (req, res, next) => {
+          if (req.url === '/api/github/commit' && req.method === 'POST') {
+            try {
+              let body = '';
+              req.on('data', chunk => {
+                body += chunk.toString();
+              });
+              
+              req.on('end', async () => {
+                try {
+                  const { config, commitMessage } = JSON.parse(body);
+                  
+                  // Validate configuration
+                  if (!config || !config.version) {
+                    throw new Error('Invalid configuration data');
+                  }
+                  
+                  // Write to config directory first
+                  const configDir = path.join(process.cwd(), 'config');
+                  if (!fs.existsSync(configDir)) {
+                    fs.mkdirSync(configDir, { recursive: true });
+                  }
+                  
+                  const configFile = path.join(configDir, '3d-config.json');
+                  fs.writeFileSync(configFile, JSON.stringify(config, null, 2));
+                  
+                  // Simulate GitHub commit (would use GitHub API in production)
+                  console.log('📝 Configuration saved locally');
+                  console.log('📄 Commit message:', commitMessage || 'Update 3D configuration');
+                  console.log('⚠️  Manual step: Commit and push this configuration to trigger deployment');
+                  
+                  res.setHeader('Content-Type', 'application/json');
+                  res.end(JSON.stringify({ 
+                    success: true, 
+                    message: 'Configuration prepared for commit',
+                    action: 'Configuration saved locally. Manual git commit required.',
+                    timestamp: new Date().toISOString()
+                  }));
+                } catch (error) {
+                  console.error('❌ GitHub commit error:', error);
+                  res.setHeader('Content-Type', 'application/json');
+                  res.statusCode = 400;
+                  res.end(JSON.stringify({ 
+                    success: false, 
+                    error: error.message 
+                  }));
+                }
+              });
+            } catch (error) {
+              console.error('❌ GitHub commit error:', error);
+              res.setHeader('Content-Type', 'application/json');
+              res.statusCode = 500;
+              res.end(JSON.stringify({ 
+                success: false, 
+                error: 'Internal server error' 
+              }));
+            }
+            return;
+          }
+          next();
+        });
+      },
+    },
+    {
       name: 'copy-config-files',
       writeBundle() {
         // Copy config directory to dist

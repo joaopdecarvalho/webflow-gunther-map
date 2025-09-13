@@ -1,8 +1,16 @@
 {
   "version": "1.0.0",
   "camera": {
-    "position": [15.2, 31.7, 17.3],
-    "target": [-0.8, -33.2, -15.3],
+    "position": [
+      15.2,
+      31.7,
+      17.3
+    ],
+    "target": [
+      -0.8,
+      -33.2,
+      -15.3
+    ],
     "fov": 60,
     "minDistance": 20,
     "maxDistance": 800
@@ -16,7 +24,7 @@
     },
     "mainLight": {
       "enabled": false,
-      "intensity": 1.0,
+      "intensity": 1,
       "castShadows": false
     },
     "fillLight": {
@@ -57,5 +65,5 @@
     "keyboardControls": true,
     "ariaLabels": true
   },
-  "exportedAt": "2025-09-13T00:00:00.000Z"
+  "exportedAt": "2025-09-13T13:23:10.605Z"
 }
