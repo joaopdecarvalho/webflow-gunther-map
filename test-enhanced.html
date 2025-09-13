@@ -247,9 +247,7 @@
     #animation-helper-panel .saved-animations { margin-top:8px; }
     #animation-helper-panel .saved-animations select { width:100%; padding:4px 6px; background: rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.15); color:#eee; border-radius:4px; font-size:11px; }
     #animation-helper-panel .saved-animations select:focus { outline:none; border-color:#60a5fa; }
-    #animation-helper-panel .library-actions { display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
-    #animation-helper-panel .library-actions .btn { flex:1 1 auto; }
-        
+    
         .info-panel.minimized {
             min-height: auto;
             height: auto !important;
@@ -1250,6 +1248,506 @@
             font-weight: bold;
         }
         
+        /* Animation Tab Redesign */
+        .animation-controls {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .animation-card {
+            background: rgba(17, 24, 39, 0.4);
+            border-radius: 16px;
+            border: 2px solid rgba(75, 85, 99, 0.2);
+            padding: 20px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.1, 1);
+            position: relative;
+        }
+        
+        .animation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--card-accent);
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+            border-radius: 16px 16px 0 0;
+        }
+        
+        /* Color coding for different animation card types - muted colors */
+        .keyframe-card {
+            --card-accent: linear-gradient(90deg, #c17a11, #a16207);
+        }
+        
+        .settings-card {
+            --card-accent: linear-gradient(90deg, #6b7280, #4b5563);
+        }
+        
+        .playback-card {
+            --card-accent: linear-gradient(90deg, #c17a11, #a16207);
+        }
+        
+        .library-card {
+            --card-accent: linear-gradient(90deg, #6b7280, #4b5563);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .card-icon {
+            font-size: 24px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+        
+        .card-title h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #F9FAFB;
+            letter-spacing: -0.2px;
+        }
+        
+        .keyframe-count, .playback-time {
+            font-size: 13px;
+            font-weight: 500;
+            color: #9CA3AF;
+            background: rgba(55, 65, 81, 0.6);
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+        
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        /* Action Buttons */
+        .keyframe-actions, .library-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .action-btn.primary {
+            background: rgba(193, 122, 17, 0.8);
+            color: white;
+            border: 1px solid rgba(193, 122, 17, 0.3);
+        }
+        
+        .action-btn.primary:hover:not(:disabled) {
+            background: rgba(193, 122, 17, 0.9);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(193, 122, 17, 0.2);
+        }
+        
+        .action-btn.secondary {
+            background: rgba(107, 114, 128, 0.6);
+            color: #D1D5DB;
+            border: 1px solid rgba(107, 114, 128, 0.3);
+        }
+        
+        .action-btn.secondary:hover:not(:disabled) {
+            background: rgba(107, 114, 128, 0.8);
+            color: #F3F4F6;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.2);
+        }
+        
+        .action-btn.danger {
+            background: rgba(185, 28, 28, 0.7);
+            color: white;
+            border: 1px solid rgba(185, 28, 28, 0.3);
+        }
+        
+        .action-btn.danger:hover:not(:disabled) {
+            background: rgba(185, 28, 28, 0.8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
+        }
+        
+        .action-btn.neutral {
+            background: rgba(55, 65, 81, 0.6);
+            color: #D1D5DB;
+            border: 1px solid rgba(75, 85, 99, 0.4);
+        }
+        
+        .action-btn.neutral:hover:not(:disabled) {
+            background: rgba(75, 85, 99, 0.8);
+            color: #F3F4F6;
+            transform: translateY(-1px);
+        }
+        
+        .action-btn.refresh {
+            background: rgba(107, 114, 128, 0.4);
+            color: #9CA3AF;
+            border: 1px solid rgba(107, 114, 128, 0.3);
+        }
+        
+        .action-btn.refresh:hover:not(:disabled) {
+            background: rgba(107, 114, 128, 0.6);
+            color: #D1D5DB;
+            transform: translateY(-1px);
+        }
+        
+        .btn-icon {
+            font-size: 14px;
+        }
+        
+        /* Keyframe List */
+        .keyframe-list-container {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .keyframe-list {
+            padding: 8px;
+        }
+        
+        .empty-keyframes {
+            text-align: center;
+            padding: 24px 16px;
+            color: #9CA3AF;
+        }
+        
+        .empty-icon {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 12px;
+        }
+        
+        .empty-keyframes p {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #D1D5DB;
+        }
+        
+        .empty-keyframes small {
+            font-size: 12px;
+            color: #9CA3AF;
+        }
+        
+        .keyframe-item {
+            background: rgba(55, 65, 81, 0.4);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .keyframe-item:hover {
+            background: rgba(75, 85, 99, 0.5);
+            border-color: rgba(96, 165, 250, 0.4);
+        }
+        
+        .keyframe-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .keyframe-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #F3F4F6;
+        }
+        
+        .keyframe-remove {
+            background: none;
+            border: none;
+            color: #EF4444;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .keyframe-remove:hover {
+            color: #DC2626;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .keyframe-details {
+            font-size: 11px;
+            color: #9CA3AF;
+            line-height: 1.4;
+        }
+        
+        /* Settings */
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .setting-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #D1D5DB;
+        }
+        
+        .custom-select-wrapper {
+            position: relative;
+        }
+        
+        .custom-select {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(55, 65, 81, 0.8);
+            border: 2px solid rgba(75, 85, 99, 0.4);
+            border-radius: 8px;
+            color: #F3F4F6;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+        
+        .custom-select:focus {
+            outline: none;
+            border-color: #60A5FA;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+        
+        /* Scrubber Control */
+        .scrubber-control {
+            position: relative;
+        }
+        
+        .timeline-scrubber {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(55, 65, 81, 0.8);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        .timeline-scrubber::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(193, 122, 17, 0.9);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(193, 122, 17, 0.3);
+            border: 2px solid #FFFFFF;
+        }
+        
+        .timeline-scrubber::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(193, 122, 17, 0.9);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(193, 122, 17, 0.3);
+            border: 2px solid #FFFFFF;
+        }
+        
+        .scrubber-markers {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 10px;
+            color: #9CA3AF;
+        }
+        
+        /* Playback Controls */
+        .playback-controls-main {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .playback-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .playback-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .playback-btn.play {
+            background: rgba(193, 122, 17, 0.8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(193, 122, 17, 0.2);
+        }
+        
+        .playback-btn.play:hover:not(:disabled) {
+            background: rgba(193, 122, 17, 0.9);
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(193, 122, 17, 0.3);
+        }
+        
+        .playback-btn.pause {
+            background: rgba(107, 114, 128, 0.8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.2);
+        }
+        
+        .playback-btn.pause:hover:not(:disabled) {
+            background: rgba(107, 114, 128, 0.9);
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(107, 114, 128, 0.3);
+        }
+        
+        .playback-btn.stop {
+            background: rgba(185, 28, 28, 0.7);
+            color: white;
+            box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
+        }
+        
+        .playback-btn.stop:hover:not(:disabled) {
+            background: rgba(185, 28, 28, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(185, 28, 28, 0.3);
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            margin: 16px 0;
+        }
+        
+        .progress-bar-wrapper {
+            width: 100%;
+            height: 8px;
+            background: rgba(55, 65, 81, 0.8);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: rgba(193, 122, 17, 0.8);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        /* Animation Status */
+        .animation-status {
+            text-align: center;
+            font-size: 12px;
+            color: #9CA3AF;
+            font-style: italic;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            border: 1px solid rgba(75, 85, 99, 0.2);
+        }
+        
+        /* Library Controls */
+        .library-save {
+            border-bottom: 1px solid rgba(75, 85, 99, 0.3);
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .save-input-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .animation-input {
+            flex: 1;
+            padding: 10px 14px;
+            background: rgba(55, 65, 81, 0.8);
+            border: 2px solid rgba(75, 85, 99, 0.4);
+            border-radius: 8px;
+            color: #F3F4F6;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+        
+        .animation-input:focus {
+            outline: none;
+            border-color: #60A5FA;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+        
+        .animation-input::placeholder {
+            color: #9CA3AF;
+        }
+        
+        .library-load {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .library-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
         .lighting-presets {
             margin-top: 24px;
         }
@@ -1634,67 +2132,6 @@
                 </div>
             </div>
 
-            <!-- Animation Helper Panel (Phase 2: Tasks 2.1 - 2.5) -->
-            <div class="info-panel" id="animation-helper-panel">
-                <h3 onclick="togglePanel('animation-helper-panel')">
-                    <span>🎬 Animation Helper</span>
-                    <button class="minimize-btn" id="animation-helper-btn">−</button>
-                </h3>
-                <div class="panel-content">
-                    <div class="kf-buttons">
-                        <button class="btn primary" id="kf-add">➕ Add Keyframe</button>
-                        <button class="btn secondary" id="kf-clear" title="Clear all keyframes">♻️ Clear</button>
-                        <button class="btn neutral" id="kf-reset-view" title="Go to first keyframe" disabled>⏮️ First</button>
-                    </div>
-                    <div>
-                        <strong style="font-size:12px;">Keyframes</strong>
-                        <ul class="keyframe-list" id="kf-list">
-                            <li class="empty-state" id="kf-empty">No keyframes set yet</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <label style="display:block;font-size:11px;margin:6px 0 4px;opacity:.8;">Easing</label>
-                        <select id="kf-ease">
-                            <option value="linear">Linear</option>
-                            <option value="easeIn">Ease In</option>
-                            <option value="easeOut">Ease Out</option>
-                            <option value="easeInOut">Ease InOut</option>
-                            <option value="bounce">Bounce</option>
-                        </select>
-                    </div>
-                    <div class="scrubber-row">
-                        <span style="font-size:10px;opacity:.7;">Scrub</span>
-                        <input type="range" id="kf-scrub" min="0" max="1" step="0.0001" value="0" />
-                    </div>
-                    <div class="playback-row">
-                        <div class="playback-controls">
-                            <button class="btn success" id="kf-play" disabled>▶️</button>
-                            <button class="btn neutral" id="kf-pause" disabled>⏸️</button>
-                            <button class="btn danger" id="kf-stop" disabled>⏹️</button>
-                        </div>
-                        <div class="playback-progress">
-                            <progress id="kf-progress" value="0" max="1"></progress>
-                            <span id="kf-time" style="font-size:10px;opacity:.7;width:55px;text-align:right;">0.0s</span>
-                        </div>
-                    </div>
-                    <div class="library-row">
-                        <input id="anim-name" placeholder="Animation name" />
-                        <button class="btn primary" id="anim-save" title="Save current animation" disabled>💾</button>
-                    </div>
-                    <div class="saved-animations">
-                        <label style="display:block;font-size:11px;margin:6px 0 4px;opacity:.8;">Saved Animations</label>
-                        <select id="anim-list"><option value="">(none)</option></select>
-                        <div class="library-actions">
-                            <button class="btn neutral" id="anim-load" disabled>📂 Load</button>
-                            <button class="btn neutral" id="anim-rename" disabled>✏️ Rename</button>
-                            <button class="btn danger" id="anim-delete" disabled>🗑️ Delete</button>
-                            <button class="btn secondary" id="anim-refresh">🔄 Refresh</button>
-                        </div>
-                    </div>
-                    <div class="status-line" id="kf-status">Add 2+ keyframes to enable playback.</div>
-                </div>
-            </div>
-            
             <div class="info-panel" id="performance-panel">
                 <h3 onclick="togglePanel('performance-panel')">
                     <span>⚡ Performance</span>
@@ -1724,6 +2161,7 @@
                 <!-- Tab Navigation -->
                 <div class="tab-navigation">
                     <div class="tab-button active" onclick="switchControlsTab('models')" id="models-tab">🎯 Models</div>
+                    <div class="tab-button" onclick="switchControlsTab('animation')" id="animation-tab">🎬 Animation</div>
                     <div class="tab-button" onclick="switchControlsTab('lighting')" id="lighting-tab">💡 Lighting</div>
                 </div>
                 
@@ -1914,6 +2352,172 @@
                                     <div class="slider-with-value">
                                         <input type="range" id="ambient-intensity" min="0" max="5" step="0.1" value="0.6" oninput="updateAmbientLight()">
                                         <span class="value-display" id="ambient-intensity-value">0.6</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <!-- Animation Tab Content -->
+                <div class="tab-content" id="animation-tab-content" style="display: none;">
+                    
+                    <div class="animation-controls">
+                        
+                        <!-- Keyframe Management Card -->
+                        <div class="animation-card keyframe-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">🎯</span>
+                                    <h4>Keyframes</h4>
+                                </div>
+                                <div class="keyframe-count" id="keyframe-count">0 keyframes</div>
+                            </div>
+                            <div class="card-content">
+                                <div class="keyframe-actions">
+                                    <button class="action-btn primary" id="kf-add">
+                                        <span class="btn-icon">➕</span>
+                                        Add Keyframe
+                                    </button>
+                                    <button class="action-btn danger" id="kf-clear" title="Clear all keyframes">
+                                        <span class="btn-icon">🗑️</span>
+                                        Clear All
+                                    </button>
+                                    <button class="action-btn neutral" id="kf-reset-view" title="Go to first keyframe" disabled>
+                                        <span class="btn-icon">⏮️</span>
+                                        First
+                                    </button>
+                                </div>
+                                
+                                <!-- Keyframe List -->
+                                <div class="keyframe-list-container">
+                                    <div class="keyframe-list" id="kf-list">
+                                        <div class="empty-keyframes" id="kf-empty">
+                                            <span class="empty-icon">🎬</span>
+                                            <p>No keyframes created yet</p>
+                                            <small>Move the camera and click "Add Keyframe" to get started</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Animation Settings Card -->
+                        <div class="animation-card settings-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">⚙️</span>
+                                    <h4>Animation Settings</h4>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="setting-group">
+                                    <label class="setting-label">Easing Function</label>
+                                    <div class="custom-select-wrapper">
+                                        <select id="kf-ease" class="custom-select">
+                                            <option value="linear">Linear</option>
+                                            <option value="easeIn">Ease In</option>
+                                            <option value="easeOut">Ease Out</option>
+                                            <option value="easeInOut">Ease InOut</option>
+                                            <option value="bounce">Bounce</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="setting-group">
+                                    <label class="setting-label">Timeline Scrubber</label>
+                                    <div class="scrubber-control">
+                                        <input type="range" id="kf-scrub" min="0" max="1" step="0.0001" value="0" class="timeline-scrubber">
+                                        <div class="scrubber-markers">
+                                            <span>Start</span>
+                                            <span>End</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Playback Controls Card -->
+                        <div class="animation-card playback-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">▶️</span>
+                                    <h4>Playback</h4>
+                                </div>
+                                <div class="playback-time" id="kf-time">0.0s</div>
+                            </div>
+                            <div class="card-content">
+                                <div class="playback-controls-main">
+                                    <button class="playback-btn play" id="kf-play" disabled title="Play Animation">
+                                        <span class="btn-icon">▶️</span>
+                                    </button>
+                                    <button class="playback-btn pause" id="kf-pause" disabled title="Pause Animation">
+                                        <span class="btn-icon">⏸️</span>
+                                    </button>
+                                    <button class="playback-btn stop" id="kf-stop" disabled title="Stop Animation">
+                                        <span class="btn-icon">⏹️</span>
+                                    </button>
+                                </div>
+                                
+                                <div class="progress-container">
+                                    <div class="progress-bar-wrapper">
+                                        <div class="progress-bar" id="kf-progress-bar">
+                                            <div class="progress-fill" id="kf-progress-fill"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="animation-status" id="kf-status">
+                                    Add 2+ keyframes to enable playback
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Animation Library Card -->
+                        <div class="animation-card library-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">📚</span>
+                                    <h4>Animation Library</h4>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="library-save">
+                                    <div class="save-input-group">
+                                        <input id="anim-name" placeholder="Enter animation name..." class="animation-input">
+                                        <button class="action-btn primary" id="anim-save" title="Save current animation" disabled>
+                                            <span class="btn-icon">💾</span>
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="library-load">
+                                    <label class="setting-label">Saved Animations</label>
+                                    <div class="custom-select-wrapper">
+                                        <select id="anim-list" class="custom-select">
+                                            <option value="">(No saved animations)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="library-actions">
+                                        <button class="action-btn secondary" id="anim-load" disabled title="Load Selected Animation">
+                                            <span class="btn-icon">📂</span>
+                                            Load
+                                        </button>
+                                        <button class="action-btn neutral" id="anim-rename" disabled title="Rename Animation">
+                                            <span class="btn-icon">✏️</span>
+                                            Rename
+                                        </button>
+                                        <button class="action-btn danger" id="anim-delete" disabled title="Delete Animation">
+                                            <span class="btn-icon">🗑️</span>
+                                            Delete
+                                        </button>
+                                        <button class="action-btn refresh" id="anim-refresh" title="Refresh Library">
+                                            <span class="btn-icon">🔄</span>
+                                            Refresh
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -2865,16 +3469,24 @@
         function updateWarmLight() {
             if (!warmHemisphereLight) return;
             
-            const enabled = document.getElementById('warm-enabled').checked;
-            const intensity = parseFloat(document.getElementById('warm-intensity').value);
-            const skyColor = document.getElementById('warm-sky-color').value;
-            const groundColor = document.getElementById('warm-ground-color').value;
+            const enabledEl = document.getElementById('warm-enabled');
+            const intensityEl = document.getElementById('warm-intensity');
+            const skyColorEl = document.getElementById('warm-sky-color');
+            const groundColorEl = document.getElementById('warm-ground-color');
+            const valueDisplayEl = document.getElementById('warm-intensity-value');
+            
+            if (!enabledEl || !intensityEl || !skyColorEl || !groundColorEl) return;
+            
+            const enabled = enabledEl.checked;
+            const intensity = parseFloat(intensityEl.value);
+            const skyColor = skyColorEl.value;
+            const groundColor = groundColorEl.value;
             
             warmHemisphereLight.intensity = enabled ? intensity : 0;
             warmHemisphereLight.color.setHex(parseInt(skyColor.replace('#', ''), 16));
             warmHemisphereLight.groundColor.setHex(parseInt(groundColor.replace('#', ''), 16));
             
-            document.getElementById('warm-intensity-value').textContent = intensity.toFixed(1);
+            if (valueDisplayEl) valueDisplayEl.textContent = intensity.toFixed(1);
             
             // Update card visual state
             const card = document.querySelector('.warm-light');
@@ -2891,12 +3503,18 @@
         function updateMainLight() {
             if (!directionalLight) return;
             
-            const enabled = document.getElementById('main-enabled').checked;
-            const intensity = parseFloat(document.getElementById('main-intensity').value);
+            const enabledEl = document.getElementById('main-enabled');
+            const intensityEl = document.getElementById('main-intensity');
+            const valueDisplayEl = document.getElementById('main-intensity-value');
+            
+            if (!enabledEl || !intensityEl) return;
+            
+            const enabled = enabledEl.checked;
+            const intensity = parseFloat(intensityEl.value);
             
             directionalLight.intensity = enabled ? intensity : 0;
             
-            document.getElementById('main-intensity-value').textContent = intensity.toFixed(1);
+            if (valueDisplayEl) valueDisplayEl.textContent = intensity.toFixed(1);
             
             // Update card visual state
             const card = document.querySelector('.main-light');
@@ -2936,14 +3554,21 @@
         function updateFillLight() {
             if (!fillLight) return;
             
-            const enabled = document.getElementById('fill-enabled').checked;
-            const intensity = parseFloat(document.getElementById('fill-intensity').value);
-            const color = document.getElementById('fill-color').value;
+            const enabledEl = document.getElementById('fill-enabled');
+            const intensityEl = document.getElementById('fill-intensity');
+            const colorEl = document.getElementById('fill-color');
+            const valueDisplayEl = document.getElementById('fill-intensity-value');
+            
+            if (!enabledEl || !intensityEl || !colorEl) return;
+            
+            const enabled = enabledEl.checked;
+            const intensity = parseFloat(intensityEl.value);
+            const color = colorEl.value;
             
             fillLight.intensity = enabled ? intensity : 0;
             fillLight.color.setHex(parseInt(color.replace('#', ''), 16));
             
-            document.getElementById('fill-intensity-value').textContent = intensity.toFixed(1);
+            if (valueDisplayEl) valueDisplayEl.textContent = intensity.toFixed(1);
             
             // Update card visual state
             const card = document.querySelector('.fill-light');
@@ -2960,14 +3585,23 @@
         function updateAmbientLight() {
             if (!ambientLight) return;
             
-            const enabled = document.getElementById('ambient-enabled').checked;
-            const intensity = parseFloat(document.getElementById('ambient-intensity').value);
-            const color = document.getElementById('ambient-color').value;
+            const enabledEl = document.getElementById('ambient-enabled');
+            const intensityEl = document.getElementById('ambient-intensity');
+            const colorEl = document.getElementById('ambient-color');
+            const valueDisplayEl = document.getElementById('ambient-intensity-value');
+            
+            if (!enabledEl || !intensityEl) return;
+            
+            const enabled = enabledEl.checked;
+            const intensity = parseFloat(intensityEl.value);
             
             ambientLight.intensity = enabled ? intensity : 0;
-            ambientLight.color.setHex(parseInt(color.replace('#', ''), 16));
+            if (colorEl) {
+                const color = colorEl.value;
+                ambientLight.color.setHex(parseInt(color.replace('#', ''), 16));
+            }
             
-            document.getElementById('ambient-intensity-value').textContent = intensity.toFixed(1);
+            if (valueDisplayEl) valueDisplayEl.textContent = intensity.toFixed(1);
             
             // Update card visual state
             const card = document.querySelector('.ambient-light');
@@ -3058,11 +3692,13 @@
                 fillLight.position.set(-100, 50, -100);
                 scene.add(fillLight);
                 
-                // Initialize lighting controls to match UI defaults
-                updateWarmLight();
-                updateMainLight();
-                updateFillLight();
-                updateAmbientLight();
+                // Initialize lighting controls to match UI defaults (after DOM is ready)
+                setTimeout(() => {
+                    updateWarmLight();
+                    updateMainLight();
+                    updateFillLight();
+                    updateAmbientLight();
+                }, 100);
                 
                 // Animation loop with monitoring
                 function animate() {
@@ -3659,6 +4295,23 @@
             }
         }
 
+        // Helper function to update progress display
+        function updateProgress(value) {
+            const progressFill = document.getElementById('kf-progress-fill');
+            if (progressFill) {
+                progressFill.style.width = (value * 100) + '%';
+            }
+        }
+        
+        // Helper function to update keyframe count display
+        function updateKeyframeCount() {
+            const countEl = document.getElementById('keyframe-count');
+            if (countEl) {
+                const count = animationHelper.keyframes.length;
+                countEl.textContent = count + ' keyframe' + (count !== 1 ? 's' : '');
+            }
+        }
+
         function clearKeyframes() {
             if (animationHelper.playing) return;
             animationHelper.keyframes = [];
@@ -3667,65 +4320,104 @@
             animationHelper.playing = false;
             animationHelper.paused = false;
             updateKeyframeList();
-            document.getElementById('kf-progress').value = 0;
+            updateProgress(0);
             document.getElementById('kf-scrub').value = 0;
             document.getElementById('kf-time').textContent = '0.0s';
             document.getElementById('kf-play').disabled = true;
             document.getElementById('kf-pause').disabled = true;
             document.getElementById('kf-stop').disabled = true;
             document.getElementById('kf-reset-view').disabled = true;
+            updateKeyframeCount();
             status('All keyframes cleared.');
         }
 
         function updateKeyframeList() {
             const list = document.getElementById('kf-list');
             const empty = document.getElementById('kf-empty');
-            list.querySelectorAll('li:not(.empty-state)').forEach(li => li.remove());
+            
+            // Clear existing keyframes
+            list.querySelectorAll('.keyframe-item').forEach(item => item.remove());
+            
             const k = animationHelper.keyframes;
             empty.style.display = k.length === 0 ? 'block' : 'none';
+            
             k.forEach((kf, i) => {
-                const li = document.createElement('li');
-                const row = document.createElement('div');
-                row.className = 'kf-row';
-                const label = document.createElement('span');
-                label.innerHTML = `KF ${i+1}`;
-                const meta = document.createElement('span');
-                meta.className = 'meta';
-                meta.textContent = `pos(${fmtVec(kf.position)}) → tgt(${fmtVec(kf.target)})`;
+                const item = document.createElement('div');
+                item.className = 'keyframe-item';
+                
+                const header = document.createElement('div');
+                header.className = 'keyframe-header';
+                
+                const title = document.createElement('div');
+                title.className = 'keyframe-title';
+                title.textContent = `Keyframe ${i + 1}`;
+                
                 const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-kf';
-                removeBtn.textContent = '✖';
+                removeBtn.className = 'keyframe-remove';
+                removeBtn.innerHTML = '🗑️';
                 removeBtn.title = 'Remove keyframe';
                 removeBtn.addEventListener('click', () => removeKeyframe(kf.id));
-                row.appendChild(label);
-                row.appendChild(meta);
-                row.appendChild(removeBtn);
-                li.appendChild(row);
-                // Segment settings except for last keyframe
+                
+                header.appendChild(title);
+                header.appendChild(removeBtn);
+                
+                const details = document.createElement('div');
+                details.className = 'keyframe-details';
+                details.innerHTML = `
+                    <div>Position: ${fmtVec(kf.position)}</div>
+                    <div>Target: ${fmtVec(kf.target)}</div>
+                `;
+                
+                item.appendChild(header);
+                item.appendChild(details);
+                
+                // Add segment duration settings (except for last keyframe)
                 if (i < k.length - 1) {
-                    const seg = document.createElement('div');
-                    seg.className = 'segment-settings';
-                    seg.innerHTML = `<span>→ KF ${i+2} duration</span>`;
+                    const segmentDiv = document.createElement('div');
+                    segmentDiv.className = 'segment-settings';
+                    segmentDiv.style.marginTop = '8px';
+                    segmentDiv.style.paddingTop = '8px';
+                    segmentDiv.style.borderTop = '1px solid rgba(75, 85, 99, 0.3)';
+                    
+                    const label = document.createElement('span');
+                    label.innerHTML = `→ KF ${i+2} duration`;
+                    label.style.fontSize = '11px';
+                    label.style.color = '#9CA3AF';
+                    label.style.marginRight = '8px';
+                    
                     const input = document.createElement('input');
                     input.type = 'number';
                     input.min = '100';
                     input.step = '100';
                     input.value = animationHelper.durations[i] || 2000;
                     input.title = 'Segment duration (ms)';
+                    input.style.width = '80px';
+                    input.style.padding = '4px 6px';
+                    input.style.fontSize = '11px';
+                    input.style.background = 'rgba(55, 65, 81, 0.6)';
+                    input.style.border = '1px solid rgba(75, 85, 99, 0.4)';
+                    input.style.borderRadius = '4px';
+                    input.style.color = '#F3F4F6';
+                    
                     input.addEventListener('change', () => {
                         const v = parseInt(input.value) || 1000;
                         animationHelper.durations[i] = Math.max(50, v);
                         status(`Segment ${i+1} duration set to ${animationHelper.durations[i]} ms`);
                     });
-                    seg.appendChild(input);
-                    li.appendChild(seg);
+                    
+                    segmentDiv.appendChild(label);
+                    segmentDiv.appendChild(input);
+                    item.appendChild(segmentDiv);
                 }
-                list.appendChild(li);
+                
+                list.appendChild(item);
             });
+            
             const canPlay = animationHelper.keyframes.length >= 2 && !animationHelper.playing;
             document.getElementById('kf-play').disabled = !canPlay;
             document.getElementById('kf-stop').disabled = animationHelper.keyframes.length < 2;
             document.getElementById('kf-reset-view').disabled = animationHelper.keyframes.length === 0;
+            updateKeyframeCount();
         }
 
         function lerp(a, b, t) { return a + (b - a) * t; }
@@ -3809,7 +4501,7 @@
             document.getElementById('kf-pause').disabled = true;
             document.getElementById('kf-pause').textContent = '⏸️';
             document.getElementById('kf-stop').disabled = animationHelper.keyframes.length < 2;
-            document.getElementById('kf-progress').value = 0;
+            updateProgress(0);
             document.getElementById('kf-scrub').value = 0;
             document.getElementById('kf-time').textContent = '0.0s';
             if (animationHelper.keyframes[0]) applyPathSample({ position: animationHelper.keyframes[0].position, target: animationHelper.keyframes[0].target });
@@ -3861,7 +4553,7 @@
                 stopAnimation();
             }
             tNorm = Math.min(1, Math.max(0, tNorm));
-            document.getElementById('kf-progress').value = tNorm;
+            updateProgress(tNorm);
             document.getElementById('kf-scrub').value = tNorm;
             const total = totalDuration();
             document.getElementById('kf-time').textContent = (tNorm * total / 1000).toFixed(1)+'s';
@@ -3876,7 +4568,7 @@
         function resetViewToFirst() {
             if (animationHelper.keyframes[0]) {
                 applyPathSample(animationHelper.keyframes[0]);
-                document.getElementById('kf-progress').value = 0;
+                updateProgress(0);
                 document.getElementById('kf-scrub').value = 0;
                 document.getElementById('kf-time').textContent = '0.0s';
                 status('Moved to first keyframe.');
@@ -3900,13 +4592,22 @@
             const renameBtn = document.getElementById('anim-rename');
             const deleteBtn = document.getElementById('anim-delete');
             const refreshBtn = document.getElementById('anim-refresh');
-            if (!addBtn) return;
+            
+            // Check if all required elements exist
+            if (!addBtn || !clearBtn || !playBtn || !pauseBtn || !stopBtn) {
+                console.warn('Animation helper UI elements not found, retrying...');
+                setTimeout(initAnimationHelperUI, 200);
+                return;
+            }
+            
+            console.log('Initializing animation helper UI...');
+            
             addBtn.addEventListener('click', addKeyframe);
             clearBtn.addEventListener('click', clearKeyframes);
             playBtn.addEventListener('click', playAnimation);
             pauseBtn.addEventListener('click', pauseAnimation);
             stopBtn.addEventListener('click', stopAnimation);
-            resetBtn.addEventListener('click', resetViewToFirst);
+            if (resetBtn) resetBtn.addEventListener('click', resetViewToFirst);
             easeSelect.addEventListener('change', () => {
                 animationHelper.easing = easeSelect.value;
                 status(`Easing set to ${easeSelect.value}`);
@@ -4032,7 +4733,7 @@
             }
         }
 
-        setTimeout(initAnimationHelperUI, 140);
+        setTimeout(initAnimationHelperUI, 500);
 
         // Auto-discover models after initialization
         setTimeout(discoverModels, 1200);
