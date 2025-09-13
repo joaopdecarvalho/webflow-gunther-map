@@ -1415,8 +1415,8 @@
             // Save this animation as "intro" for replay
             saveIntroAnimation(startPos, startTarget, endPos, endTarget);
             
-            // Animate to end position over 1 second
-            const duration = 1000; // 1 second
+            // Animate to end position over 1.7 seconds
+            const duration = 1700; // 1.7 seconds
             const startTime = performance.now();
             
             const animate = () => {
@@ -1455,10 +1455,10 @@
                     {
                         position: { x: endPos.x, y: endPos.y, z: endPos.z },
                         target: { x: endTarget.x, y: endTarget.y, z: endTarget.z },
-                        timestamp: 1000
+                        timestamp: 1700
                     }
                 ],
-                durations: [1000],
+                durations: [1700],
                 easing: 'easeInOut',
                 savedAt: Date.now()
             };
@@ -1497,7 +1497,7 @@
             console.log('🎬 Replaying intro animation...');
             
             // Animate to end position
-            const duration = 1000;
+            const duration = 1700;
             const startTime = performance.now();
             
             const animate = () => {
