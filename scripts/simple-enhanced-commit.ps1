@@ -145,15 +145,7 @@ Write-Host "----------------------------------------" -ForegroundColor DarkGray
 Write-Host "$CustomMessage" -ForegroundColor White  
 Write-Host "----------------------------------------" -ForegroundColor DarkGray
 
-# Confirm
-Write-Host "`n[?] Proceed with commit and push? [Y/n]: " -ForegroundColor Yellow -NoNewline
-$confirm = Read-Host
-if ($confirm -eq "n" -or $confirm -eq "N") {
-    Write-Host "[X] Cancelled" -ForegroundColor Red
-    return
-}
-
-# Execute git commands
+# Execute git commands automatically
 Write-Host "`n[*] Staging changes..." -ForegroundColor Cyan
 git add .
 
