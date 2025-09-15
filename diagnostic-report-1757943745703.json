@@ -1,0 +1,4777 @@
+{
+  "timestamp": "2025-09-15T13:42:13.315Z",
+  "url": "http://localhost:8080/webflow-staging-site-files/index.html",
+  "pageLoad": {
+    "duration": 1751,
+    "title": "Website Name",
+    "url": "http://localhost:8080/webflow-staging-site-files/index.html"
+  },
+  "networkRequests": [
+    {
+      "type": "request",
+      "url": "http://localhost:8080/webflow-staging-site-files/index.html",
+      "method": "GET",
+      "resourceType": "document",
+      "timestamp": 1757943733635
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/webflow-staging-site-files/index.html",
+      "status": 200,
+      "contentType": "text/html",
+      "timestamp": 1757943733641
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/@vite/client",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/webflow-staging-site-files/css/normalize.css",
+      "method": "GET",
+      "resourceType": "stylesheet",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/webflow-staging-site-files/css/webflow.css",
+      "method": "GET",
+      "resourceType": "stylesheet",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/webflow-staging-site-files/css/go-goethe-quartier-ebde32.webflow.css",
+      "method": "GET",
+      "resourceType": "stylesheet",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=68bfde35f384360748d87167",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/webflow-staging-site-files/js/webflow.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/gsap.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/Flip.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/SplitText.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/Draggable.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/DrawSVGPlugin.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/MorphSVGPlugin.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/Observer.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/ScrollToPlugin.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/TextPlugin.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/CustomEase.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/EasePack.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733651
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/webflow-staging-site-files/css/normalize.css",
+      "status": 200,
+      "contentType": "text/css",
+      "timestamp": 1757943733652
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/webflow-staging-site-files/css/webflow.css",
+      "status": 200,
+      "contentType": "text/css",
+      "timestamp": 1757943733652
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/webflow-staging-site-files/css/go-goethe-quartier-ebde32.webflow.css",
+      "status": 200,
+      "contentType": "text/css",
+      "timestamp": 1757943733652
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/@vite/client",
+      "status": 200,
+      "contentType": "text/javascript",
+      "timestamp": 1757943733653
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/node_modules/vite/dist/client/env.mjs",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733653
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/node_modules/vite/dist/client/env.mjs",
+      "status": 200,
+      "contentType": "text/javascript",
+      "timestamp": 1757943733656
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/webflow-staging-site-files/js/webflow.js",
+      "status": 200,
+      "contentType": "text/javascript",
+      "timestamp": 1757943733658
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/src/router.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733666
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/webflow-staging-site-files/images/Menu_line.png",
+      "method": "GET",
+      "resourceType": "image",
+      "timestamp": 1757943733690
+    },
+    {
+      "type": "request",
+      "url": "https://timothyricks.us.getafile.online/background-video",
+      "method": "GET",
+      "resourceType": "media",
+      "timestamp": 1757943733696
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/webflow-staging-site-files/images/Menu_line.png",
+      "status": 200,
+      "contentType": "image/png",
+      "timestamp": 1757943733696
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/src/router.js",
+      "status": 200,
+      "contentType": "text/javascript",
+      "timestamp": 1757943733696
+    },
+    {
+      "type": "response",
+      "url": "https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=68bfde35f384360748d87167",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757943733703
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/gsap.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757943733734
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/Flip.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757943733737
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/SplitText.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757943733738
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/Draggable.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757943733738
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/DrawSVGPlugin.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757943733744
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/Observer.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757943733745
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/MorphSVGPlugin.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757943733745
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/ScrollToPlugin.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757943733745
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/TextPlugin.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757943733745
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/CustomEase.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757943733750
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/EasePack.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757943733750
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733769
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+      "status": 200,
+      "contentType": "text/javascript",
+      "timestamp": 1757943733772
+    },
+    {
+      "type": "request",
+      "url": "https://unpkg.com/three@0.137.5/build/three.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943733774
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/src/styles/3d-map.css",
+      "method": "GET",
+      "resourceType": "stylesheet",
+      "timestamp": 1757943733774
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/src/styles/3d-map.css",
+      "status": 200,
+      "contentType": "text/css",
+      "timestamp": 1757943733776
+    },
+    {
+      "type": "response",
+      "url": "https://timothyricks.us.getafile.online/background-video",
+      "status": 302,
+      "timestamp": 1757943733829
+    },
+    {
+      "type": "request",
+      "url": "https://timothyricks.us.getafile.online/background-video?cb=8731757219768",
+      "method": "GET",
+      "resourceType": "media",
+      "timestamp": 1757943733829
+    },
+    {
+      "type": "response",
+      "url": "https://timothyricks.us.getafile.online/background-video?cb=8731757219768",
+      "status": 206,
+      "contentType": "video/mp4",
+      "timestamp": 1757943733891
+    },
+    {
+      "type": "response",
+      "url": "https://unpkg.com/three@0.137.5/build/three.min.js",
+      "status": 200,
+      "contentType": "text/javascript; charset=utf-8",
+      "timestamp": 1757943733939
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/webflow-staging-site-files/images/favicon.png",
+      "method": "GET",
+      "resourceType": "other",
+      "timestamp": 1757943733979
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/webflow-staging-site-files/images/favicon.png",
+      "status": 200,
+      "contentType": "image/png",
+      "timestamp": 1757943733981
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/GLTFLoader.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943734049
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/GLTFLoader.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "timestamp": 1757943734146
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/DRACOLoader.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943734248
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/DRACOLoader.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "timestamp": 1757943734281
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/controls/OrbitControls.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757943734383
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/controls/OrbitControls.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "timestamp": 1757943734423
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/src/config/3d-config.json?v=1757943734629&attempt=0",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757943734629
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/src/config/3d-config.json?v=1757943734629&attempt=0",
+      "status": 200,
+      "contentType": "application/json",
+      "timestamp": 1757943734632
+    },
+    {
+      "type": "request",
+      "url": "https://www.gstatic.com/draco/versioned/decoders/1.5.6/draco_wasm_wrapper.js",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757943734663
+    },
+    {
+      "type": "request",
+      "url": "https://www.gstatic.com/draco/versioned/decoders/1.5.6/draco_decoder.wasm",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757943734663
+    },
+    {
+      "type": "request",
+      "url": "https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp25.glb",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757943734663
+    },
+    {
+      "type": "response",
+      "url": "https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp25.glb",
+      "status": 200,
+      "contentType": "application/octet-stream",
+      "timestamp": 1757943734722
+    },
+    {
+      "type": "response",
+      "url": "https://www.gstatic.com/draco/versioned/decoders/1.5.6/draco_wasm_wrapper.js",
+      "status": 200,
+      "contentType": "text/javascript",
+      "timestamp": 1757943734722
+    },
+    {
+      "type": "response",
+      "url": "https://www.gstatic.com/draco/versioned/decoders/1.5.6/draco_decoder.wasm",
+      "status": 200,
+      "contentType": "application/wasm",
+      "timestamp": 1757943734723
+    },
+    {
+      "type": "request",
+      "url": "blob:http://localhost:8080/0591dadc-2570-4f19-987c-cbfd2af9e7f1",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757943734873
+    },
+    {
+      "type": "request",
+      "url": "blob:http://localhost:8080/b96020ea-d09f-4286-a1b6-a02d2246fe79",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757943734873
+    },
+    {
+      "type": "response",
+      "url": "blob:http://localhost:8080/0591dadc-2570-4f19-987c-cbfd2af9e7f1",
+      "status": 200,
+      "contentType": "image/webp",
+      "timestamp": 1757943734874
+    },
+    {
+      "type": "response",
+      "url": "blob:http://localhost:8080/b96020ea-d09f-4286-a1b6-a02d2246fe79",
+      "status": 200,
+      "contentType": "image/webp",
+      "timestamp": 1757943734874
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/src/config/3d-config.json?v=1757943735665",
+      "method": "HEAD",
+      "resourceType": "fetch",
+      "timestamp": 1757943735665
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/src/config/3d-config.json?v=1757943735665",
+      "status": 200,
+      "contentType": "application/json",
+      "timestamp": 1757943735667
+    },
+    {
+      "type": "request",
+      "url": "http://localhost:8080/src/config/3d-config.json?v=1757943735668&attempt=0",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757943735668
+    },
+    {
+      "type": "response",
+      "url": "http://localhost:8080/src/config/3d-config.json?v=1757943735668&attempt=0",
+      "status": 200,
+      "contentType": "application/json",
+      "timestamp": 1757943735677
+    }
+  ],
+  "consoleMessages": [
+    {
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "location": {
+        "url": "http://localhost:8080/@vite/client",
+        "lineNumber": 494,
+        "columnNumber": 8
+      },
+      "timestamp": 1757943733753
+    },
+    {
+      "type": "log",
+      "text": "Script Router initialized",
+      "location": {
+        "url": "http://localhost:8080/src/router.js",
+        "lineNumber": 81,
+        "columnNumber": 12
+      },
+      "timestamp": 1757943733766
+    },
+    {
+      "type": "log",
+      "text": "Base URL: http://localhost:8080/src",
+      "location": {
+        "url": "http://localhost:8080/src/router.js",
+        "lineNumber": 82,
+        "columnNumber": 12
+      },
+      "timestamp": 1757943733766
+    },
+    {
+      "type": "log",
+      "text": "Environment: Production",
+      "location": {
+        "url": "http://localhost:8080/src/router.js",
+        "lineNumber": 83,
+        "columnNumber": 12
+      },
+      "timestamp": 1757943733766
+    },
+    {
+      "type": "log",
+      "text": "Loading page scripts: [3d-map-final]",
+      "location": {
+        "url": "http://localhost:8080/src/router.js",
+        "lineNumber": 102,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943733766
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected.",
+      "location": {
+        "url": "http://localhost:8080/@vite/client",
+        "lineNumber": 617,
+        "columnNumber": 14
+      },
+      "timestamp": 1757943733773
+    },
+    {
+      "type": "log",
+      "text": "Loading Three.js from CDN with fallbacks...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 16,
+        "columnNumber": 12
+      },
+      "timestamp": 1757943733774
+    },
+    {
+      "type": "log",
+      "text": "Loaded: scripts/3d-map-final",
+      "location": {
+        "url": "http://localhost:8080/src/router.js",
+        "lineNumber": 36,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943733774
+    },
+    {
+      "type": "log",
+      "text": "Loaded style: styles/3d-map",
+      "location": {
+        "url": "http://localhost:8080/src/router.js",
+        "lineNumber": 66,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943733776
+    },
+    {
+      "type": "log",
+      "text": "All scripts loaded successfully",
+      "location": {
+        "url": "http://localhost:8080/src/router.js",
+        "lineNumber": 116,
+        "columnNumber": 14
+      },
+      "timestamp": 1757943733776
+    },
+    {
+      "type": "log",
+      "text": "✅ Loaded THREE.js Core from https://unpkg.com/three@0.137.5/build/three.min.js",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 88,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943733946
+    },
+    {
+      "type": "log",
+      "text": "✅ Loaded GLTFLoader from https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/GLTFLoader.js",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 88,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734146
+    },
+    {
+      "type": "log",
+      "text": "✅ Loaded DRACOLoader from https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/DRACOLoader.js",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 88,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734281
+    },
+    {
+      "type": "log",
+      "text": "✅ Loaded OrbitControls from https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/controls/OrbitControls.js",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 88,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734423
+    },
+    {
+      "type": "log",
+      "text": "All Three.js scripts loaded successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 60,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734524
+    },
+    {
+      "type": "log",
+      "text": "Initializing 3D Map...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 123,
+        "columnNumber": 12
+      },
+      "timestamp": 1757943734627
+    },
+    {
+      "type": "log",
+      "text": "🚀 DOM already ready, calling initMap...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1371,
+        "columnNumber": 14
+      },
+      "timestamp": 1757943734627
+    },
+    {
+      "type": "log",
+      "text": "Homepage detection: {currentPath: /webflow-staging-site-files/index.html, hostname: localhost, isHomePage: true, conditions: Object}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1334,
+        "columnNumber": 14
+      },
+      "timestamp": 1757943734628
+    },
+    {
+      "type": "log",
+      "text": "Initializing Map3D instance for homepage...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1347,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734628
+    },
+    {
+      "type": "log",
+      "text": "Map3D constructor called",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 214,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734628
+    },
+    {
+      "type": "log",
+      "text": "🚀 Starting Map3D.init() method...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 224,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734628
+    },
+    {
+      "type": "log",
+      "text": "Starting Map3D initialization...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 243,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734628
+    },
+    {
+      "type": "log",
+      "text": "📋 Initialization steps defined: [Configuration Loading, Container Creation, Scene Setup, Camera Setup, Renderer Setup, Controls Setup, Lighting Setup, Model Loading, Event Listeners, Animation Start, Welcome Animation]",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 244,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734628
+    },
+    {
+      "type": "log",
+      "text": "1/11 - Configuration Loading...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 248,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734628
+    },
+    {
+      "type": "log",
+      "text": "Loading configuration from: http://localhost:8080/src/config/3d-config.json (attempt 1)",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 365,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734628
+    },
+    {
+      "type": "log",
+      "text": "✅ Configuration loaded successfully: {version: 1.0.0, source: external, camera: Object, lighting: Array(1), animations: enabled}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 394,
+        "columnNumber": 22
+      },
+      "timestamp": 1757943734633
+    },
+    {
+      "type": "log",
+      "text": "✅ Configuration Loading completed successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 260,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734633
+    },
+    {
+      "type": "log",
+      "text": "2/11 - Container Creation...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 248,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734633
+    },
+    {
+      "type": "log",
+      "text": "Creating 3D map container...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 512,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734633
+    },
+    {
+      "type": "log",
+      "text": "Found existing webgl-container: {id: webgl-container, classList: Array(1), currentZIndex: 0, currentPosition: absolute}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 518,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734633
+    },
+    {
+      "type": "log",
+      "text": "Updated container styles applied",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 538,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734633
+    },
+    {
+      "type": "log",
+      "text": "Container verification: {exists: true, hasParent: true, dimensions: Object, computedStyle: Object}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 566,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734634
+    },
+    {
+      "type": "log",
+      "text": "Container setup complete",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 580,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734634
+    },
+    {
+      "type": "log",
+      "text": "✅ Container Creation completed successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 260,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734634
+    },
+    {
+      "type": "log",
+      "text": "3/11 - Scene Setup...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 248,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734634
+    },
+    {
+      "type": "log",
+      "text": "Setting up Three.js scene...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 584,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734634
+    },
+    {
+      "type": "log",
+      "text": "✅ Scene Setup completed successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 260,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734634
+    },
+    {
+      "type": "log",
+      "text": "4/11 - Camera Setup...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 248,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734634
+    },
+    {
+      "type": "log",
+      "text": "Camera configured: {position: Zt, fov: 60, target: Array(3)}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 613,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734634
+    },
+    {
+      "type": "log",
+      "text": "✅ Camera Setup completed successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 260,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734634
+    },
+    {
+      "type": "log",
+      "text": "5/11 - Renderer Setup...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 248,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734634
+    },
+    {
+      "type": "log",
+      "text": "Setting up Three.js renderer...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 621,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734634
+    },
+    {
+      "type": "log",
+      "text": "Checking WebGL support...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 624,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734634
+    },
+    {
+      "type": "log",
+      "text": "WebGL support result: {webgl: true, webgl2: false, extensions: Object, limits: Object}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 626,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734643
+    },
+    {
+      "type": "log",
+      "text": "✅ WebGL support detected: {webgl: true, webgl2: false, extensions: Object, limits: Object}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 633,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734643
+    },
+    {
+      "type": "log",
+      "text": "Creating WebGLRenderer with settings: {antialias: true, alpha: true, powerPreference: high-performance, failIfMajorPerformanceCaveat: false}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 636,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734643
+    },
+    {
+      "type": "log",
+      "text": "✅ WebGLRenderer created successfully: true",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 651,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734657
+    },
+    {
+      "type": "log",
+      "text": "WebGL context info: {vendor: WebKit, renderer: WebKit WebGL, version: WebGL 2.0 (OpenGL ES 3.0 Chromium), shadingLanguageVersion: WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium), maxTextureSize: 16384}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 655,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734657
+    },
+    {
+      "type": "log",
+      "text": "WebGL renderer created successfully: {context: WebGL2RenderingContext, maxTextureSize: 16384, maxAnisotropy: 16}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 669,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734658
+    },
+    {
+      "type": "log",
+      "text": "Canvas element appended to container: {containerChildren: 1, canvasSize: Object, canvasPointerEvents: auto}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 706,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734660
+    },
+    {
+      "type": "log",
+      "text": "✅ Renderer Setup completed successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 260,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734660
+    },
+    {
+      "type": "log",
+      "text": "6/11 - Controls Setup...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 248,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734660
+    },
+    {
+      "type": "log",
+      "text": "Setting up camera controls...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 759,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734660
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls created: {controls: true, domElement: canvas, enabled: true, camera: true}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 762,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734661
+    },
+    {
+      "type": "log",
+      "text": "Controls configured: {minDistance: 20, maxDistance: 800, target: Zt, zoom: true, rotate: true}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 791,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734661
+    },
+    {
+      "type": "log",
+      "text": "=== INTERACTION DEBUGGING ===",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 805,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734661
+    },
+    {
+      "type": "log",
+      "text": "Container Debug Info: {element: div#webgl-container.webgl-container, id: webgl-container, position: fixed, zIndex: 0, pointerEvents: none}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 814,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734661
+    },
+    {
+      "type": "log",
+      "text": "Canvas Debug Info: {element: canvas, position: absolute, zIndex: 1, pointerEvents: auto, width: 1920px}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 828,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734661
+    },
+    {
+      "type": "log",
+      "text": "=== INTERACTION DEBUGGING COMPLETE ===",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 897,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734661
+    },
+    {
+      "type": "log",
+      "text": "✅ Controls Setup completed successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 260,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734661
+    },
+    {
+      "type": "log",
+      "text": "7/11 - Lighting Setup...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 248,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734661
+    },
+    {
+      "type": "log",
+      "text": "Setting up scene lighting...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 901,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734661
+    },
+    {
+      "type": "log",
+      "text": "✅ Warm ambient light added: {skyColor: #fff5f5, groundColor: #bd9a1f, intensity: 3.9}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 920,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734661
+    },
+    {
+      "type": "log",
+      "text": "Lighting configuration applied: [warmAmbient]",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 975,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943734662
+    },
+    {
+      "type": "log",
+      "text": "✅ Lighting Setup completed successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 260,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734662
+    },
+    {
+      "type": "log",
+      "text": "8/11 - Model Loading...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 248,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734662
+    },
+    {
+      "type": "log",
+      "text": "Loading 3D model from GitHub: https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp25.glb",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1077,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734663
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 1%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734724
+    },
+    {
+      "type": "log",
+      "text": "🚀 Calling initMap after DOM ready...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1360,
+        "columnNumber": 14
+      },
+      "timestamp": 1757943734728
+    },
+    {
+      "type": "log",
+      "text": "Homepage detection: {currentPath: /webflow-staging-site-files/index.html, hostname: localhost, isHomePage: true, conditions: Object}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1334,
+        "columnNumber": 14
+      },
+      "timestamp": 1757943734728
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 2%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734734
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 3%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734736
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 5%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734739
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 6%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734741
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 10%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734751
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 14%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734756
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 15%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734759
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 16%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734764
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 21%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734767
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 26%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734772
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 30%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734777
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 36%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734784
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 41%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734790
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 45%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734794
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 50%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734800
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 56%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734806
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 61%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734811
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 66%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734816
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 69%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734822
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 73%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734827
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 77%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734831
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 82%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734837
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 87%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734848
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 90%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734848
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 94%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734854
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 95%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734855
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 100%",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1086,
+        "columnNumber": 26
+      },
+      "timestamp": 1757943734863
+    },
+    {
+      "type": "log",
+      "text": "3D model loaded successfully! Meshes: 2, Scale: 0.09x",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1134,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943734980
+    },
+    {
+      "type": "log",
+      "text": "✅ Model Loading completed successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 260,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734985
+    },
+    {
+      "type": "log",
+      "text": "9/11 - Event Listeners...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 248,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734985
+    },
+    {
+      "type": "log",
+      "text": "✅ Event Listeners completed successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 260,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734985
+    },
+    {
+      "type": "log",
+      "text": "10/11 - Animation Start...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 248,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734985
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943734985
+    },
+    {
+      "type": "log",
+      "text": "✅ Animation Start completed successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 260,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735111
+    },
+    {
+      "type": "log",
+      "text": "11/11 - Welcome Animation...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 248,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735111
+    },
+    {
+      "type": "log",
+      "text": "Starting welcome animation...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 993,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943735111
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735111
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735133
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735138
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735144
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735150
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735155
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735160
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735166
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735171
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735177
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735183
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735188
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735194
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735199
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735205
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735210
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735216
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735221
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735227
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735232
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735238
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735243
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735249
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735254
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735260
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735265
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735271
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735277
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735282
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735288
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735293
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735299
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735304
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735310
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735315
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735321
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735327
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735332
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735338
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735344
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735349
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735355
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735360
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735366
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735371
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735377
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735383
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735393
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735399
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735404
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735410
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735416
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735421
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735427
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735467
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735468
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735468
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735468
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735471
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735477
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735482
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735488
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735493
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735499
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735504
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735510
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735516
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735521
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735527
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735532
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735538
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735543
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735549
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735555
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735560
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735566
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735571
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735577
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735582
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735588
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735593
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735599
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735605
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735610
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735616
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735621
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735627
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735632
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735638
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735644
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735649
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735655
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735660
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735665
+    },
+    {
+      "type": "log",
+      "text": "🔄 New configuration detected, updating...",
+      "location": {
+        "url": "http://localhost:8080/webflow-staging-site-files/index.html",
+        "lineNumber": 53,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943735667
+    },
+    {
+      "type": "log",
+      "text": "🔄 Reloading 3D configuration...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1265,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943735667
+    },
+    {
+      "type": "log",
+      "text": "Loading configuration from: http://localhost:8080/src/config/3d-config.json (attempt 1)",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 365,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735668
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735678
+    },
+    {
+      "type": "log",
+      "text": "✅ Configuration loaded successfully: {version: 1.0.0, source: external, camera: Object, lighting: Array(1), animations: enabled}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 394,
+        "columnNumber": 22
+      },
+      "timestamp": 1757943735678
+    },
+    {
+      "type": "log",
+      "text": "Setting up scene lighting...",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 901,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943735679
+    },
+    {
+      "type": "log",
+      "text": "✅ Warm ambient light added: {skyColor: #fff5f5, groundColor: #bd9a1f, intensity: 3.9}",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 920,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943735680
+    },
+    {
+      "type": "log",
+      "text": "Lighting configuration applied: [warmAmbient]",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 975,
+        "columnNumber": 16
+      },
+      "timestamp": 1757943735680
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735680
+    },
+    {
+      "type": "log",
+      "text": "✅ Configuration reloaded successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1309,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943735680
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735684
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735688
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735693
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735699
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735704
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735710
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735715
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735721
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735727
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735732
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735738
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735743
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735749
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735754
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735760
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735766
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735771
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735777
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735783
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735788
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735793
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735799
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735805
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735810
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735817
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735821
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735827
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735832
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735837
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735843
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735849
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735854
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735860
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735865
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735871
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735877
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735882
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735888
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735893
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735899
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735904
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735910
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735915
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735921
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735927
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735932
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735937
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735944
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735949
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735955
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735960
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735966
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735971
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735977
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735982
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735988
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735993
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943735999
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736005
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736011
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736016
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736021
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736027
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736033
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736038
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736043
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736049
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736055
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736060
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736066
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736072
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736077
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736083
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736088
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736094
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736099
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736105
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736110
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736116
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736121
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736127
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736132
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736138
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736144
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736149
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736155
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736160
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736166
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736173
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736178
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736182
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736188
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736193
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736199
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736205
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736210
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736216
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736222
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736227
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736232
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736238
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736243
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736249
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736255
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736260
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736266
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736271
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736277
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736282
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736288
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736293
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736299
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736304
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736310
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736316
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736321
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736327
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736332
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736338
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736343
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736349
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736354
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736360
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736366
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736371
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736377
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736382
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736388
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736393
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736399
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736404
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736411
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736416
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736421
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736427
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736432
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736438
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736444
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736450
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736455
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736460
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736466
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736471
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736477
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736482
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736488
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736493
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736499
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736505
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736510
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736516
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736521
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736527
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736532
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736539
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736544
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736549
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736554
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736560
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736566
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736571
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736577
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736582
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736588
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736593
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736599
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736605
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736610
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736616
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736621
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736627
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736632
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736638
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736644
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736649
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736655
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736660
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736666
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736671
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736677
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736682
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736688
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736694
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736699
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736705
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736710
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736716
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736721
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736727
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736732
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736738
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736744
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736749
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736755
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736760
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736766
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736771
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736777
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736782
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736788
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736794
+    },
+    {
+      "type": "log",
+      "text": "OrbitControls: Camera position changed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 889,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736805
+    },
+    {
+      "type": "log",
+      "text": "Welcome animation completed",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 1052,
+        "columnNumber": 22
+      },
+      "timestamp": 1757943736816
+    },
+    {
+      "type": "log",
+      "text": "✅ Welcome Animation completed successfully",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 260,
+        "columnNumber": 20
+      },
+      "timestamp": 1757943736816
+    },
+    {
+      "type": "log",
+      "text": "🎉 3D Map initialized successfully! (11/11 steps completed)",
+      "location": {
+        "url": "http://localhost:8080/src/scripts/3d-map-final.js",
+        "lineNumber": 299,
+        "columnNumber": 18
+      },
+      "timestamp": 1757943736816
+    },
+    {
+      "type": "log",
+      "text": "🔍 Running in-browser 3D diagnostics...",
+      "location": {
+        "url": "",
+        "lineNumber": 161,
+        "columnNumber": 12
+      },
+      "timestamp": 1757943745487
+    },
+    {
+      "type": "warning",
+      "text": "Deprecated API for given entry type.",
+      "location": {
+        "url": "",
+        "lineNumber": 129,
+        "columnNumber": 0
+      },
+      "timestamp": 1757943745494
+    },
+    {
+      "type": "log",
+      "text": "📊 3D Diagnostics Results: {timestamp: 2025-09-15T13:42:23.482Z, webgl: Object, threejs: Object, containers: Object, models: Object}",
+      "location": {
+        "url": "",
+        "lineNumber": 173,
+        "columnNumber": 12
+      },
+      "timestamp": 1757943745495
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "01-initial-load",
+      "filename": "diagnostic-01-initial-load-1757943735380.png",
+      "filepath": "C:\\Users\\joao\\Documents\\My Scripts\\webflow-gunther-map\\screenshots\\diagnostic-01-initial-load-1757943735380.png",
+      "timestamp": 1757943735472
+    },
+    {
+      "name": "02-post-diagnostics",
+      "filename": "diagnostic-02-post-diagnostics-1757943745495.png",
+      "filepath": "C:\\Users\\joao\\Documents\\My Scripts\\webflow-gunther-map\\screenshots\\diagnostic-02-post-diagnostics-1757943745495.png",
+      "timestamp": 1757943745602
+    },
+    {
+      "name": "03-final-state",
+      "filename": "diagnostic-03-final-state-1757943745606.png",
+      "filepath": "C:\\Users\\joao\\Documents\\My Scripts\\webflow-gunther-map\\screenshots\\diagnostic-03-final-state-1757943745606.png",
+      "timestamp": 1757943745701
+    }
+  ],
+  "diagnostics": {
+    "error": "Diagnostics not completed"
+  },
+  "canvas": {
+    "canvasCount": 1,
+    "canvases": [
+      {
+        "id": "",
+        "className": "",
+        "width": 1920,
+        "height": 1080,
+        "clientWidth": 1920,
+        "clientHeight": 1080,
+        "hasWebGL": false
+      }
+    ],
+    "container": {
+      "id": "webgl-container",
+      "className": "webgl-container",
+      "width": 1920,
+      "height": 1080,
+      "children": 1
+    }
+  },
+  "threeJS": {
+    "threeAvailable": true,
+    "threeVersion": "137",
+    "mapInstances": 0,
+    "globalScripts": [],
+    "pageScripts": [
+      "3d-map-final"
+    ]
+  }
+}

@@ -16,35 +16,39 @@
 
     console.log('Loading Three.js from CDN with fallbacks...');
     
-    // Multiple CDN sources for better reliability - using ES modules for r158+
+    // Use consistent r137 for all modules to avoid compatibility issues
+    // r137 is stable and widely supported, avoiding deprecated API issues
     const scripts = [
       {
         name: 'THREE.js Core',
         urls: [
-          'https://unpkg.com/three@0.158.0/build/three.min.js',
-          'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js',
-          'https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js'
+          'https://unpkg.com/three@0.137.5/build/three.min.js',
+          'https://cdn.jsdelivr.net/npm/three@0.137.5/build/three.min.js',
+          'https://cdnjs.cloudflare.com/ajax/libs/three.js/r137/three.min.js'
         ],
         check: () => typeof THREE !== 'undefined'
       },
       {
         name: 'GLTFLoader',
         urls: [
-          'https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/GLTFLoader.js'
+          'https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/GLTFLoader.js',
+          'https://unpkg.com/three@0.137.5/examples/js/loaders/GLTFLoader.js'
         ],
         check: () => typeof THREE !== 'undefined' && THREE.GLTFLoader
       },
       {
         name: 'DRACOLoader',
         urls: [
-          'https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/DRACOLoader.js'
+          'https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/loaders/DRACOLoader.js',
+          'https://unpkg.com/three@0.137.5/examples/js/loaders/DRACOLoader.js'
         ],
         check: () => typeof THREE !== 'undefined' && THREE.DRACOLoader
       },
       {
         name: 'OrbitControls',
         urls: [
-          'https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/controls/OrbitControls.js'
+          'https://cdn.jsdelivr.net/npm/three@0.137.5/examples/js/controls/OrbitControls.js',
+          'https://unpkg.com/three@0.137.5/examples/js/controls/OrbitControls.js'
         ],
         check: () => typeof THREE !== 'undefined' && THREE.OrbitControls
       }
@@ -519,7 +523,7 @@
             currentPosition: window.getComputedStyle(this.container).position
           });
 
-          // Configure the existing container with transparent background and proper layering
+          // Configure the existing container - allow all events to pass through
           this.container.style.cssText = `
             position: fixed !important;
             top: 0;
@@ -529,10 +533,11 @@
             z-index: 1 !important;
             background: transparent;
             overflow: hidden;
-            pointer-events: none;
+            pointer-events: auto;
           `;
 
           console.log('Updated container styles applied');
+          
         } else {
           console.log('No existing webgl-container found, creating new one');
           // Fallback: create new container
@@ -573,69 +578,7 @@
           }
         });
 
-        this.ensureUILayering();
-      }
-
-      ensureUILayering() {
-        // Canvas is at z-index: 1, so ensure UI elements are above it but allow pointer events to fall through
-        const pageWrap = document.querySelector('[class*="page_wrap"], .page_wrap, #page_wrap');
-        if (pageWrap) {
-          pageWrap.style.position = 'relative';
-          pageWrap.style.zIndex = '10';
-          pageWrap.style.pointerEvents = 'none'; // Allow events to fall through to 3D canvas
-        }
-
-        // Ensure interactive UI elements are above the 3D canvas but only capture events on themselves
-        const interactiveSelectors = ['button', 'a', 'input', 'form', 'select', 'textarea'];
-        const nonInteractiveSelectors = ['[class*="main"]', '[class*="content"]', '.main-content', 'main', 'header', 'nav', 'footer'];
-
-        // Interactive elements should capture pointer events
-        interactiveSelectors.forEach(selector => {
-          const elements = document.querySelectorAll(selector);
-          elements.forEach(el => {
-            if (el && el !== this.container) {
-              el.style.position = el.style.position || 'relative';
-              const currentZIndex = parseInt(window.getComputedStyle(el).zIndex) || 0;
-              if (currentZIndex < 10) {
-                el.style.zIndex = '10';
-              }
-              el.style.pointerEvents = 'auto';
-            }
-          });
-        });
-
-        // Non-interactive elements should allow events to pass through
-        nonInteractiveSelectors.forEach(selector => {
-          const elements = document.querySelectorAll(selector);
-          elements.forEach(el => {
-            if (el && el !== this.container) {
-              el.style.position = el.style.position || 'relative';
-              el.style.zIndex = '10';
-              el.style.pointerEvents = 'none'; // Allow events to fall through
-            }
-          });
-        });
-
-        // Fix Webflow button children that block pointer events
-        this.fixButtonPointerEvents();
-
-        console.log('UI layering ensured: 3D canvas (z-index: 1), interactive UI (z-index: 10), non-interactive UI (pointer-events: none)');
-      }
-
-      fixButtonPointerEvents() {
-        // Common Webflow issue: button children block clicks
-        const buttonChildren = document.querySelectorAll('button *');
-        buttonChildren.forEach(child => {
-          child.style.pointerEvents = 'none';
-        });
-
-        // Ensure buttons themselves can receive clicks
-        const buttons = document.querySelectorAll('button');
-        buttons.forEach(button => {
-          button.style.pointerEvents = 'auto';
-        });
-
-        console.log(`Fixed pointer events for ${buttonChildren.length} button children`);
+        console.log('Container setup complete');
       }
 
       setupScene() {
@@ -678,21 +621,45 @@
       setupRenderer() {
         console.log('Setting up Three.js renderer...');
 
-        // Check WebGL capability first
+        // Check WebGL capability first with detailed logging
+        console.log('Checking WebGL support...');
         const webglSupported = this.checkWebGLSupport();
+        console.log('WebGL support result:', webglSupported);
+        
         if (!webglSupported.webgl && !webglSupported.webgl2) {
+          console.error('❌ WebGL not supported:', webglSupported);
           throw new Error('WebGL is not supported by this browser');
         }
 
-        console.log('WebGL support detected:', webglSupported);
+        console.log('✅ WebGL support detected:', webglSupported);
 
         try {
+          console.log('Creating WebGLRenderer with settings:', {
+            antialias: this.config.performance?.enableAntialiasing !== false,
+            alpha: true,
+            powerPreference: 'high-performance',
+            failIfMajorPerformanceCaveat: false
+          });
+          
           // Try to create WebGL renderer with optimal settings
           this.renderer = new THREE.WebGLRenderer({
             antialias: this.config.performance?.enableAntialiasing !== false,
             alpha: true,
             powerPreference: 'high-performance',
             failIfMajorPerformanceCaveat: false
+          });
+          
+          console.log('✅ WebGLRenderer created successfully:', !!this.renderer);
+          
+          // Test WebGL context
+          const gl = this.renderer.getContext();
+          console.log('WebGL context info:', {
+            vendor: gl.getParameter(gl.VENDOR),
+            renderer: gl.getParameter(gl.RENDERER),
+            version: gl.getParameter(gl.VERSION),
+            shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION),
+            maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+            maxViewportDims: gl.getParameter(gl.MAX_VIEWPORT_DIMS)
           });
 
           // Verify renderer was created successfully
@@ -727,14 +694,14 @@
             this.renderer.outputEncoding = THREE.sRGBEncoding;
           }
 
-          // Append canvas to container - canvas will be behind UI but receive events in empty areas
+          // Simple canvas positioning - inherit events from container
           this.renderer.domElement.style.pointerEvents = 'auto';
-          this.renderer.domElement.style.position = 'fixed';
+          this.renderer.domElement.style.position = 'absolute';
           this.renderer.domElement.style.top = '0';
           this.renderer.domElement.style.left = '0';
-          this.renderer.domElement.style.width = '100vw';
-          this.renderer.domElement.style.height = '100vh';
-          this.renderer.domElement.style.zIndex = '1';  // Same as container
+          this.renderer.domElement.style.width = '100%';
+          this.renderer.domElement.style.height = '100%';
+          this.renderer.domElement.style.zIndex = '0';  // Within container
           this.container.appendChild(this.renderer.domElement);
 
           console.log('Canvas element appended to container:', {
@@ -793,6 +760,13 @@
         console.log('Setting up camera controls...');
         this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
         
+        console.log('OrbitControls created:', {
+          controls: !!this.controls,
+          domElement: this.controls.domElement,
+          enabled: this.controls.enabled,
+          camera: !!this.camera
+        });
+        
         const camConfig = this.config.camera;
         const uiConfig = this.config.ui;
         
@@ -823,6 +797,105 @@
           rotate: this.controls.enableRotate,
           pan: this.controls.enablePan
         });
+        
+        // Add comprehensive debugging for interaction issues
+        this.addInteractionDebugging();
+      }
+
+      addInteractionDebugging() {
+        console.log('=== INTERACTION DEBUGGING ===');
+        
+        // Debug container and canvas properties
+        const container = this.container;
+        const canvas = this.renderer.domElement;
+        
+        const containerStyle = window.getComputedStyle(container);
+        const canvasStyle = window.getComputedStyle(canvas);
+        
+        console.log('Container Debug Info:', {
+          element: container,
+          id: container.id,
+          position: containerStyle.position,
+          zIndex: containerStyle.zIndex,
+          pointerEvents: containerStyle.pointerEvents,
+          width: containerStyle.width,
+          height: containerStyle.height,
+          top: containerStyle.top,
+          left: containerStyle.left,
+          display: containerStyle.display,
+          visibility: containerStyle.visibility
+        });
+        
+        console.log('Canvas Debug Info:', {
+          element: canvas,
+          position: canvasStyle.position,
+          zIndex: canvasStyle.zIndex,
+          pointerEvents: canvasStyle.pointerEvents,
+          width: canvasStyle.width,
+          height: canvasStyle.height,
+          top: canvasStyle.top,
+          left: canvasStyle.left,
+          display: canvasStyle.display,
+          visibility: canvasStyle.visibility
+        });
+        
+        // Add event listeners for debugging
+        const events = ['mousedown', 'mousemove', 'mouseup', 'click', 'wheel', 'touchstart', 'touchmove', 'touchend'];
+        
+        events.forEach(eventType => {
+          canvas.addEventListener(eventType, (e) => {
+            console.log(`Canvas ${eventType}:`, {
+              type: e.type,
+              clientX: e.clientX,
+              clientY: e.clientY,
+              target: e.target,
+              currentTarget: e.currentTarget,
+              button: e.button,
+              buttons: e.buttons
+            });
+          }, { passive: false });
+          
+          container.addEventListener(eventType, (e) => {
+            console.log(`Container ${eventType}:`, {
+              type: e.type,
+              clientX: e.clientX,
+              clientY: e.clientY,
+              target: e.target,
+              currentTarget: e.currentTarget
+            });
+          }, { passive: false });
+        });
+        
+        // Debug what elements are on top at mouse position
+        document.addEventListener('mousemove', (e) => {
+          const elementAtPoint = document.elementFromPoint(e.clientX, e.clientY);
+          if (elementAtPoint && (elementAtPoint === canvas || elementAtPoint === container)) {
+            console.log('Mouse over 3D element:', {
+              element: elementAtPoint,
+              tagName: elementAtPoint.tagName,
+              id: elementAtPoint.id,
+              className: elementAtPoint.className,
+              zIndex: window.getComputedStyle(elementAtPoint).zIndex
+            });
+          }
+        }, { passive: true });
+        
+        // Debug OrbitControls events
+        if (this.controls) {
+          this.controls.addEventListener('start', () => {
+            console.log('OrbitControls: Interaction started');
+          });
+          
+          this.controls.addEventListener('change', () => {
+            console.log('OrbitControls: Camera position changed');
+          });
+          
+          this.controls.addEventListener('end', () => {
+            console.log('OrbitControls: Interaction ended');
+          });
+        }
+        
+        console.log('=== INTERACTION DEBUGGING COMPLETE ===');
       }
 
       setupLighting() {

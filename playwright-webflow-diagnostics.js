@@ -201,7 +201,11 @@ class PlaywrightWebflowDiagnostics {
         
         const canvasInfo = await this.page.evaluate(() => {
             const canvases = Array.from(document.querySelectorAll('canvas'));
-            const container = document.getElementById('map-container') || document.getElementById('canvas-3d');
+            const container = document.getElementById('webgl-container') || 
+                            document.getElementById('map-container') || 
+                            document.getElementById('canvas-3d') ||
+                            document.querySelector('.webgl-container') ||
+                            document.querySelector('[data-webgl-container]');
             
             return {
                 canvasCount: canvases.length,
@@ -371,7 +375,7 @@ class PlaywrightWebflowDiagnostics {
         
         // Check for basic issues
         if (!this.results.canvas?.container) {
-            recommendations.push('❌ No 3D container found - ensure #map-container or #canvas-3d exists in your Webflow page');
+            recommendations.push('❌ No 3D container found - ensure #webgl-container, #map-container or #canvas-3d exists in your page');
         }
         
         if (!this.results.threeJS?.threeAvailable) {

@@ -1,342 +1,186 @@
 /**
- * Webflow 3D Model Diagnostics Script
- * Comprehensive diagnostic tool to check why 3D model isn't loading on staging site
+ * In-browser 3D Diagnostics Script
+ * This script runs inside the browser to diagnose 3D model issues
  */
 
-class WebflowDiagnostics {
-    constructor() {
-        this.results = {
-            pageInfo: {},
-            scripts: [],
-            networkRequests: [],
-            consoleMessages: [],
-            dom: {},
-            threejs: {},
-            models: {},
-            performance: {},
-            errors: []
-        };
+(function() {
+  'use strict';
+  
+  const diagnostics = {
+    timestamp: new Date().toISOString(),
+    webgl: {},
+    threejs: {},
+    containers: {},
+    models: {},
+    errors: [],
+    performance: {}
+  };
+  
+  // WebGL Support Check
+  function checkWebGLSupport() {
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+      
+      diagnostics.webgl = {
+        supported: !!gl,
+        version: gl ? gl.getParameter(gl.VERSION) : null,
+        vendor: gl ? gl.getParameter(gl.VENDOR) : null,
+        renderer: debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'Unknown',
+        maxTextureSize: gl ? gl.getParameter(gl.MAX_TEXTURE_SIZE) : 0,
+        maxVertexAttribs: gl ? gl.getParameter(gl.MAX_VERTEX_ATTRIBS) : 0
+      };
+    } catch (error) {
+      diagnostics.webgl = { supported: false, error: error.message };
+      diagnostics.errors.push(`WebGL Error: ${error.message}`);
     }
-
-    async diagnose(url) {
-        console.log(`🔍 Starting comprehensive diagnostics for: ${url}`);
-        
-        try {
-            // Step 1: Navigate to the page
-            await this.navigateToPage(url);
-            
-            // Step 2: Wait for page load and initial scripts
-            await this.waitForInitialLoad();
-            
-            // Step 3: Check basic page structure
-            await this.checkPageStructure();
-            
-            // Step 4: Analyze script loading
-            await this.analyzeScripts();
-            
-            // Step 5: Check Three.js availability
-            await this.checkThreeJS();
-            
-            // Step 6: Check 3D container
-            await this.check3DContainer();
-            
-            // Step 7: Monitor network requests
-            await this.analyzeNetworkRequests();
-            
-            // Step 8: Check console messages
-            await this.analyzeConsoleMessages();
-            
-            // Step 9: Check model loading
-            await this.checkModelLoading();
-            
-            // Step 10: Performance analysis
-            await this.analyzePerformance();
-            
-            // Step 11: Generate report
-            this.generateReport();
-            
-        } catch (error) {
-            console.error('Diagnostic error:', error);
-            this.results.errors.push({
-                type: 'diagnostic_error',
-                message: error.message,
-                stack: error.stack
-            });
-        }
-        
-        return this.results;
+  }
+  
+  // Three.js Check
+  function checkThreeJS() {
+    diagnostics.threejs = {
+      loaded: typeof THREE !== 'undefined',
+      version: typeof THREE !== 'undefined' ? THREE.REVISION : null,
+      hasGLTFLoader: typeof THREE !== 'undefined' && !!THREE.GLTFLoader,
+      hasDRACOLoader: typeof THREE !== 'undefined' && !!THREE.DRACOLoader,
+      hasOrbitControls: typeof THREE !== 'undefined' && !!THREE.OrbitControls
+    };
+    
+    if (typeof THREE === 'undefined') {
+      diagnostics.errors.push('Three.js is not loaded');
     }
-
-    async navigateToPage(url) {
-        console.log(`📍 Navigating to: ${url}`);
-        this.results.pageInfo.url = url;
-        this.results.pageInfo.timestamp = new Date().toISOString();
-    }
-
-    async waitForInitialLoad() {
-        console.log('⏳ Waiting for initial page load...');
-        // Wait for DOM and initial scripts
-        await new Promise(resolve => setTimeout(resolve, 3000));
-    }
-
-    async checkPageStructure() {
-        console.log('🏗️ Checking page structure...');
+  }
+  
+  // Container Check
+  function checkContainers() {
+    const containers = [
+      { selector: '#webgl-container', name: 'Main WebGL Container' },
+      { selector: '.webgl-container', name: 'WebGL Container Class' },
+      { selector: '.w-webgl-container', name: 'Webflow WebGL Container' },
+      { selector: '[data-webgl-container]', name: 'Data WebGL Container' }
+    ];
+    
+    diagnostics.containers.found = [];
+    diagnostics.containers.canvases = [];
+    
+    containers.forEach(({ selector, name }) => {
+      const element = document.querySelector(selector);
+      if (element) {
+        const canvas = element.querySelector('canvas');
+        const rect = element.getBoundingClientRect();
         
-        // Check for key elements
-        const checks = [
-            { selector: '#map-container', name: 'Map Container' },
-            { selector: '#canvas-3d', name: '3D Canvas' },
-            { selector: 'canvas', name: 'Canvas Element' },
-            { selector: 'script[src*="router"]', name: 'Router Script' },
-            { selector: 'script[src*="three"]', name: 'Three.js Script' }
-        ];
-        
-        this.results.dom.elements = {};
-        
-        for (const check of checks) {
-            const element = document.querySelector(check.selector);
-            this.results.dom.elements[check.name] = {
-                found: !!element,
-                selector: check.selector,
-                attributes: element ? this.getElementAttributes(element) : null
-            };
-        }
-    }
-
-    getElementAttributes(element) {
-        const attrs = {};
-        for (const attr of element.attributes) {
-            attrs[attr.name] = attr.value;
-        }
-        return attrs;
-    }
-
-    async analyzeScripts() {
-        console.log('📜 Analyzing script loading...');
-        
-        const scripts = Array.from(document.querySelectorAll('script')).map(script => ({
-            src: script.src || 'inline',
-            type: script.type || 'text/javascript',
-            async: script.async,
-            defer: script.defer,
-            loaded: true, // If we can see it, it's loaded
-            content: script.src ? null : script.textContent.substring(0, 200) + '...'
-        }));
-        
-        this.results.scripts = scripts;
-        
-        // Check for specific scripts
-        const routerScript = scripts.find(s => s.src.includes('router'));
-        const threeScript = scripts.find(s => s.src.includes('three'));
-        
-        this.results.scripts.analysis = {
-            routerFound: !!routerScript,
-            threeJSFound: !!threeScript,
-            totalScripts: scripts.length
-        };
-    }
-
-    async checkThreeJS() {
-        console.log('🎮 Checking Three.js availability...');
-        
-        this.results.threejs = {
-            available: typeof window.THREE !== 'undefined',
-            version: window.THREE ? window.THREE.REVISION : null,
-            classes: {}
-        };
-        
-        if (window.THREE) {
-            // Check for essential Three.js classes
-            const requiredClasses = [
-                'Scene', 'Camera', 'WebGLRenderer', 'OrbitControls',
-                'GLTFLoader', 'DRACOLoader', 'PerspectiveCamera'
-            ];
-            
-            requiredClasses.forEach(className => {
-                this.results.threejs.classes[className] = {
-                    available: !!window.THREE[className] || !!window[className],
-                    type: typeof (window.THREE[className] || window[className])
-                };
-            });
-        }
-    }
-
-    async check3DContainer() {
-        console.log('📦 Checking 3D container setup...');
-        
-        const container = document.getElementById('map-container') || document.getElementById('canvas-3d');
-        
-        this.results.dom.container = {
-            found: !!container,
-            id: container ? container.id : null,
-            className: container ? container.className : null,
-            dimensions: container ? {
-                width: container.offsetWidth,
-                height: container.offsetHeight,
-                clientWidth: container.clientWidth,
-                clientHeight: container.clientHeight
-            } : null,
-            styles: container ? window.getComputedStyle(container) : null,
-            children: container ? container.children.length : 0
-        };
-        
-        // Check for canvas inside container
-        const canvas = container ? container.querySelector('canvas') : document.querySelector('canvas');
-        this.results.dom.canvas = {
-            found: !!canvas,
-            context: canvas ? canvas.getContext('webgl') !== null : false,
-            dimensions: canvas ? {
-                width: canvas.width,
-                height: canvas.height,
-                clientWidth: canvas.clientWidth,
-                clientHeight: canvas.clientHeight
-            } : null
-        };
-    }
-
-    async analyzeNetworkRequests() {
-        console.log('🌐 Analyzing network requests...');
-        
-        // This will be populated by Playwright's network monitoring
-        this.results.networkRequests = {
-            total: 0,
-            scripts: [],
-            models: [],
-            failed: [],
-            pending: []
-        };
-    }
-
-    async analyzeConsoleMessages() {
-        console.log('📝 Analyzing console messages...');
-        
-        // This will be populated by Playwright's console monitoring
-        this.results.consoleMessages = {
-            errors: [],
-            warnings: [],
-            logs: [],
-            info: []
-        };
-    }
-
-    async checkModelLoading() {
-        console.log('🎯 Checking model loading...');
-        
-        // Check if any 3D map instances exist
-        const mapInstances = window.gunther3DMap || window.map3D || [];
-        
-        this.results.models = {
-            instances: Array.isArray(mapInstances) ? mapInstances.length : (mapInstances ? 1 : 0),
-            status: 'unknown',
-            urls: [],
-            errors: []
-        };
-        
-        // Check for GLTF/GLB requests in network
-        // This will be enhanced with actual network data
-    }
-
-    async analyzePerformance() {
-        console.log('⚡ Analyzing performance...');
-        
-        this.results.performance = {
-            timing: performance.timing ? {
-                domContentLoaded: performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart,
-                loadComplete: performance.timing.loadEventEnd - performance.timing.navigationStart,
-                firstPaint: performance.getEntriesByType('paint')[0]?.startTime || null
-            } : null,
-            memory: performance.memory ? {
-                used: performance.memory.usedJSHeapSize,
-                total: performance.memory.totalJSHeapSize,
-                limit: performance.memory.jsHeapSizeLimit
-            } : null,
-            resources: performance.getEntriesByType('resource').length
-        };
-    }
-
-    generateReport() {
-        console.log('\n🔍 DIAGNOSTIC REPORT');
-        console.log('=====================');
-        
-        console.log('\n📍 PAGE INFO:');
-        console.log(`URL: ${this.results.pageInfo.url}`);
-        console.log(`Timestamp: ${this.results.pageInfo.timestamp}`);
-        
-        console.log('\n🏗️ DOM STRUCTURE:');
-        Object.entries(this.results.dom.elements || {}).forEach(([name, info]) => {
-            console.log(`${name}: ${info.found ? '✅' : '❌'} (${info.selector})`);
+        diagnostics.containers.found.push({
+          name,
+          selector,
+          hasCanvas: !!canvas,
+          dimensions: {
+            width: rect.width,
+            height: rect.height,
+            visible: rect.width > 0 && rect.height > 0
+          },
+          innerHTML: element.innerHTML.substring(0, 200),
+          styles: {
+            display: getComputedStyle(element).display,
+            visibility: getComputedStyle(element).visibility,
+            position: getComputedStyle(element).position,
+            zIndex: getComputedStyle(element).zIndex
+          }
         });
         
-        console.log('\n📦 CONTAINER STATUS:');
-        const container = this.results.dom.container;
-        console.log(`Container found: ${container.found ? '✅' : '❌'}`);
-        if (container.found) {
-            console.log(`Dimensions: ${container.dimensions.width}x${container.dimensions.height}`);
-            console.log(`Children: ${container.children}`);
+        if (canvas) {
+          diagnostics.containers.canvases.push({
+            width: canvas.width,
+            height: canvas.height,
+            style: canvas.style.cssText,
+            hasWebGLContext: !!canvas.getContext('webgl')
+          });
         }
-        
-        console.log('\n🎮 THREE.JS STATUS:');
-        console.log(`Available: ${this.results.threejs.available ? '✅' : '❌'}`);
-        if (this.results.threejs.available) {
-            console.log(`Version: r${this.results.threejs.version}`);
-            Object.entries(this.results.threejs.classes).forEach(([className, info]) => {
-                console.log(`${className}: ${info.available ? '✅' : '❌'}`);
-            });
-        }
-        
-        console.log('\n📜 SCRIPTS:');
-        console.log(`Total scripts: ${this.results.scripts.length}`);
-        console.log(`Router script: ${this.results.scripts.analysis?.routerFound ? '✅' : '❌'}`);
-        console.log(`Three.js script: ${this.results.scripts.analysis?.threeJSFound ? '✅' : '❌'}`);
-        
-        console.log('\n❌ ERRORS:');
-        this.results.errors.forEach(error => {
-            console.log(`${error.type}: ${error.message}`);
-        });
-        
-        console.log('\n💡 RECOMMENDATIONS:');
-        this.generateRecommendations();
-    }
-
-    generateRecommendations() {
-        const recommendations = [];
-        
-        if (!this.results.dom.container.found) {
-            recommendations.push('❌ 3D container element not found - check if #map-container or #canvas-3d exists');
-        }
-        
-        if (!this.results.threejs.available) {
-            recommendations.push('❌ Three.js not loaded - check script loading and CDN availability');
-        }
-        
-        if (!this.results.scripts.analysis?.routerFound) {
-            recommendations.push('❌ Router script not found - check if router.js is being loaded');
-        }
-        
-        if (this.results.dom.container.found && this.results.dom.container.dimensions.width === 0) {
-            recommendations.push('⚠️ Container has zero width - check CSS styling');
-        }
-        
-        if (this.results.dom.canvas.found && !this.results.dom.canvas.context) {
-            recommendations.push('❌ WebGL context not available - browser may not support WebGL');
-        }
-        
-        if (recommendations.length === 0) {
-            recommendations.push('✅ Basic setup looks good - check console for runtime errors');
-        }
-        
-        recommendations.forEach(rec => console.log(rec));
-    }
-}
-
-// Export for use in Playwright
-window.WebflowDiagnostics = WebflowDiagnostics;
-
-// Auto-run if in browser context
-if (typeof document !== 'undefined') {
-    const diagnostics = new WebflowDiagnostics();
-    diagnostics.diagnose(window.location.href).then(results => {
-        window.diagnosticsResults = results;
-        console.log('Diagnostics complete! Results available in window.diagnosticsResults');
+      }
     });
-}
+  }
+  
+  // Model Loading Check
+  function checkModels() {
+    diagnostics.models = {
+      loadingAttempts: window.webflow3DModelAttempts || 0,
+      loadedModels: window.webflow3DLoadedModels || [],
+      currentScene: !!window.webflow3DScene,
+      sceneObjects: 0
+    };
+    
+    if (window.webflow3DScene && window.webflow3DScene.children) {
+      diagnostics.models.sceneObjects = window.webflow3DScene.children.length;
+    }
+  }
+  
+  // Performance Check
+  function checkPerformance() {
+    const timing = performance.getEntriesByType('navigation')[0];
+    if (timing) {
+      diagnostics.performance = {
+        domContentLoaded: timing.domContentLoadedEventEnd - timing.domContentLoadedEventStart,
+        loadComplete: timing.loadEventEnd - timing.loadEventStart,
+        firstPaint: performance.getEntriesByType('paint')
+          .find(entry => entry.name === 'first-paint')?.startTime || 0
+      };
+    }
+    
+    // Check for any long tasks
+    const longTasks = performance.getEntriesByType('longtask');
+    if (longTasks.length > 0) {
+      diagnostics.performance.longTasks = longTasks.length;
+      diagnostics.errors.push(`Performance: ${longTasks.length} long tasks detected`);
+    }
+  }
+  
+  // Error Collection
+  function checkErrors() {
+    // Check for console errors (this might not catch all errors but will try)
+    const originalError = console.error;
+    let errorCount = 0;
+    
+    console.error = function(...args) {
+      errorCount++;
+      diagnostics.errors.push(`Console Error: ${args.join(' ')}`);
+      return originalError.apply(console, args);
+    };
+    
+    // Check for unhandled promise rejections
+    window.addEventListener('unhandledrejection', (event) => {
+      diagnostics.errors.push(`Unhandled Promise Rejection: ${event.reason}`);
+    });
+    
+    // Restore original console.error after a short delay
+    setTimeout(() => {
+      console.error = originalError;
+    }, 1000);
+  }
+  
+  // Run all diagnostics
+  function runDiagnostics() {
+    console.log('🔍 Running in-browser 3D diagnostics...');
+    
+    checkWebGLSupport();
+    checkThreeJS();
+    checkContainers();
+    checkModels();
+    checkPerformance();
+    checkErrors();
+    
+    // Add to window for external access
+    window.webflow3DDiagnostics = diagnostics;
+    
+    console.log('📊 3D Diagnostics Results:', diagnostics);
+    
+    // Return for external use
+    return diagnostics;
+  }
+  
+  // Auto-run after a short delay to allow page to initialize
+  setTimeout(runDiagnostics, 2000);
+  
+  // Also expose function for manual execution
+  window.runWebflow3DDiagnostics = runDiagnostics;
+  
+})();
