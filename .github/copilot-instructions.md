@@ -11,7 +11,7 @@ Interactive 3D map system for Webflow integration using Three.js. Features dual-
 const isDev = location.hostname.includes('.webflow.io');
 const baseUrl = isDev ? 'http://localhost:8080/src' : 'https://joaopdecarvalho.github.io/webflow-gunther-map/src';
 // Configuration loading from GitHub Pages
-const configUrl = 'https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json';
+const configUrl = 'https://joaopdecarvalho.github.io/webflow-gunther-map/src/config/3d-config.json';
 ```
 
 ## Development Workflow
@@ -42,7 +42,7 @@ this.modelUrls = {
   goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb'
 };
 // Configuration loading from GitHub Pages
-await this.loadConfiguration('https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json');
+await this.loadConfiguration('https://joaopdecarvalho.github.io/webflow-gunther-map/src/config/3d-config.json');
 ```
 
 ## Webflow Integration
@@ -94,3 +94,48 @@ Production scripts load dynamic configurations from GitHub Pages:
   "accessibility": { "respectMotionPreference": true, "keyboardControls": true }
 }
 ```
+
+## GitHub Copilot Slash Commands
+
+### /commit-and-push
+**Usage**: `/commit-and-push` or `/commit-and-push "custom message"`
+
+Automatically:
+1. Analyze all staged and unstaged changes using `git diff`
+2. Generate an intelligent commit message based on:
+   - Files modified (configuration, scripts, documentation, etc.)
+   - Type of changes (feat, fix, refactor, docs, style, etc.)
+   - Scope of changes (3d-map, config, webflow, testing, etc.)
+   - Impact level (breaking, minor, patch)
+3. Stage all changes with `git add .`
+4. Commit with the generated message using conventional commit format
+5. Push to the current branch
+
+**Examples**:
+- `feat(3d-map): implement configuration hot-reloading system`
+- `fix(webflow): resolve CORS issues by moving config to src folder`  
+- `refactor(embed): consolidate production and development environments`
+- `docs(readme): update deployment instructions and architecture`
+
+**Implementation**: This slash command should:
+- Use `git status --porcelain` to detect changes
+- Use `git diff --name-only` and `git diff --cached --name-only` for file analysis
+- Generate semantic commit messages following conventional commits
+- Handle merge conflicts and provide clear error messages
+- Support custom commit message override as optional parameter
+
+**Command Implementation**:
+```powershell
+# Quick usage for GitHub Copilot:
+./commit-and-push.ps1                    # Auto-generate commit message
+./commit-and-push.ps1 "custom message"   # Use custom message
+
+# Or run the full script directly:
+./scripts/smart-commit.ps1
+```
+
+**Conventional Commit Format**:
+- `type(scope): description`
+- Types: feat, fix, docs, style, refactor, test, chore, config
+- Scopes: 3d-map, webflow, config, router, test, core, project
+- Auto-detects based on changed files and content analysis

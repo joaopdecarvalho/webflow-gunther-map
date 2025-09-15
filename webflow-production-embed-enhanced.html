@@ -2,16 +2,16 @@
 <!-- Copy this to Webflow Site Settings → Custom Code → Head -->
 <script>
 (function() {
-  // Configuration URL for hot-reloading
-  const configUrl = 'https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json';
-  
   // UNCOMMENT the next line to force PRODUCTION mode (test before going live!)
   // window.SCRIPT_BASE_URL = 'https://joaopdecarvalho.github.io/webflow-gunther-map/src';
   
-  const isDev = location.hostname.includes('.webflow.io');
+  const isDev = location.hostname.includes('.webflow.io') || location.hostname.includes('localhost');
   const baseUrl = window.SCRIPT_BASE_URL || (isDev 
     ? 'http://localhost:8080/src' 
     : 'https://joaopdecarvalho.github.io/webflow-gunther-map/src');
+  
+  // Configuration URL with environment detection for CORS-free loading
+  const configUrl = baseUrl + '/config/3d-config.json';
   
   // Configuration versioning for cache-busting
   let currentConfigVersion = localStorage.getItem('3d-config-version') || '0';

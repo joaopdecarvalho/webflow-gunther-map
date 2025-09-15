@@ -198,8 +198,12 @@
           }
         };
         
-        // Configuration URL from GitHub Pages
-        this.configUrl = 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/config/3d-config.json';
+        // Environment-aware configuration URL (same as embed code)
+        const isDev = location.hostname.includes('.webflow.io') || location.hostname.includes('localhost');
+        const baseUrl = window.SCRIPT_BASE_URL || (isDev 
+          ? 'http://localhost:8080/src' 
+          : 'https://joaopdecarvalho.github.io/webflow-gunther-map/src');
+        this.configUrl = baseUrl + '/config/3d-config.json';
         
         this.currentModelUrl = this.modelUrls[this.config.models.primary];
         this.isInitialized = false;

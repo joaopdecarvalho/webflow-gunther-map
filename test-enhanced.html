@@ -5232,7 +5232,7 @@
                     pushStatus.innerHTML = `
                         ✅ Configuration prepared successfully!<br>
                         <small style="color: #9CA3AF;">
-                        ${result.action || 'Configuration saved to config/3d-config.json'}<br>
+                        ${result.action || 'Configuration saved to src/config/3d-config.json'}<br>
                         Next: Git commit and push to trigger deployment.
                         </small>
                     `;
@@ -5260,7 +5260,7 @@
                         pushStatus.innerHTML = `
                             ⚠️ API unavailable - Configuration copied to clipboard!<br>
                             <small style="color: #9CA3AF;">
-                            Manual step: Create <code>config/3d-config.json</code> in your GitHub repo with this content, then push to trigger deployment.
+                            Manual step: Create <code>src/config/3d-config.json</code> in your GitHub repo with this content, then push to trigger deployment.
                             </small>
                         `;
                         pushStatus.style.color = '#F59E0B';
