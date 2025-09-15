@@ -519,7 +519,7 @@
             currentPosition: window.getComputedStyle(this.container).position
           });
 
-          // Configure the existing container with improved styling
+          // Configure the existing container with transparent background and proper layering
           this.container.style.cssText = `
             position: fixed !important;
             top: 0;
@@ -527,9 +527,9 @@
             width: 100vw;
             height: 100vh;
             z-index: 1 !important;
-            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0E68C 100%);
+            background: transparent;
             overflow: hidden;
-            pointer-events: auto;
+            pointer-events: none;
           `;
 
           console.log('Updated container styles applied');
@@ -546,9 +546,9 @@
             width: 100vw;
             height: 100vh;
             z-index: 1;
-            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0E68C 100%);
+            background: transparent;
             overflow: hidden;
-            pointer-events: auto;
+            pointer-events: none;
           `;
           document.body.insertBefore(this.container, document.body.firstChild);
           console.log('New container created and inserted');
@@ -577,27 +577,65 @@
       }
 
       ensureUILayering() {
+        // Canvas is at z-index: 1, so ensure UI elements are above it but allow pointer events to fall through
         const pageWrap = document.querySelector('[class*="page_wrap"], .page_wrap, #page_wrap');
         if (pageWrap) {
           pageWrap.style.position = 'relative';
           pageWrap.style.zIndex = '10';
-          pageWrap.style.pointerEvents = 'auto';
+          pageWrap.style.pointerEvents = 'none'; // Allow events to fall through to 3D canvas
         }
 
-        const contentSelectors = [
-          '[class*="main"]', '[class*="content"]', '.main-content',
-          'main', 'header', 'nav', 'footer'
-        ];
+        // Ensure interactive UI elements are above the 3D canvas but only capture events on themselves
+        const interactiveSelectors = ['button', 'a', 'input', 'form', 'select', 'textarea'];
+        const nonInteractiveSelectors = ['[class*="main"]', '[class*="content"]', '.main-content', 'main', 'header', 'nav', 'footer'];
 
-        contentSelectors.forEach(selector => {
+        // Interactive elements should capture pointer events
+        interactiveSelectors.forEach(selector => {
           const elements = document.querySelectorAll(selector);
           elements.forEach(el => {
             if (el && el !== this.container) {
               el.style.position = el.style.position || 'relative';
-              el.style.zIndex = el.style.zIndex || '5';
+              const currentZIndex = parseInt(window.getComputedStyle(el).zIndex) || 0;
+              if (currentZIndex < 10) {
+                el.style.zIndex = '10';
+              }
+              el.style.pointerEvents = 'auto';
             }
           });
         });
+
+        // Non-interactive elements should allow events to pass through
+        nonInteractiveSelectors.forEach(selector => {
+          const elements = document.querySelectorAll(selector);
+          elements.forEach(el => {
+            if (el && el !== this.container) {
+              el.style.position = el.style.position || 'relative';
+              el.style.zIndex = '10';
+              el.style.pointerEvents = 'none'; // Allow events to fall through
+            }
+          });
+        });
+
+        // Fix Webflow button children that block pointer events
+        this.fixButtonPointerEvents();
+
+        console.log('UI layering ensured: 3D canvas (z-index: 1), interactive UI (z-index: 10), non-interactive UI (pointer-events: none)');
+      }
+
+      fixButtonPointerEvents() {
+        // Common Webflow issue: button children block clicks
+        const buttonChildren = document.querySelectorAll('button *');
+        buttonChildren.forEach(child => {
+          child.style.pointerEvents = 'none';
+        });
+
+        // Ensure buttons themselves can receive clicks
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {
+          button.style.pointerEvents = 'auto';
+        });
+
+        console.log(`Fixed pointer events for ${buttonChildren.length} button children`);
       }
 
       setupScene() {
@@ -689,7 +727,14 @@
             this.renderer.outputEncoding = THREE.sRGBEncoding;
           }
 
-          // Append canvas to container
+          // Append canvas to container - canvas will be behind UI but receive events in empty areas
+          this.renderer.domElement.style.pointerEvents = 'auto';
+          this.renderer.domElement.style.position = 'fixed';
+          this.renderer.domElement.style.top = '0';
+          this.renderer.domElement.style.left = '0';
+          this.renderer.domElement.style.width = '100vw';
+          this.renderer.domElement.style.height = '100vh';
+          this.renderer.domElement.style.zIndex = '1';  // Same as container
           this.container.appendChild(this.renderer.domElement);
 
           console.log('Canvas element appended to container:', {
@@ -697,7 +742,8 @@
             canvasSize: {
               width: this.renderer.domElement.width,
               height: this.renderer.domElement.height
-            }
+            },
+            canvasPointerEvents: this.renderer.domElement.style.pointerEvents
           });
 
         } catch (error) {
