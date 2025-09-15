@@ -3,6 +3,14 @@
  * 
  * This script provides a clean, straightforward implementation to load
  * a GLB model into the webgl-container element using Three.js with your custom configuration.
+ * 
+ * DEVELOPMENT NOTE: This script includes camera position panel functionality for debugging.
+ * When deploying to production:
+ * 1. The camera panel is hidden by CSS in staging but code remains
+ * 2. Consider removing updateCameraInfo(), toggleCameraPanel(), copyCurrentPosition() 
+ *    functions if not needed in production
+ * 3. Remove camera panel HTML from staging site before copying to production
+ * 4. Panel functions are safe to leave - they won't break if DOM elements don't exist
  */
 
 class Simple3DLoader {
@@ -21,8 +29,8 @@ class Simple3DLoader {
     this.config = {
       "version": "1.0.0",
       "camera": {
-        "position": [15.2, 31.7, 17.3],
-        "target": [-0.8, -33.2, -15.3],
+        "position": [10.3, 21.9, 16.0],
+        "target": [-6.5, -34.2, -11.8],
         "fov": 60,
         "minDistance": 20,
         "maxDistance": 800
@@ -55,7 +63,7 @@ class Simple3DLoader {
       "animations": {
         "welcomeAnimation": {
           "enabled": true,
-          "duration": 1700,
+          "duration": 1300,
           "easing": "easeInOut"
         }
       },
@@ -152,28 +160,28 @@ class Simple3DLoader {
 
   playWelcomeAnimation() {
     const animConfig = this.config.animations.welcomeAnimation;
-    console.log('🎬 Playing welcome animation...');
+    console.log('🎬 Playing welcome animation with custom start/end positions...');
     
-    // Store original camera position
-    const originalPos = this.camera.position.clone();
-    const targetPos = new THREE.Vector3(...this.config.camera.position);
+    // Custom animation parameters from user specification
+    const startPos = new THREE.Vector3(27.7, 41.2, 42.6);
+    const startTarget = new THREE.Vector3(-0.4, -36.6, -9.4);
+    const endPos = new THREE.Vector3(10.3, 21.9, 16.0);
+    const endTarget = new THREE.Vector3(-6.5, -34.2, -11.8);
     
-    // Start from a different position for animation
-    this.camera.position.set(
-      originalPos.x * 1.5,
-      originalPos.y * 1.2,
-      originalPos.z * 1.5
-    );
+    // Set initial camera position and target
+    this.camera.position.copy(startPos);
+    this.controls.target.copy(startTarget);
+    this.controls.update();
     
-    // Animate camera to configured position
+    // Animation parameters
     const startTime = Date.now();
-    const duration = animConfig.duration;
+    const duration = animConfig.duration; // 1700ms
     
     const animateCamera = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      // Apply easing (simplified easeInOut)
+      // Apply easing (easeInOut)
       let easedProgress = progress;
       if (animConfig.easing === 'easeInOut') {
         easedProgress = progress < 0.5 
@@ -181,22 +189,23 @@ class Simple3DLoader {
           : 1 - Math.pow(-2 * progress + 2, 2) / 2;
       }
       
-      // Interpolate camera position
-      this.camera.position.lerpVectors(
-        this.camera.position.clone(),
-        targetPos,
-        easedProgress * 0.1
-      );
+      // Interpolate camera position and target
+      this.camera.position.lerpVectors(startPos, endPos, easedProgress);
+      this.controls.target.lerpVectors(startTarget, endTarget, easedProgress);
+      this.controls.update();
       
       if (progress < 1) {
         requestAnimationFrame(animateCamera);
       } else {
-        this.camera.position.copy(targetPos);
-        console.log('✅ Welcome animation complete');
+        // Ensure final positions are exact
+        this.camera.position.copy(endPos);
+        this.controls.target.copy(endTarget);
+        this.controls.update();
+        console.log('✅ Welcome animation complete - synced with Advanced Suite');
       }
     };
     
-    animateCamera();
+    requestAnimationFrame(animateCamera);
   }
 
   applyInitialStyling() {
@@ -802,9 +811,51 @@ class Simple3DLoader {
       this.updateBasicControls();
     }
 
+    // Update camera info panel (DEVELOPMENT ONLY - remove for production if not needed)
+    this.updateCameraInfo();
+
     // Render scene
     if (this.renderer && this.scene && this.camera) {
       this.renderer.render(this.scene, this.camera);
+    }
+  }
+
+  // =============================================================================
+  // DEVELOPMENT/DEBUG FUNCTIONS - Camera Position Panel
+  // =============================================================================
+  // These functions support the camera position panel for development/debugging.
+  // Safe to remove for production if camera panel HTML is not included.
+  // Panel is currently HIDDEN in staging via CSS but functions remain active.
+  
+  updateCameraInfo() {
+    if (!this.camera || !this.controls) return;
+    
+    const pos = this.camera.position;
+    const target = this.controls.target;
+    const distance = pos.distanceTo(target);
+    
+    // Calculate rotation in degrees
+    const euler = new THREE.Euler().setFromQuaternion(this.camera.quaternion, 'YXZ');
+    const rotX = THREE.MathUtils.radToDeg(euler.x);
+    const rotY = THREE.MathUtils.radToDeg(euler.y);
+    
+    // Update DOM elements if they exist
+    const posElement = document.getElementById('camera-position');
+    const targetElement = document.getElementById('camera-target');
+    const distanceElement = document.getElementById('camera-distance');
+    const rotationElement = document.getElementById('camera-rotation');
+    
+    if (posElement) {
+      posElement.textContent = `${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)}`;
+    }
+    if (targetElement) {
+      targetElement.textContent = `${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)}`;
+    }
+    if (distanceElement) {
+      distanceElement.textContent = distance.toFixed(1);
+    }
+    if (rotationElement) {
+      rotationElement.textContent = `${rotX.toFixed(1)}°, ${rotY.toFixed(1)}°`;
     }
   }
 
@@ -850,7 +901,66 @@ class Simple3DLoader {
   }
 }
 
-// Auto-initialize when DOM is ready
+// =============================================================================
+// DEVELOPMENT/DEBUG GLOBAL FUNCTIONS - Camera Position Panel
+// =============================================================================
+// These global functions are attached to window for camera panel interaction.
+// PRODUCTION NOTE: Safe to remove these functions if camera panel is not needed:
+// - window.toggleCameraPanel
+// - window.copyCurrentPosition
+// Functions will not error if DOM elements don't exist.
+
+// Global functions for camera panel interaction
+window.toggleCameraPanel = function() {
+  const content = document.getElementById('camera-content');
+  const btn = document.getElementById('camera-btn');
+  
+  if (content && btn) {
+    const isHidden = content.classList.contains('hidden');
+    
+    if (isHidden) {
+      content.classList.remove('hidden');
+      btn.textContent = '−';
+    } else {
+      content.classList.add('hidden');
+      btn.textContent = '+';
+    }
+  }
+};
+
+window.copyCurrentPosition = async function() {
+  const loader = window.simple3DLoader;
+  if (!loader || !loader.camera || !loader.controls) return;
+  
+  const pos = loader.camera.position;
+  const target = loader.controls.target;
+  const jsCode = `// Camera position for Webflow\n`+
+`camera.position.set(${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)});\n`+
+`camera.lookAt(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)});\n`+
+`controls.target.set(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)});`;
+  
+  try {
+    await navigator.clipboard.writeText(jsCode);
+    console.log('📋 Camera position copied to clipboard!');
+    
+    // Show visual feedback
+    const btn = document.querySelector('.copy-btn');
+    if (btn) {
+      const originalText = btn.textContent;
+      btn.textContent = '✅ Copied!';
+      btn.style.background = '#059669';
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.background = '#374151';
+      }, 2000);
+    }
+  } catch (err) {
+    console.warn('Copy failed, code logged to console:', jsCode);
+    alert('Copy failed - check console for camera position code');
+  }
+};
+
+// Auto-initialization
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     window.simple3DLoader = new Simple3DLoader();

@@ -39,15 +39,15 @@ const configUrl = 'https://joaopdecarvalho.github.io/webflow-gunther-map/src/con
 ```javascript
 // Model URLs pattern - always use GitHub raw URLs for CORS
 this.modelUrls = {
-  goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb'
+  goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp25.glb'
 };
 // Configuration loading from GitHub Pages
 await this.loadConfiguration('https://joaopdecarvalho.github.io/webflow-gunther-map/src/config/3d-config.json');
 ```
 
 ## Webflow Integration
-- **Head code injection**: Use `webflow-embed-code.html` in Webflow Site Settings → Custom Code → Head
-- **Page-specific loading**: Router detects homepage and loads `3d-map` script automatically
+- **Head code injection**: Use `webflow-production-embed-enhanced.html` in Webflow Site Settings → Custom Code → Head
+- **Page-specific loading**: Router detects homepage and loads `simple-3d-loader.js` script automatically
 - **Global scripts**: Defined in `window.globalScripts` array (loads on every page)
 - **Production toggle**: Uncomment `window.SCRIPT_BASE_URL` line to force production mode during testing
 
@@ -57,26 +57,9 @@ await this.loadConfiguration('https://joaopdecarvalho.github.io/webflow-gunther-
 - `.docs/webflow-integration-plan.md`: Complete implementation plan with 9 phases and 50+ tasks
 - `vite.config.js`: Auto-discovery of scripts, CORS headers for Webflow, models endpoint
 - `public/`: 3D models hosted via GitHub Pages for CORS-free access
-- `/config/`: Configuration files deployed to GitHub Pages for production use
+- `/src/config/`: Configuration files deployed to GitHub Pages for production use
 - `.github/workflows/deploy.yml`: Auto-deployment pipeline to GitHub Pages
 
-## Critical Development Notes
-1. **Follow the integration plan**: Use `.docs/webflow-integration-plan.md` for structured implementation
-2. **Always test with GitHub-hosted models** - local models won't work in production due to CORS
-3. **Use configuration export system** - settings from test interface should be exportable as JSON
-4. **Implement security measures** - CSP headers, input validation, and error boundaries
-5. **Ensure accessibility compliance** - motion preferences, keyboard navigation, screen readers
-6. **Test across environments** - development, staging, and production configurations
-7. **Monitor performance impact** - FPS, memory usage, and loading times in production
-8. **Plan for client handoff** - documentation, training materials, and maintenance procedures
-
-## Implementation Priority
-1. **Phase 1-2**: Assessment and configuration export system
-2. **Phase 3-4**: Production script enhancement and Webflow integration
-3. **Phase 5-6**: Auto-update pipeline and comprehensive testing
-4. **Phase 7-9**: Security, client handoff, and enhancement features
-4. **Check DRACO loader availability** - models use compression and need Google's DRACO decoder CDN
-5. **Monitor performance in test interface** - real-time FPS, triangle count, and memory usage
 
 ## Adding New Scripts
 1. Create file in `src/scripts/scriptname.js`
