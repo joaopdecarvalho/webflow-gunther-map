@@ -134,7 +134,7 @@
         
         // Production model URLs from GitHub (with absolute texture and bin file URLs)
         this.modelUrls = {
-          goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb'
+          goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp25.glb'
         };
         
         // Default configuration (fallback)
