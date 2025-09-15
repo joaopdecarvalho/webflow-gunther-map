@@ -4,6 +4,8 @@
  * This script provides a clean, straightforward implementation to load
  * a GLB model into the webgl-container element using Three.js with your custom configuration.
  * 
+ * Last Updated: January 22, 2025 - Custom Animation Coordinates (27.7,41.2,42.6) → (10.3,21.9,16.0)
+ * 
  * DEVELOPMENT NOTE: This script includes camera position panel functionality for debugging.
  * When deploying to production:
  * 1. The camera panel is hidden by CSS in staging but code remains
