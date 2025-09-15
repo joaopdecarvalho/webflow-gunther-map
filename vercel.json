@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/test",
-      "destination": "/test-enhanced.html"
+      "destination": "/Advanced-3D-Testing-Suite.html"
     }
   ],
   "headers": [

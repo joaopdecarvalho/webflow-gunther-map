@@ -11,17 +11,17 @@ This project implements a 3D interactive map for a Webflow homepage using Three.
 
 ### Development Commands
 - `npm run dev` - Start Vite development server on http://localhost:5173
-- Main testing interface: **http://localhost:8080/test-enhanced.html**
+- Main testing interface: **http://localhost:8080/Advanced-3D-Testing-Suite.html**
 
 ### Key Files
-- `test-enhanced.html` - **Primary testing interface** with comprehensive controls
+- `Advanced-3D-Testing-Suite.html` - **Primary testing interface** with comprehensive controls
 - `src/scripts/3d-map-final.js` - Production-ready 3D map implementation
 - `public/Goetheviertel_250812.glb` - Main 3D model (GLB format)
 
 ### Model URLs (GitHub CDN)
 - Goetheviertel: `https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812.glb`
 
-### Testing Features (test-enhanced.html)
+### Testing Features (Advanced-3D-Testing-Suite.html)
 - **Load Time Tracking**: Precise millisecond timing for model loading
 - **Real-time Camera Position**: Live coordinates, target, distance, rotation
 - **Performance Monitoring**: FPS, triangle count, draw calls, memory usage
@@ -32,7 +32,7 @@ This project implements a 3D interactive map for a Webflow homepage using Three.
 For Webflow deployment:
 1. Use `src/scripts/3d-map-final.js` as the main script
 2. Host models on GitHub for CORS-free access
-3. Copy camera positions from test-enhanced.html for optimal viewing angles
+3. Copy camera positions from Advanced-3D-Testing-Suite.html for optimal viewing angles
 4. Ensure proper z-index layering for UI elements
 
 ### Technical Stack

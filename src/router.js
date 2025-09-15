@@ -9,9 +9,9 @@
     if (window.SCRIPT_BASE_URL) {
       return window.SCRIPT_BASE_URL;
     }
-    const isDev = location.hostname.includes('.webflow.io');
-    return isDev 
-      ? 'http://localhost:8080/src' 
+    const isDev = location.hostname.includes('.webflow.io') || location.hostname.includes('localhost');
+    return isDev
+      ? 'http://localhost:8080/src'
       : 'https://joaopdecarvalho.github.io/webflow-gunther-map/src';
   };
 

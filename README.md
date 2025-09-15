@@ -16,7 +16,7 @@
     : 'https://joaopdecarvalho.github.io/webflow-gunther-map/src');
   
   // Scripts that load on EVERY page
-  window.globalScripts = ['alert'];  // Add your global scripts here
+  window.globalScripts = [];  // No global scripts needed
   
   // Load the router
   const script = document.createElement('script');
@@ -30,8 +30,8 @@
 
 1. Publish your Webflow site
 2. Open your .webflow.io site
-3. Open browser console (F12)
-4. You should see "Alert script loaded!" after 5 seconds
+3. The 3D map should load automatically on the homepage
+4. Check browser console for any errors or loading messages
 
 ## 🛠 Development
 
@@ -57,7 +57,7 @@ webflow-gunther-map/
 ├── src/
 │   ├── router.js          # Script router (don't modify)
 │   └── scripts/           # Your scripts go here
-│       └── alert.js       # Example script
+│       └── 3d-map-final.js # Main 3D map script
 ├── dist/                  # Production build (auto-generated)
 ├── .github/
 │   └── workflows/

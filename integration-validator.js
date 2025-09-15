@@ -91,7 +91,7 @@ class WebflowIntegrationValidator {
 
     // Test 3: Check test interface accessibility
     try {
-      const testInterface = await fetch(`${this.endpoints.local}/test-enhanced.html`);
+      const testInterface = await fetch(`${this.endpoints.local}/Advanced-3D-Testing-Suite.html`);
       dev.testInterface = testInterface.ok;
       this.logResult('Test interface accessible', dev.testInterface);
     } catch (error) {

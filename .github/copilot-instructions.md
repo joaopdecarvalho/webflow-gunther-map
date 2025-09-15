@@ -4,7 +4,7 @@
 Interactive 3D map system for Webflow integration using Three.js. Features dual-environment script router with **configuration export system** that enables seamless transfer of test interface settings to production Webflow sites with automatic GitHub Pages deployment.
 
 ## Architecture Pattern
-**Script Router + Configuration System**: All scripts load through `src/router.js` with environment detection. The new **configuration export workflow** allows `test-enhanced.html` settings to be exported as JSON and automatically deployed to production via GitHub Pages.
+**Script Router + Configuration System**: All scripts load through `src/router.js` with environment detection. The new **configuration export workflow** allows `Advanced-3D-Testing-Suite.html` settings to be exported as JSON and automatically deployed to production via GitHub Pages.
 
 ```javascript
 // Environment detection in router.js
@@ -15,7 +15,7 @@ const configUrl = 'https://joaopdecarvalho.github.io/webflow-gunther-map/src/con
 ```
 
 ## Development Workflow
-- **Primary testing interface**: `test-enhanced.html` (comprehensive 3D testing suite with animation controls and configuration export)
+- **Primary testing interface**: `Advanced-3D-Testing-Suite.html` (comprehensive 3D testing suite with animation controls and configuration export)
 - **Configuration export**: Export settings from test interface → commit to GitHub → auto-deploy to Webflow
 - **Dev server**: `npm run dev` starts Vite on port 8080 with CORS for Webflow integration
 - **Build**: Vite automatically discovers all scripts in `src/scripts/` and builds them as separate entry points
@@ -53,7 +53,7 @@ await this.loadConfiguration('https://joaopdecarvalho.github.io/webflow-gunther-
 
 ## Key Files & Patterns
 - `src/router.js`: Core script loader - handles environment switching and script discovery
-- `test-enhanced.html`: Development interface with real-time camera position copying and configuration export
+- `Advanced-3D-Testing-Suite.html`: Development interface with real-time camera position copying and configuration export
 - `.docs/webflow-integration-plan.md`: Complete implementation plan with 9 phases and 50+ tasks
 - `vite.config.js`: Auto-discovery of scripts, CORS headers for Webflow, models endpoint
 - `public/`: 3D models hosted via GitHub Pages for CORS-free access

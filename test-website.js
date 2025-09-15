@@ -12,10 +12,10 @@ async function testWebsite() {
   await page.setViewportSize({ width: 1920, height: 1080 });
 
   try {
-    console.log('Navigating to test-enhanced.html...');
+    console.log('Navigating to Advanced-3D-Testing-Suite.html...');
     
     // Navigate to your test page
-    await page.goto('http://localhost:8081/test-enhanced.html');
+    await page.goto('http://localhost:8081/Advanced-3D-Testing-Suite.html');
     
     // Wait for the page to load
     await page.waitForTimeout(3000);

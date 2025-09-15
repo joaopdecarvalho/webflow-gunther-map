@@ -209,10 +209,17 @@
         this.isInitialized = false;
         
         console.log('Map3D constructor called');
-        this.init();
+        
+        // Start async initialization with proper error handling
+        this.init().catch(error => {
+          console.error('❌ Critical error during Map3D initialization:', error);
+          console.error('Stack trace:', error.stack);
+        });
       }
 
       async init() {
+        console.log('🚀 Starting Map3D.init() method...');
+        
         const initSteps = [
           { name: 'Configuration Loading', fn: () => this.loadConfiguration() },
           { name: 'Container Creation', fn: () => this.createContainer() },
@@ -231,33 +238,54 @@
         let completedSteps = 0;
         
         console.log('Starting Map3D initialization...');
+        console.log('📋 Initialization steps defined:', initSteps.map(s => s.name));
         
         for (const [index, step] of initSteps.entries()) {
           try {
             console.log(`${index + 1}/${initSteps.length} - ${step.name}...`);
-            
+
             // Handle async steps
-            if (step.name === 'Configuration Loading' || 
-                step.name === 'Model Loading' || 
+            if (step.name === 'Configuration Loading' ||
+                step.name === 'Model Loading' ||
                 step.name === 'Welcome Animation') {
               await step.fn();
             } else {
               step.fn();
             }
-            
+
             completedSteps++;
-            console.log(`✅ ${step.name} completed`);
-            
+            console.log(`✅ ${step.name} completed successfully`);
+
+            // Additional validation after critical steps
+            if (step.name === 'Container Creation' && !this.container) {
+              throw new Error('Container creation failed - no container element');
+            }
+            if (step.name === 'Renderer Setup' && !this.renderer) {
+              throw new Error('Renderer setup failed - no WebGL renderer');
+            }
+            if (step.name === 'Renderer Setup' && this.container && this.container.children.length === 0) {
+              throw new Error('Renderer not properly attached to container');
+            }
+
           } catch (error) {
-            const isCritical = ['Scene Setup', 'Camera Setup', 'Renderer Setup'].includes(step.name);
-            
+            const isCritical = ['Container Creation', 'Scene Setup', 'Camera Setup', 'Renderer Setup'].includes(step.name);
+
             if (isCritical) {
               console.error(`❌ Critical error in ${step.name}:`, error);
+              console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                container: !!this.container,
+                renderer: !!this.renderer,
+                scene: !!this.scene,
+                camera: !!this.camera
+              });
               criticalError = true;
-              this.showErrorFallback(`Failed to initialize 3D Map: ${step.name} error`);
+              this.showErrorFallback(`Failed to initialize 3D Map: ${step.name} - ${error.message}`);
               return;
             } else {
               console.warn(`⚠️  Non-critical error in ${step.name}:`, error.message);
+              console.warn('Error details:', error);
               // Continue with remaining steps
             }
           }
@@ -479,29 +507,38 @@
 
       createContainer() {
         console.log('Creating 3D map container...');
-        
+
         // First try to use existing webgl-container by class or ID
         this.container = document.querySelector('.webgl-container') || document.querySelector('#webgl-container');
-        
+
         if (this.container) {
-          console.log('Found existing webgl-container, using it');
-          // Configure the existing container
+          console.log('Found existing webgl-container:', {
+            id: this.container.id,
+            classList: [...this.container.classList],
+            currentZIndex: window.getComputedStyle(this.container).zIndex,
+            currentPosition: window.getComputedStyle(this.container).position
+          });
+
+          // Configure the existing container with improved styling
           this.container.style.cssText = `
-            position: fixed;
+            position: fixed !important;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 1;
+            z-index: 1 !important;
             background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0E68C 100%);
             overflow: hidden;
             pointer-events: auto;
           `;
+
+          console.log('Updated container styles applied');
         } else {
           console.log('No existing webgl-container found, creating new one');
           // Fallback: create new container
           this.container = document.createElement('div');
           this.container.id = 'map-3d-container';
+          this.container.className = 'webgl-container';
           this.container.style.cssText = `
             position: fixed;
             top: 0;
@@ -514,8 +551,28 @@
             pointer-events: auto;
           `;
           document.body.insertBefore(this.container, document.body.firstChild);
+          console.log('New container created and inserted');
         }
-        
+
+        // Verify container was created successfully
+        if (!this.container) {
+          throw new Error('Failed to create or find 3D map container element');
+        }
+
+        console.log('Container verification:', {
+          exists: !!this.container,
+          hasParent: !!this.container.parentElement,
+          dimensions: {
+            width: this.container.offsetWidth,
+            height: this.container.offsetHeight
+          },
+          computedStyle: {
+            position: window.getComputedStyle(this.container).position,
+            zIndex: window.getComputedStyle(this.container).zIndex,
+            display: window.getComputedStyle(this.container).display
+          }
+        });
+
         this.ensureUILayering();
       }
 
@@ -582,29 +639,103 @@
 
       setupRenderer() {
         console.log('Setting up Three.js renderer...');
-        this.renderer = new THREE.WebGLRenderer({ 
-          antialias: true, 
-          alpha: true,
-          powerPreference: 'high-performance'
-        });
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        
-        if (this.renderer.shadowMap) {
-          this.renderer.shadowMap.enabled = true;
-          this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        // Check WebGL capability first
+        const webglSupported = this.checkWebGLSupport();
+        if (!webglSupported.webgl && !webglSupported.webgl2) {
+          throw new Error('WebGL is not supported by this browser');
         }
-        
-        if (this.renderer.toneMapping !== undefined) {
-          this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-          this.renderer.toneMappingExposure = 1;
+
+        console.log('WebGL support detected:', webglSupported);
+
+        try {
+          // Try to create WebGL renderer with optimal settings
+          this.renderer = new THREE.WebGLRenderer({
+            antialias: this.config.performance?.enableAntialiasing !== false,
+            alpha: true,
+            powerPreference: 'high-performance',
+            failIfMajorPerformanceCaveat: false
+          });
+
+          // Verify renderer was created successfully
+          if (!this.renderer || !this.renderer.domElement) {
+            throw new Error('WebGL renderer creation failed');
+          }
+
+          console.log('WebGL renderer created successfully:', {
+            context: this.renderer.getContext().constructor.name,
+            maxTextureSize: this.renderer.capabilities.maxTextureSize,
+            maxAnisotropy: this.renderer.capabilities.getMaxAnisotropy()
+          });
+
+          this.renderer.setSize(window.innerWidth, window.innerHeight);
+          this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.config.performance?.pixelRatio || 2));
+
+          // Configure shadows if supported
+          if (this.renderer.shadowMap && this.config.performance?.shadowMapEnabled) {
+            this.renderer.shadowMap.enabled = true;
+            this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            console.log('Shadow mapping enabled');
+          }
+
+          // Configure tone mapping if available
+          if (this.renderer.toneMapping !== undefined) {
+            this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            this.renderer.toneMappingExposure = 1;
+          }
+
+          // Configure encoding if available
+          if (this.renderer.outputEncoding !== undefined) {
+            this.renderer.outputEncoding = THREE.sRGBEncoding;
+          }
+
+          // Append canvas to container
+          this.container.appendChild(this.renderer.domElement);
+
+          console.log('Canvas element appended to container:', {
+            containerChildren: this.container.children.length,
+            canvasSize: {
+              width: this.renderer.domElement.width,
+              height: this.renderer.domElement.height
+            }
+          });
+
+        } catch (error) {
+          console.error('WebGL renderer setup failed:', error);
+          throw new Error(`Failed to create WebGL renderer: ${error.message}`);
         }
-        
-        if (this.renderer.outputEncoding !== undefined) {
-          this.renderer.outputEncoding = THREE.sRGBEncoding;
+      }
+
+      checkWebGLSupport() {
+        const canvas = document.createElement('canvas');
+        const webgl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        const webgl2 = canvas.getContext('webgl2');
+
+        const support = {
+          webgl: !!webgl,
+          webgl2: !!webgl2,
+          extensions: {},
+          limits: {}
+        };
+
+        if (webgl) {
+          // Check common extensions
+          support.extensions = {
+            ANGLE_instanced_arrays: !!webgl.getExtension('ANGLE_instanced_arrays'),
+            EXT_texture_filter_anisotropic: !!webgl.getExtension('EXT_texture_filter_anisotropic'),
+            WEBGL_compressed_texture_s3tc: !!webgl.getExtension('WEBGL_compressed_texture_s3tc')
+          };
+
+          // Check limits
+          support.limits = {
+            maxTextureSize: webgl.getParameter(webgl.MAX_TEXTURE_SIZE),
+            maxVertexAttributes: webgl.getParameter(webgl.MAX_VERTEX_ATTRIBS),
+            maxVaryingVectors: webgl.getParameter(webgl.MAX_VARYING_VECTORS)
+          };
         }
-        
-        this.container.appendChild(this.renderer.domElement);
+
+        canvas.remove();
+        return support;
       }
 
       setupControls() {
@@ -1074,8 +1205,26 @@
     let map3d = null;
 
     function initMap() {
-      const isHomePage = window.location.pathname === '/' || window.location.pathname === '';
-      
+      // Updated homepage detection to support staging paths and development environments
+      const currentPath = window.location.pathname;
+      const isHomePage = currentPath === '/' ||
+                        currentPath === '' ||
+                        currentPath.includes('/index.html') ||
+                        currentPath.includes('/webflow-staging-site-files/') ||
+                        (window.location.hostname.includes('localhost') && currentPath.includes('index.html'));
+
+      console.log('Homepage detection:', {
+        currentPath,
+        hostname: window.location.hostname,
+        isHomePage,
+        conditions: {
+          isRoot: currentPath === '/' || currentPath === '',
+          hasIndexHtml: currentPath.includes('/index.html'),
+          isStaging: currentPath.includes('/webflow-staging-site-files/'),
+          isLocalhost: window.location.hostname.includes('localhost') && currentPath.includes('index.html')
+        }
+      });
+
       if (isHomePage && !map3d) {
         console.log('Initializing Map3D instance for homepage...');
         map3d = new Map3D();
@@ -1088,9 +1237,20 @@
       }
     }
 
+    // Ensure initMap is called after a short delay to allow DOM to be fully ready
+    setTimeout(() => {
+      console.log('🚀 Calling initMap after DOM ready...');
+      initMap();
+    }, 100);
+
+    // Also add the traditional event listeners as backup
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initMap);
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('🚀 DOM loaded, calling initMap...');
+        initMap();
+      });
     } else {
+      console.log('🚀 DOM already ready, calling initMap...');
       initMap();
     }
 

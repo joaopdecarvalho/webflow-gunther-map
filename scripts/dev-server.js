@@ -48,7 +48,7 @@ async function startDevServer() {
   
   if (runningPort) {
     console.log(`✅ Development server is already running on port ${runningPort}`);
-    console.log(`🌐 Test interface: http://localhost:${runningPort}/test-enhanced.html`);
+    console.log(`🌐 Test interface: http://localhost:${runningPort}/Advanced-3D-Testing-Suite.html`);
     console.log(`📁 Main page: http://localhost:${runningPort}/`);
     console.log('');
     console.log('💡 To stop the server, press Ctrl+C in the terminal where it\'s running');
