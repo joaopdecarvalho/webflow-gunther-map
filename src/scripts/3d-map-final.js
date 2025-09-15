@@ -479,21 +479,42 @@
       createContainer() {
         console.log('Creating 3D map container...');
         
-        this.container = document.createElement('div');
-        this.container.id = 'map-3d-container';
-        this.container.style.cssText = `
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          z-index: -1;
-          background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0E68C 100%);
-          overflow: hidden;
-          pointer-events: auto;
-        `;
+        // First try to use existing webgl-container by class or ID
+        this.container = document.querySelector('.webgl-container') || document.querySelector('#webgl-container');
         
-        document.body.insertBefore(this.container, document.body.firstChild);
+        if (this.container) {
+          console.log('Found existing webgl-container, using it');
+          // Configure the existing container
+          this.container.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0E68C 100%);
+            overflow: hidden;
+            pointer-events: auto;
+          `;
+        } else {
+          console.log('No existing webgl-container found, creating new one');
+          // Fallback: create new container
+          this.container = document.createElement('div');
+          this.container.id = 'map-3d-container';
+          this.container.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 50%, #F0E68C 100%);
+            overflow: hidden;
+            pointer-events: auto;
+          `;
+          document.body.insertBefore(this.container, document.body.firstChild);
+        }
+        
         this.ensureUILayering();
       }
 
