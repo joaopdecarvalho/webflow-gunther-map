@@ -95,47 +95,31 @@ Production scripts load dynamic configurations from GitHub Pages:
 }
 ```
 
-## GitHub Copilot Slash Commands
+## GitHub Copilot Custom Instructions
 
-### /commit-and-push
-**Usage**: `/commit-and-push` or `/commit-and-push "custom message"`
+### **Smart Commit and Push Workflow**
+When the user asks to "commit and push" or "create commit and push changes":
+1. Run: `.\commit-and-push.ps1` to analyze changes and create intelligent commit messages
+2. Use conventional commit format: `type(scope): description`
+3. Auto-detect types based on file changes: feat, fix, config, docs, refactor, etc.
+4. Auto-detect scopes: 3d-map, webflow, config, router, test, core, project
 
-Automatically:
-1. Analyze all staged and unstaged changes using `git diff`
-2. Generate an intelligent commit message based on:
-   - Files modified (configuration, scripts, documentation, etc.)
-   - Type of changes (feat, fix, refactor, docs, style, etc.)
-   - Scope of changes (3d-map, config, webflow, testing, etc.)
-   - Impact level (breaking, minor, patch)
-3. Stage all changes with `git add .`
-4. Commit with the generated message using conventional commit format
-5. Push to the current branch
+### **Example Usage Patterns**
+User might say:
+- "commit and push all changes"
+- "create a commit with smart message and push"
+- "analyze changes and commit with conventional format"
 
-**Examples**:
+**Response**: Run the smart commit script: `.\commit-and-push.ps1`
+
+### **PowerShell Scripts Available**
+- `.\commit-and-push.ps1` - Main wrapper script
+- `.\scripts\simple-commit.ps1` - Core functionality
+- Both scripts auto-generate conventional commit messages based on file analysis
+
+### **Conventional Commit Examples**
 - `feat(3d-map): implement configuration hot-reloading system`
 - `fix(webflow): resolve CORS issues by moving config to src folder`  
 - `refactor(embed): consolidate production and development environments`
 - `docs(readme): update deployment instructions and architecture`
-
-**Implementation**: This slash command should:
-- Use `git status --porcelain` to detect changes
-- Use `git diff --name-only` and `git diff --cached --name-only` for file analysis
-- Generate semantic commit messages following conventional commits
-- Handle merge conflicts and provide clear error messages
-- Support custom commit message override as optional parameter
-
-**Command Implementation**:
-```powershell
-# Quick usage for GitHub Copilot:
-./commit-and-push.ps1                    # Auto-generate commit message
-./commit-and-push.ps1 "custom message"   # Use custom message
-
-# Or run the full script directly:
-./scripts/smart-commit.ps1
-```
-
-**Conventional Commit Format**:
-- `type(scope): description`
-- Types: feat, fix, docs, style, refactor, test, chore, config
-- Scopes: 3d-map, webflow, config, router, test, core, project
-- Auto-detects based on changed files and content analysis
+- `config(core): update environment detection and configuration loading`
