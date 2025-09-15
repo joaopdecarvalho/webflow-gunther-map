@@ -202,7 +202,7 @@
         };
         
         // Configuration URL from GitHub Pages
-        this.configUrl = 'https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json';
+        this.configUrl = 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/config/3d-config.json';
         
         this.currentModelUrl = this.modelUrls[this.config.models.primary];
         this.isInitialized = false;

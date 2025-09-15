@@ -1,0 +1,7 @@
+# GitHub Pages CORS Configuration
+plugins:
+  - jekyll-cors
+
+# Allow CORS for all origins (for Webflow staging)
+cors:
+  - "*"

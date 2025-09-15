@@ -1,0 +1,2047 @@
+{
+  "timestamp": "2025-09-15T10:21:45.726Z",
+  "url": "https://go-goethe-quartier-ebde32.webflow.io/",
+  "pageLoad": {
+    "duration": 2465,
+    "title": "Website Name",
+    "url": "https://go-goethe-quartier-ebde32.webflow.io/"
+  },
+  "networkRequests": [
+    {
+      "type": "request",
+      "url": "https://go-goethe-quartier-ebde32.webflow.io/",
+      "method": "GET",
+      "resourceType": "document",
+      "timestamp": 1757931706907
+    },
+    {
+      "type": "response",
+      "url": "https://go-goethe-quartier-ebde32.webflow.io/",
+      "status": 200,
+      "contentType": "text/html",
+      "timestamp": 1757931707017
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/68bfde35f384360748d87167/css/go-goethe-quartier-ebde32.webflow.shared.438be2d59.css",
+      "method": "GET",
+      "resourceType": "stylesheet",
+      "timestamp": 1757931707022
+    },
+    {
+      "type": "request",
+      "url": "https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=68bfde35f384360748d87167",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707022
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/68bfde35f384360748d87167/js/webflow.8a9dc580.bee97d1691f16b72.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/gsap.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/Flip.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/SplitText.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/Draggable.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/DrawSVGPlugin.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/MorphSVGPlugin.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/Observer.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/ScrollToPlugin.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/TextPlugin.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/CustomEase.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/EasePack.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/68bfde35f384360748d87167%2F689e5ba67671442434f3ca35%2F68c7e6570cf123877f6bdc20%2F3d_map_final_fix-4.0.0.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707023
+    },
+    {
+      "type": "response",
+      "url": "https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=68bfde35f384360748d87167",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707086
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/68bfde35f384360748d87167/css/go-goethe-quartier-ebde32.webflow.shared.438be2d59.css",
+      "status": 200,
+      "contentType": "text/css",
+      "timestamp": 1757931707100
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/EasePack.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707100
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/TextPlugin.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707103
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/CustomEase.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707103
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/Flip.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707103
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/ScrollToPlugin.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707108
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/68bfde35f384360748d87167%2F689e5ba67671442434f3ca35%2F68c7e6570cf123877f6bdc20%2F3d_map_final_fix-4.0.0.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707115
+    },
+    {
+      "type": "request",
+      "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707121
+    },
+    {
+      "type": "request",
+      "url": "https://timothyricks.us.getafile.online/background-video",
+      "method": "GET",
+      "resourceType": "media",
+      "timestamp": 1757931707133
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/SplitText.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707133
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/68bfde35f384360748d87167/js/webflow.8a9dc580.bee97d1691f16b72.js",
+      "status": 200,
+      "contentType": "text/javascript",
+      "timestamp": 1757931707133
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/Draggable.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707138
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/Observer.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707139
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/DrawSVGPlugin.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707139
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/MorphSVGPlugin.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707139
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/gsap/3.13.0/gsap.min.js",
+      "status": 200,
+      "contentType": "application/javascript",
+      "timestamp": 1757931707139
+    },
+    {
+      "type": "request",
+      "url": "https://d3e54v103j8qbb.cloudfront.net/img/webflow-badge-icon-d2.89e12c322e.svg",
+      "method": "GET",
+      "resourceType": "image",
+      "timestamp": 1757931707194
+    },
+    {
+      "type": "request",
+      "url": "https://d3e54v103j8qbb.cloudfront.net/img/webflow-badge-text-d2.c82cec3b78.svg",
+      "method": "GET",
+      "resourceType": "image",
+      "timestamp": 1757931707194
+    },
+    {
+      "type": "response",
+      "url": "https://d3e54v103j8qbb.cloudfront.net/img/webflow-badge-icon-d2.89e12c322e.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "timestamp": 1757931707207
+    },
+    {
+      "type": "response",
+      "url": "https://d3e54v103j8qbb.cloudfront.net/img/webflow-badge-text-d2.c82cec3b78.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "timestamp": 1757931707208
+    },
+    {
+      "type": "response",
+      "url": "https://timothyricks.us.getafile.online/background-video",
+      "status": 302,
+      "timestamp": 1757931707241
+    },
+    {
+      "type": "request",
+      "url": "https://timothyricks.us.getafile.online/background-video?cb=8731757219768",
+      "method": "GET",
+      "resourceType": "media",
+      "timestamp": 1757931707242
+    },
+    {
+      "type": "response",
+      "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "timestamp": 1757931707270
+    },
+    {
+      "type": "request",
+      "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/alert.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707272
+    },
+    {
+      "type": "request",
+      "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707272
+    },
+    {
+      "type": "response",
+      "url": "https://timothyricks.us.getafile.online/background-video?cb=8731757219768",
+      "status": 206,
+      "contentType": "video/mp4",
+      "timestamp": 1757931707346
+    },
+    {
+      "type": "response",
+      "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/alert.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "timestamp": 1757931707395
+    },
+    {
+      "type": "response",
+      "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "timestamp": 1757931707414
+    },
+    {
+      "type": "request",
+      "url": "https://unpkg.com/three@0.158.0/build/three.min.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707414
+    },
+    {
+      "type": "response",
+      "url": "https://unpkg.com/three@0.158.0/build/three.min.js",
+      "status": 200,
+      "contentType": "text/javascript; charset=utf-8",
+      "timestamp": 1757931707576
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.prod.website-files.com/68bfde35f384360748d87167/68bfde36f384360748d87206_favicon.png",
+      "method": "GET",
+      "resourceType": "other",
+      "timestamp": 1757931707584
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.prod.website-files.com/68bfde35f384360748d87167/68bfde36f384360748d87206_favicon.png",
+      "status": 200,
+      "contentType": "image/png",
+      "timestamp": 1757931707614
+    },
+    {
+      "type": "request",
+      "url": "https://threejs.org/examples/js/loaders/GLTFLoader.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707685
+    },
+    {
+      "type": "response",
+      "url": "https://threejs.org/examples/js/loaders/GLTFLoader.js",
+      "status": 404,
+      "contentType": "text/html; charset=utf-8",
+      "timestamp": 1757931707737
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/GLTFLoader.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707738
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/GLTFLoader.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "timestamp": 1757931707811
+    },
+    {
+      "type": "request",
+      "url": "https://threejs.org/examples/js/loaders/DRACOLoader.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707913
+    },
+    {
+      "type": "response",
+      "url": "https://threejs.org/examples/js/loaders/DRACOLoader.js",
+      "status": 404,
+      "contentType": "text/html; charset=utf-8",
+      "timestamp": 1757931707932
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/DRACOLoader.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931707933
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/DRACOLoader.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "timestamp": 1757931707949
+    },
+    {
+      "type": "request",
+      "url": "https://threejs.org/examples/js/controls/OrbitControls.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931708052
+    },
+    {
+      "type": "response",
+      "url": "https://threejs.org/examples/js/controls/OrbitControls.js",
+      "status": 404,
+      "contentType": "text/html; charset=utf-8",
+      "timestamp": 1757931708070
+    },
+    {
+      "type": "request",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/controls/OrbitControls.js",
+      "method": "GET",
+      "resourceType": "script",
+      "timestamp": 1757931708071
+    },
+    {
+      "type": "response",
+      "url": "https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/controls/OrbitControls.js",
+      "status": 200,
+      "contentType": "application/javascript; charset=utf-8",
+      "timestamp": 1757931708088
+    },
+    {
+      "type": "request",
+      "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json?v=1757931708274",
+      "method": "HEAD",
+      "resourceType": "fetch",
+      "timestamp": 1757931708274
+    },
+    {
+      "type": "request",
+      "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json?v=1757931708292&attempt=0",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757931708292
+    },
+    {
+      "type": "response",
+      "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json?v=1757931708274",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "timestamp": 1757931708294
+    },
+    {
+      "type": "request",
+      "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json?v=1757931708295&attempt=0",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757931708295
+    },
+    {
+      "type": "response",
+      "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json?v=1757931708292&attempt=0",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "timestamp": 1757931708309
+    },
+    {
+      "type": "request",
+      "url": "https://www.gstatic.com/draco/versioned/decoders/1.5.6/draco_wasm_wrapper.js",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757931708325
+    },
+    {
+      "type": "request",
+      "url": "https://www.gstatic.com/draco/versioned/decoders/1.5.6/draco_decoder.wasm",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757931708325
+    },
+    {
+      "type": "request",
+      "url": "https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp25.glb",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757931708326
+    },
+    {
+      "type": "response",
+      "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json?v=1757931708295&attempt=0",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8",
+      "timestamp": 1757931708327
+    },
+    {
+      "type": "response",
+      "url": "https://www.gstatic.com/draco/versioned/decoders/1.5.6/draco_wasm_wrapper.js",
+      "status": 200,
+      "contentType": "text/javascript",
+      "timestamp": 1757931708381
+    },
+    {
+      "type": "response",
+      "url": "https://www.gstatic.com/draco/versioned/decoders/1.5.6/draco_decoder.wasm",
+      "status": 200,
+      "contentType": "application/wasm",
+      "timestamp": 1757931708384
+    },
+    {
+      "type": "response",
+      "url": "https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp25.glb",
+      "status": 200,
+      "contentType": "application/octet-stream",
+      "timestamp": 1757931708625
+    },
+    {
+      "type": "request",
+      "url": "blob:https://go-goethe-quartier-ebde32.webflow.io/538c6f30-4bde-4b39-b32f-dbf9152589e0",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757931708859
+    },
+    {
+      "type": "request",
+      "url": "blob:https://go-goethe-quartier-ebde32.webflow.io/cbcfbf5c-ef1b-445c-8f47-4135afaa64c3",
+      "method": "GET",
+      "resourceType": "fetch",
+      "timestamp": 1757931708859
+    },
+    {
+      "type": "response",
+      "url": "blob:https://go-goethe-quartier-ebde32.webflow.io/538c6f30-4bde-4b39-b32f-dbf9152589e0",
+      "status": 200,
+      "contentType": "image/webp",
+      "timestamp": 1757931708860
+    },
+    {
+      "type": "response",
+      "url": "blob:https://go-goethe-quartier-ebde32.webflow.io/cbcfbf5c-ef1b-445c-8f47-4135afaa64c3",
+      "status": 200,
+      "contentType": "image/webp",
+      "timestamp": 1757931708860
+    }
+  ],
+  "consoleMessages": [
+    {
+      "type": "log",
+      "text": "Script Router initialized",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 81,
+        "columnNumber": 12
+      },
+      "timestamp": 1757931707271
+    },
+    {
+      "type": "log",
+      "text": "Base URL: https://joaopdecarvalho.github.io/webflow-gunther-map/src",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 82,
+        "columnNumber": 12
+      },
+      "timestamp": 1757931707271
+    },
+    {
+      "type": "log",
+      "text": "Environment: Development",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 83,
+        "columnNumber": 12
+      },
+      "timestamp": 1757931707271
+    },
+    {
+      "type": "log",
+      "text": "Loading global scripts: [alert]",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 88,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931707271
+    },
+    {
+      "type": "log",
+      "text": "✅ 3D Map router loaded from GitHub Pages",
+      "location": {
+        "url": "https://go-goethe-quartier-ebde32.webflow.io/",
+        "lineNumber": 106,
+        "columnNumber": 12
+      },
+      "timestamp": 1757931707272
+    },
+    {
+      "type": "log",
+      "text": "Script Router initialized",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 81,
+        "columnNumber": 12
+      },
+      "timestamp": 1757931707272
+    },
+    {
+      "type": "log",
+      "text": "Base URL: https://joaopdecarvalho.github.io/webflow-gunther-map/src",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 82,
+        "columnNumber": 12
+      },
+      "timestamp": 1757931707272
+    },
+    {
+      "type": "log",
+      "text": "Environment: Development",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 83,
+        "columnNumber": 12
+      },
+      "timestamp": 1757931707272
+    },
+    {
+      "type": "log",
+      "text": "Loading global scripts: [alert]",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 88,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931707272
+    },
+    {
+      "type": "log",
+      "text": "Script already loaded: scripts/alert",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 25,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931707272
+    },
+    {
+      "type": "log",
+      "text": "Loading page scripts: [3d-map-final]",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 102,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931707272
+    },
+    {
+      "type": "log",
+      "text": "✅ 3D Map router loaded from GitHub Pages",
+      "location": {
+        "url": "https://cdn.prod.website-files.com/68bfde35f384360748d87167%2F689e5ba67671442434f3ca35%2F68c7e6570cf123877f6bdc20%2F3d_map_final_fix-4.0.0.js",
+        "lineNumber": 9,
+        "columnNumber": 30
+      },
+      "timestamp": 1757931707272
+    },
+    {
+      "type": "log",
+      "text": "Alert script loaded",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/alert.js",
+        "lineNumber": 3,
+        "columnNumber": 8
+      },
+      "timestamp": 1757931707395
+    },
+    {
+      "type": "log",
+      "text": "Loaded: scripts/alert",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 36,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931707395
+    },
+    {
+      "type": "log",
+      "text": "Loading page scripts: [3d-map-final]",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 102,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931707395
+    },
+    {
+      "type": "log",
+      "text": "Script already loaded: scripts/3d-map-final",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 25,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931707395
+    },
+    {
+      "type": "log",
+      "text": "All scripts loaded successfully",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 116,
+        "columnNumber": 14
+      },
+      "timestamp": 1757931707395
+    },
+    {
+      "type": "log",
+      "text": "Loading Three.js from CDN with fallbacks...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 16,
+        "columnNumber": 12
+      },
+      "timestamp": 1757931707414
+    },
+    {
+      "type": "log",
+      "text": "Loaded: scripts/3d-map-final",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 36,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931707415
+    },
+    {
+      "type": "log",
+      "text": "All scripts loaded successfully",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/router.js",
+        "lineNumber": 116,
+        "columnNumber": 14
+      },
+      "timestamp": 1757931707415
+    },
+    {
+      "type": "warning",
+      "text": "Scripts \"build/three.js\" and \"build/three.min.js\" are deprecated with r150+, and will be removed with r160. Please use ES Modules or alternatives: https://threejs.org/docs/index.html#manual/en/introduction/Installation",
+      "location": {
+        "url": "https://unpkg.com/three@0.158.0/build/three.min.js",
+        "lineNumber": 0,
+        "columnNumber": 8
+      },
+      "timestamp": 1757931707580
+    },
+    {
+      "type": "log",
+      "text": "✅ Loaded THREE.js Core from https://unpkg.com/three@0.158.0/build/three.min.js",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 87,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931707583
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://threejs.org/examples/js/loaders/GLTFLoader.js",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": 1757931707737
+    },
+    {
+      "type": "warning",
+      "text": "❌ Failed to load GLTFLoader from https://threejs.org/examples/js/loaders/GLTFLoader.js",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 102,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931707738
+    },
+    {
+      "type": "log",
+      "text": "✅ Loaded GLTFLoader from https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/GLTFLoader.js",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 87,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931707811
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://threejs.org/examples/js/loaders/DRACOLoader.js",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": 1757931707932
+    },
+    {
+      "type": "warning",
+      "text": "❌ Failed to load DRACOLoader from https://threejs.org/examples/js/loaders/DRACOLoader.js",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 102,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931707933
+    },
+    {
+      "type": "log",
+      "text": "✅ Loaded DRACOLoader from https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/loaders/DRACOLoader.js",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 87,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931707949
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()",
+      "location": {
+        "url": "https://threejs.org/examples/js/controls/OrbitControls.js",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "timestamp": 1757931708070
+    },
+    {
+      "type": "warning",
+      "text": "❌ Failed to load OrbitControls from https://threejs.org/examples/js/controls/OrbitControls.js",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 102,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931708070
+    },
+    {
+      "type": "log",
+      "text": "✅ Loaded OrbitControls from https://cdn.jsdelivr.net/npm/three@0.137.0/examples/js/controls/OrbitControls.js",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 87,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931708088
+    },
+    {
+      "type": "log",
+      "text": "All Three.js scripts loaded successfully",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 59,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708189
+    },
+    {
+      "type": "log",
+      "text": "Initializing 3D Map...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 122,
+        "columnNumber": 12
+      },
+      "timestamp": 1757931708291
+    },
+    {
+      "type": "log",
+      "text": "Initializing Map3D instance for homepage...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 1078,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708291
+    },
+    {
+      "type": "log",
+      "text": "Map3D constructor called",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 209,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708291
+    },
+    {
+      "type": "log",
+      "text": "Starting Map3D initialization...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 231,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708291
+    },
+    {
+      "type": "log",
+      "text": "1/11 - Configuration Loading...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 235,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708291
+    },
+    {
+      "type": "log",
+      "text": "Loading configuration from: https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json (attempt 1)",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 332,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708291
+    },
+    {
+      "type": "log",
+      "text": "🔄 New configuration detected, updating...",
+      "location": {
+        "url": "https://go-goethe-quartier-ebde32.webflow.io/",
+        "lineNumber": 25,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708294
+    },
+    {
+      "type": "log",
+      "text": "🔄 Reloading 3D configuration...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 1014,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708294
+    },
+    {
+      "type": "log",
+      "text": "Loading configuration from: https://joaopdecarvalho.github.io/webflow-gunther-map/config/3d-config.json (attempt 1)",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 332,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708295
+    },
+    {
+      "type": "log",
+      "text": "✅ Configuration loaded successfully: {version: 1.0.0, source: external, camera: Object, lighting: Array(1), animations: enabled}",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 361,
+        "columnNumber": 22
+      },
+      "timestamp": 1757931708309
+    },
+    {
+      "type": "log",
+      "text": "✅ Configuration Loading completed",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 247,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708309
+    },
+    {
+      "type": "log",
+      "text": "2/11 - Container Creation...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 235,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708309
+    },
+    {
+      "type": "log",
+      "text": "Creating 3D map container...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 479,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708309
+    },
+    {
+      "type": "log",
+      "text": "Found existing webgl-container, using it",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 485,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931708309
+    },
+    {
+      "type": "log",
+      "text": "✅ Container Creation completed",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 247,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708309
+    },
+    {
+      "type": "log",
+      "text": "3/11 - Scene Setup...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 235,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708309
+    },
+    {
+      "type": "log",
+      "text": "Setting up Three.js scene...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 545,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708309
+    },
+    {
+      "type": "log",
+      "text": "✅ Scene Setup completed",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 247,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708309
+    },
+    {
+      "type": "log",
+      "text": "4/11 - Camera Setup...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 235,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708309
+    },
+    {
+      "type": "log",
+      "text": "Camera configured: {position: ke, fov: 60, target: Array(3)}",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 574,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708310
+    },
+    {
+      "type": "log",
+      "text": "✅ Camera Setup completed",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 247,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708310
+    },
+    {
+      "type": "log",
+      "text": "5/11 - Renderer Setup...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 235,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708310
+    },
+    {
+      "type": "log",
+      "text": "Setting up Three.js renderer...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 582,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708310
+    },
+    {
+      "type": "warning",
+      "text": "THREE.WebGLRenderer: Property .outputEncoding has been removed. Use .outputColorSpace instead.",
+      "location": {
+        "url": "https://unpkg.com/three@0.158.0/build/three.min.js",
+        "lineNumber": 6,
+        "columnNumber": 446330
+      },
+      "timestamp": 1757931708323
+    },
+    {
+      "type": "warning",
+      "text": "THREE.WebGLRenderer: Property .outputEncoding has been removed. Use .outputColorSpace instead.",
+      "location": {
+        "url": "https://unpkg.com/three@0.158.0/build/three.min.js",
+        "lineNumber": 6,
+        "columnNumber": 446496
+      },
+      "timestamp": 1757931708323
+    },
+    {
+      "type": "log",
+      "text": "✅ Renderer Setup completed",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 247,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708323
+    },
+    {
+      "type": "log",
+      "text": "6/11 - Controls Setup...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 235,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708324
+    },
+    {
+      "type": "log",
+      "text": "Setting up camera controls...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 614,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708324
+    },
+    {
+      "type": "log",
+      "text": "Controls configured: {minDistance: 20, maxDistance: 800, target: ke, zoom: true, rotate: true}",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 639,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708324
+    },
+    {
+      "type": "log",
+      "text": "✅ Controls Setup completed",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 247,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708324
+    },
+    {
+      "type": "log",
+      "text": "7/11 - Lighting Setup...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 235,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708324
+    },
+    {
+      "type": "log",
+      "text": "Setting up scene lighting...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 650,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708324
+    },
+    {
+      "type": "log",
+      "text": "✅ Warm ambient light added: {skyColor: #fff5f5, groundColor: #bd9a1f, intensity: 3.9}",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 669,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931708324
+    },
+    {
+      "type": "log",
+      "text": "Lighting configuration applied: [warmAmbient]",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 724,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708324
+    },
+    {
+      "type": "log",
+      "text": "✅ Lighting Setup completed",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 247,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708324
+    },
+    {
+      "type": "log",
+      "text": "8/11 - Model Loading...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 235,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708324
+    },
+    {
+      "type": "log",
+      "text": "Loading 3D model from GitHub: https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp25.glb",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 826,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931708325
+    },
+    {
+      "type": "log",
+      "text": "✅ Configuration loaded successfully: {version: 1.0.0, source: external, camera: Object, lighting: Array(1), animations: enabled}",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 361,
+        "columnNumber": 22
+      },
+      "timestamp": 1757931708327
+    },
+    {
+      "type": "log",
+      "text": "Setting up scene lighting...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 650,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708328
+    },
+    {
+      "type": "log",
+      "text": "✅ Warm ambient light added: {skyColor: #fff5f5, groundColor: #bd9a1f, intensity: 3.9}",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 669,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931708328
+    },
+    {
+      "type": "log",
+      "text": "Lighting configuration applied: [warmAmbient]",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 724,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931708328
+    },
+    {
+      "type": "log",
+      "text": "✅ Configuration reloaded successfully",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 1058,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931708328
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 2%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708637
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 3%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708643
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 6%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708646
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 10%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708661
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 13%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708663
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 14%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708667
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 16%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708673
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 21%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708678
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 26%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708683
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 27%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708686
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 31%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708690
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 33%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708694
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 34%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708696
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 36%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708701
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 38%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708707
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 41%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708714
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 42%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708715
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 43%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708719
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 45%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708723
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 50%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708733
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 51%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708737
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 52%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708740
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 55%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708747
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 58%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708752
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 59%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708756
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 61%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708761
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 63%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708766
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 66%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708771
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 67%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708775
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 69%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708779
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 70%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708782
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 74%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708790
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 76%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708796
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 77%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708798
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 79%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708800
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 81%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708806
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 82%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708810
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 83%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708812
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 84%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708815
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 86%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708817
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 88%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708822
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 89%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708826
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 90%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708828
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 91%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708832
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 93%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708836
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 95%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708839
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 96%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708842
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 97%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708844
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 98%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708847
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 99%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708849
+    },
+    {
+      "type": "log",
+      "text": "Loading progress: 100%",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 835,
+        "columnNumber": 26
+      },
+      "timestamp": 1757931708850
+    },
+    {
+      "type": "warning",
+      "text": "THREE.Material: 'alphaWrite' is not a property of THREE.MeshStandardMaterial.",
+      "location": {
+        "url": "https://unpkg.com/three@0.158.0/build/three.min.js",
+        "lineNumber": 6,
+        "columnNumber": 85331
+      },
+      "timestamp": 1757931708933
+    },
+    {
+      "type": "warning",
+      "text": "THREE.Texture: Property .encoding has been replaced by .colorSpace.",
+      "location": {
+        "url": "https://unpkg.com/three@0.158.0/build/three.min.js",
+        "lineNumber": 6,
+        "columnNumber": 13036
+      },
+      "timestamp": 1757931708934
+    },
+    {
+      "type": "warning",
+      "text": "THREE.Material: 'alphaWrite' is not a property of THREE.MeshStandardMaterial.",
+      "location": {
+        "url": "https://unpkg.com/three@0.158.0/build/three.min.js",
+        "lineNumber": 6,
+        "columnNumber": 85331
+      },
+      "timestamp": 1757931708959
+    },
+    {
+      "type": "log",
+      "text": "3D model loaded successfully! Meshes: 2, Scale: 0.09x",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 883,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931708962
+    },
+    {
+      "type": "log",
+      "text": "✅ Model Loading completed",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 247,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708962
+    },
+    {
+      "type": "log",
+      "text": "9/11 - Event Listeners...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 235,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708962
+    },
+    {
+      "type": "log",
+      "text": "✅ Event Listeners completed",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 247,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708962
+    },
+    {
+      "type": "log",
+      "text": "10/11 - Animation Start...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 235,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931708962
+    },
+    {
+      "type": "log",
+      "text": "✅ Animation Start completed",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 247,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931709075
+    },
+    {
+      "type": "log",
+      "text": "11/11 - Welcome Animation...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 235,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931709075
+    },
+    {
+      "type": "log",
+      "text": "Starting welcome animation...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 742,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931709076
+    },
+    {
+      "type": "log",
+      "text": "Welcome animation completed",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 801,
+        "columnNumber": 22
+      },
+      "timestamp": 1757931710780
+    },
+    {
+      "type": "log",
+      "text": "✅ Welcome Animation completed",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 247,
+        "columnNumber": 20
+      },
+      "timestamp": 1757931710781
+    },
+    {
+      "type": "log",
+      "text": "🎉 3D Map initialized successfully! (11/11 steps completed)",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/3d-map-final.js",
+        "lineNumber": 266,
+        "columnNumber": 18
+      },
+      "timestamp": 1757931710781
+    },
+    {
+      "type": "log",
+      "text": "Alert will show in 5 seconds...",
+      "location": {
+        "url": "https://joaopdecarvalho.github.io/webflow-gunther-map/src/scripts/alert.js",
+        "lineNumber": 7,
+        "columnNumber": 10
+      },
+      "timestamp": 1757931712397
+    },
+    {
+      "type": "log",
+      "text": "🔍 Starting comprehensive diagnostics for: https://go-goethe-quartier-ebde32.webflow.io/",
+      "location": {
+        "url": "",
+        "lineNumber": 21,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931717630
+    },
+    {
+      "type": "log",
+      "text": "📍 Navigating to: https://go-goethe-quartier-ebde32.webflow.io/",
+      "location": {
+        "url": "",
+        "lineNumber": 70,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931717630
+    },
+    {
+      "type": "log",
+      "text": "⏳ Waiting for initial page load...",
+      "location": {
+        "url": "",
+        "lineNumber": 76,
+        "columnNumber": 16
+      },
+      "timestamp": 1757931717631
+    },
+    {
+      "type": "error",
+      "text": "THREE.WebGLRenderer: A WebGL context could not be created. Reason:  Canvas has an existing context of a different type",
+      "location": {
+        "url": "https://unpkg.com/three@0.158.0/build/three.min.js",
+        "lineNumber": 6,
+        "columnNumber": 422768
+      },
+      "timestamp": 1757931719863
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "01-initial-load",
+      "filename": "diagnostic-01-initial-load-1757931709367.png",
+      "filepath": "C:\\Users\\joao\\Documents\\My Scripts\\webflow-gunther-map\\screenshots\\diagnostic-01-initial-load-1757931709367.png",
+      "timestamp": 1757931709607
+    },
+    {
+      "name": "02-post-diagnostics",
+      "filename": "diagnostic-02-post-diagnostics-1757931719642.png",
+      "filepath": "C:\\Users\\joao\\Documents\\My Scripts\\webflow-gunther-map\\screenshots\\diagnostic-02-post-diagnostics-1757931719642.png",
+      "timestamp": 1757931719861
+    },
+    {
+      "name": "03-final-state",
+      "filename": "diagnostic-03-final-state-1757931719864.png",
+      "filepath": "C:\\Users\\joao\\Documents\\My Scripts\\webflow-gunther-map\\screenshots\\diagnostic-03-final-state-1757931719864.png",
+      "timestamp": 1757931720084
+    }
+  ],
+  "diagnostics": {
+    "error": "Diagnostics not completed"
+  },
+  "canvas": {
+    "canvasCount": 1,
+    "canvases": [
+      {
+        "id": "",
+        "className": "",
+        "width": 1920,
+        "height": 1080,
+        "clientWidth": 1920,
+        "clientHeight": 1080,
+        "hasWebGL": false
+      }
+    ],
+    "container": null
+  },
+  "threeJS": {
+    "threeAvailable": true,
+    "threeVersion": "158",
+    "mapInstances": 0,
+    "globalScripts": [
+      "alert"
+    ],
+    "pageScripts": [
+      "3d-map-final"
+    ]
+  }
+}
