@@ -1,13 +1,20 @@
 #!/usr/bin/env pwsh
-# Quick wrapper for the smart commit script
+# Enhanced Smart Commit and Push Script
+# Generates comprehensive commit messages with detailed change analysis and benefits
 # Usage: ./commit-and-push.ps1 ["custom message"]
 
-param([string]$Message = "")
+param([string]$CustomMessage = "")
 
-$scriptPath = Join-Path $PSScriptRoot "scripts\simple-commit.ps1"
+# Use the simple enhanced commit script
+$enhancedCommitPath = Join-Path $PSScriptRoot "scripts\simple-enhanced-commit.ps1"
 
-if ($Message) {
-    & $scriptPath -CustomMessage $Message
+if (Test-Path $enhancedCommitPath) {
+    if ($CustomMessage) {
+        & $enhancedCommitPath -CustomMessage $CustomMessage
+    } else {
+        & $enhancedCommitPath
+    }
 } else {
-    & $scriptPath
+    Write-Host "[X] Enhanced commit script not found at: $enhancedCommitPath" -ForegroundColor Red
+    Write-Host "Please ensure scripts\simple-enhanced-commit.ps1 exists" -ForegroundColor Yellow
 }
