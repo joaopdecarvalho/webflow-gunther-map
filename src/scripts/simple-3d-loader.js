@@ -7,6 +7,9 @@
 
 class Simple3DLoader {
   constructor() {
+    // Inject CSS immediately to prevent any flash
+    this.injectAntiFlashCSS();
+    
     this.scene = null;
     this.camera = null;
     this.renderer = null;
@@ -82,6 +85,21 @@ class Simple3DLoader {
     this.init();
   }
 
+  injectAntiFlashCSS() {
+    // Create and inject CSS to prevent any white flash
+    const style = document.createElement('style');
+    style.textContent = `
+      #webgl-container,
+      .webgl-container,
+      [data-webgl-container] {
+        background-color: #3c5e71 !important;
+        transition: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+    console.log('🚫 Anti-flash CSS injected');
+  }
+
   async init() {
     try {
       // Find the container element
@@ -95,6 +113,9 @@ class Simple3DLoader {
       }
 
       console.log('✅ Container found:', this.container);
+
+      // Apply initial styling to prevent gradient flash
+      this.applyInitialStyling();
 
       // Load Three.js from CDN
       await this.loadThreeJS();
@@ -118,6 +139,9 @@ class Simple3DLoader {
       if (this.config.animations.welcomeAnimation.enabled) {
         this.playWelcomeAnimation();
       }
+      
+      // Remove loading state after everything is initialized
+      this.finishLoading();
       
       console.log('✅ 3D scene initialized successfully!');
       
@@ -173,6 +197,87 @@ class Simple3DLoader {
     };
     
     animateCamera();
+  }
+
+  applyInitialStyling() {
+    console.log('🎨 Applying initial styling to prevent flash...');
+    
+    // Store original styles to restore later
+    this.originalContainerStyles = {
+      background: this.container.style.background,
+      opacity: this.container.style.opacity,
+      transition: this.container.style.transition
+    };
+    
+    // Apply loading styles to prevent gradient flash
+    this.container.style.background = '#3c5e71'; // Set target color immediately
+    this.container.style.opacity = '1'; // Keep visible but with correct background
+    this.container.style.transition = 'none'; // Remove transition during setup
+    
+    // Ensure container covers the full viewport
+    this.container.style.width = '100vw';
+    this.container.style.height = '100vh';
+    this.container.style.position = 'fixed';
+    this.container.style.top = '0';
+    this.container.style.left = '0';
+    this.container.style.zIndex = '1';
+    
+    console.log('✅ Initial styling applied - full viewport coverage with target background');
+  }
+
+  finishLoading() {
+    console.log('🎉 Finishing loading sequence...');
+    
+    // Set the final scene background now that everything is loaded
+    if (this.scene) {
+      this.scene.background = new THREE.Color(0x3c5e71); // Blue-gray background
+      console.log('🎨 Scene background set to final color');
+    }
+    
+    // Update renderer clear color for proper rendering
+    if (this.renderer) {
+      this.renderer.setClearColor(0x3c5e71, 1); // Opaque background
+    }
+    
+    // Container is already visible with correct background - just log completion
+    console.log('✅ 3D scene ready and visible');
+  }
+
+  fadeInModel() {
+    if (!this.model) {
+      console.warn('⚠️ No model to fade in');
+      return;
+    }
+
+    console.log('✨ Starting model fade-in animation...');
+    
+    const duration = 2000; // 2 seconds fade-in
+    const startTime = Date.now();
+    
+    const fadeAnimation = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Smooth easing function (ease-out)
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      
+      // Apply opacity to all meshes in the model
+      this.model.traverse((child) => {
+        if (child.isMesh && child.material && child.material.transparent) {
+          child.material.opacity = easedProgress;
+          child.material.needsUpdate = true;
+        }
+      });
+      
+      if (progress < 1) {
+        requestAnimationFrame(fadeAnimation);
+      } else {
+        console.log('✅ Model fade-in complete');
+      }
+    };
+    
+    // Start the fade-in animation
+    requestAnimationFrame(fadeAnimation);
   }
 
   async loadThreeJS() {
@@ -340,14 +445,14 @@ class Simple3DLoader {
   setupScene() {
     console.log('🎬 Setting up Three.js scene...');
     
-    // Get container dimensions
-    const rect = this.container.getBoundingClientRect();
-    const width = rect.width || 800;
-    const height = rect.height || 600;
+    // Use viewport dimensions for full-page coverage
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
     // Create scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xf0f0f0);
+    // Start with transparent background to prevent gradient flash
+    this.scene.background = null; // Will be set after loading
 
     // Create camera using configuration
     const cameraConfig = this.config.camera;
@@ -363,10 +468,12 @@ class Simple3DLoader {
     const performanceConfig = this.config.performance;
     this.renderer = new THREE.WebGLRenderer({ 
       antialias: performanceConfig.enableAntialiasing,
-      alpha: true 
+      alpha: true,
+      premultipliedAlpha: false // Prevent alpha blending issues
     });
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(performanceConfig.pixelRatio);
+    this.renderer.setClearColor(0x000000, 0); // Transparent clear color initially
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -454,11 +561,14 @@ class Simple3DLoader {
           console.log('✅ Model loaded successfully!');
           this.model = gltf.scene;
           
-          // Enable shadows on all meshes
+          // Enable shadows on all meshes and set initial opacity to 0
           this.model.traverse((child) => {
             if (child.isMesh) {
               child.castShadow = true;
               child.receiveShadow = true;
+              // Make model invisible initially for fade-in effect
+              child.material.transparent = true;
+              child.material.opacity = 0;
             }
           });
           
@@ -467,6 +577,9 @@ class Simple3DLoader {
           
           // Center and scale model
           this.centerModel();
+          
+          // Start fade-in animation for the model
+          this.fadeInModel();
           
           resolve();
         },
@@ -535,11 +648,23 @@ class Simple3DLoader {
     buildingGroup.add(ground);
     
     this.model = buildingGroup;
+    
+    // Set initial opacity to 0 for all materials in the placeholder
+    this.model.traverse((child) => {
+      if (child.isMesh && child.material) {
+        child.material.transparent = true;
+        child.material.opacity = 0;
+      }
+    });
+    
     this.scene.add(this.model);
     
     // Position camera to view the placeholder
     this.camera.position.set(50, 40, 50);
     this.camera.lookAt(0, 15, 0);
+    
+    // Start fade-in animation for the placeholder model
+    this.fadeInModel();
     
     console.log('✅ Placeholder model created and added to scene');
   }
@@ -654,11 +779,11 @@ class Simple3DLoader {
   }
 
   onWindowResize() {
-    if (!this.container || !this.camera || !this.renderer) return;
+    if (!this.camera || !this.renderer) return;
 
-    const rect = this.container.getBoundingClientRect();
-    const width = rect.width || 800;
-    const height = rect.height || 600;
+    // Use viewport dimensions for full-page coverage
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();

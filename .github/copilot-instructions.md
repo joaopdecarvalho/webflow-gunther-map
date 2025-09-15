@@ -94,32 +94,3 @@ Production scripts load dynamic configurations from GitHub Pages:
   "accessibility": { "respectMotionPreference": true, "keyboardControls": true }
 }
 ```
-
-## GitHub Copilot Custom Instructions
-
-### **Smart Commit and Push Workflow**
-When the user asks to "commit and push" or "create commit and push changes":
-1. Run: `.\commit-and-push.ps1` to analyze changes and create intelligent commit messages
-2. Use conventional commit format: `type(scope): description`
-3. Auto-detect types based on file changes: feat, fix, config, docs, refactor, etc.
-4. Auto-detect scopes: 3d-map, webflow, config, router, test, core, project
-
-### **Example Usage Patterns**
-User might say:
-- "commit and push all changes"
-- "create a commit with smart message and push"
-- "analyze changes and commit with conventional format"
-
-**Response**: Run the smart commit script: `.\commit-and-push.ps1`
-
-### **PowerShell Scripts Available**
-- `.\commit-and-push.ps1` - Main wrapper script
-- `.\scripts\simple-commit.ps1` - Core functionality
-- Both scripts auto-generate conventional commit messages based on file analysis
-
-### **Conventional Commit Examples**
-- `feat(3d-map): implement configuration hot-reloading system`
-- `fix(webflow): resolve CORS issues by moving config to src folder`  
-- `refactor(embed): consolidate production and development environments`
-- `docs(readme): update deployment instructions and architecture`
-- `config(core): update environment detection and configuration loading`
