@@ -162,7 +162,7 @@ class Simple3DLoader {
 
   playWelcomeAnimation() {
     const animConfig = this.config.animations.welcomeAnimation;
-    console.log('🎬 Playing welcome animation with custom start/end positions (expo.inOut easing)...');
+    console.log('🎬 Playing welcome animation with custom start/end positions (smooth expo.inOut easing)...');
     
     // Custom animation parameters from user specification
     const startPos = new THREE.Vector3(27.7, 41.2, 42.6);
@@ -183,7 +183,7 @@ class Simple3DLoader {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      // Apply exponential InOut easing (like GSAP's expo.inOut)
+      // Apply smooth exponential InOut easing (gentler curve than standard expo)
       let easedProgress = progress;
       if (animConfig.easing === 'easeInOut') {
         if (progress === 0) {
@@ -191,9 +191,11 @@ class Simple3DLoader {
         } else if (progress === 1) {
           easedProgress = 1;
         } else if (progress < 0.5) {
-          easedProgress = Math.pow(2, 20 * progress - 10) / 2;
+          // Gentler exponential ease in (reduced from 20 to 12 for smoother curve)
+          easedProgress = Math.pow(2, 12 * progress - 6) / 2;
         } else {
-          easedProgress = (2 - Math.pow(2, -20 * progress + 10)) / 2;
+          // Gentler exponential ease out
+          easedProgress = (2 - Math.pow(2, -12 * progress + 6)) / 2;
         }
       }
       
