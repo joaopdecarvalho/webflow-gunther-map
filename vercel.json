@@ -13,11 +13,11 @@
       "destination": "/Advanced-3D-Testing-Suite.html"
     },
     {
-      "source": "/staging",
-      "destination": "/staging.html"
+      "source": "/staging/(.*)",
+      "destination": "/webflow-staging-site-files/$1"
     },
     {
-      "source": "/staging-full",
+      "source": "/staging",
       "destination": "/webflow-staging-site-files/index.html"
     }
   ],
@@ -71,6 +71,19 @@
         {
           "key": "Access-Control-Allow-Origin",
           "value": "*"
+        }
+      ]
+    },
+    {
+      "source": "/webflow-staging-site-files/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
         }
       ]
     }

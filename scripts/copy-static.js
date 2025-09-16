@@ -45,14 +45,6 @@ try {
     }
   }
   
-  // Copy staging index.html to root as staging.html for direct access
-  try {
-    copyFileSync(join('webflow-staging-site-files', 'index.html'), join('dist', 'staging.html'));
-    console.log('✅ Copied staging.html for direct access');
-  } catch (err) {
-    console.warn('⚠️ Could not copy staging.html:', err.message);
-  }
-  
   // Copy webflow-staging-site-files directory
   try {
     copyDir('webflow-staging-site-files', join('dist', 'webflow-staging-site-files'));
