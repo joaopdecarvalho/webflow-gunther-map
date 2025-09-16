@@ -7,8 +7,10 @@
     "dev": "node scripts/dev-server.js",
     "dev:force": "vite",
     "build": "vite build",
+    "vercel-build": "npm run build",
     "preview": "vite preview",
     "deploy": "npm run build && git add dist && git commit -m \"Deploy build\" && git push",
+    "deploy:vercel": "vercel --prod",
     "new-script": "webflow-scripts new",
     "embed-code": "webflow-scripts embed",
     "test-connection": "webflow-scripts test"
