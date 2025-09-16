@@ -34,8 +34,8 @@ class Simple3DLoader {
         "position": [10.3, 21.9, 16.0],
         "target": [-6.5, -34.2, -11.8],
         "fov": 60,
-        "minDistance": 20,
-        "maxDistance": 800
+        "minDistance": 50,
+        "maxDistance": 90
       },
       "lighting": {
         "warmAmbient": {
@@ -736,7 +736,7 @@ class Simple3DLoader {
     
     // Restrict vertical rotation to prevent looking under the model
     this.controls.minPolarAngle = Math.PI * 0.1; // 18 degrees from top (prevents looking too far down)
-    this.controls.maxPolarAngle = Math.PI * 0.45; // 81 degrees (prevents looking under the model)
+    this.controls.maxPolarAngle = Math.PI * 0.34; // 81 degrees (prevents looking under the model)
     
     this.controls.minDistance = cameraConfig.minDistance;
     this.controls.maxDistance = cameraConfig.maxDistance;
