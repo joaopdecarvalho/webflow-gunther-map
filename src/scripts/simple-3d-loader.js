@@ -736,7 +736,7 @@ class Simple3DLoader {
     
     // Restrict vertical rotation to prevent looking under the model
     this.controls.minPolarAngle = Math.PI * 0.1; // 18 degrees from top (prevents looking too far down)
-    this.controls.maxPolarAngle = Math.PI * 0.48; // 86.4 degrees (prevents looking under the model)
+    this.controls.maxPolarAngle = Math.PI * 0.45; // 81 degrees (prevents looking under the model)
     
     this.controls.minDistance = cameraConfig.minDistance;
     this.controls.maxDistance = cameraConfig.maxDistance;
