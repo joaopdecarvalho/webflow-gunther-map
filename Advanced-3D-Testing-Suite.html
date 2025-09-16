@@ -2843,15 +2843,30 @@
             try {
                 updateModelStatus('✨ Loading available models...');
                 
-                // Direct list of your 4 models in the public folder
-                const modelFiles = [
-                    './public/Goetheviertel_250812_with-textures.glb',
-                    './public/Goetheviertel_250812_with-textures_webp.glb',
-                    './public/Goetheviertel_250812_with-textures_webp15.glb',
-                    './public/Goetheviertel_250812_with-textures_webp25.glb'
-                ];
+                // Environment detection for correct URLs
+                const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+                const isVercel = location.hostname.includes('.vercel.app');
                 
-                console.log('✅ Loading models:', modelFiles);
+                let modelFiles;
+                if (isLocal) {
+                    // Local development - use relative paths
+                    modelFiles = [
+                        './public/Goetheviertel_250812_with-textures.glb',
+                        './public/Goetheviertel_250812_with-textures_webp.glb',
+                        './public/Goetheviertel_250812_with-textures_webp15.glb',
+                        './public/Goetheviertel_250812_with-textures_webp25.glb'
+                    ];
+                } else {
+                    // Production/Vercel - use absolute paths without /public/
+                    modelFiles = [
+                        '/Goetheviertel_250812_with-textures.glb',
+                        '/Goetheviertel_250812_with-textures_webp.glb',
+                        '/Goetheviertel_250812_with-textures_webp15.glb',
+                        '/Goetheviertel_250812_with-textures_webp25.glb'
+                    ];
+                }
+                
+                console.log('✅ Loading models for environment:', isLocal ? 'LOCAL' : 'PRODUCTION', modelFiles);
                 
                 // No need for separate GitHub models - using direct paths above
                 
@@ -2951,12 +2966,26 @@
         
         // Fallback to hardcoded models if discovery fails
         async function loadFallbackModels() {
-            availableModels = [
-                { key: 'goetheviertel_textures', name: 'Goetheviertel With Textures', url: '/Goetheviertel_250812_with-textures.glb', type: 'GLB', source: 'Local' },
-                { key: 'goetheviertel_webp', name: 'Goetheviertel WebP', url: '/Goetheviertel_250812_with-textures_webp.glb', type: 'GLB', source: 'Local' },
-                { key: 'goetheviertel_webp15', name: 'Goetheviertel WebP15', url: '/Goetheviertel_250812_with-textures_webp15.glb', type: 'GLB', source: 'Local' },
-                { key: 'goetheviertel_webp25', name: 'Goetheviertel WebP25', url: '/Goetheviertel_250812_with-textures_webp25.glb', type: 'GLB', source: 'Local' }
-            ];
+            // Environment detection for correct URLs
+            const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+            
+            if (isLocal) {
+                // Local development - use relative paths
+                availableModels = [
+                    { key: 'goetheviertel_textures', name: 'Goetheviertel With Textures', url: './public/Goetheviertel_250812_with-textures.glb', type: 'GLB', source: 'Local' },
+                    { key: 'goetheviertel_webp', name: 'Goetheviertel WebP', url: './public/Goetheviertel_250812_with-textures_webp.glb', type: 'GLB', source: 'Local' },
+                    { key: 'goetheviertel_webp15', name: 'Goetheviertel WebP15', url: './public/Goetheviertel_250812_with-textures_webp15.glb', type: 'GLB', source: 'Local' },
+                    { key: 'goetheviertel_webp25', name: 'Goetheviertel WebP25', url: './public/Goetheviertel_250812_with-textures_webp25.glb', type: 'GLB', source: 'Local' }
+                ];
+            } else {
+                // Production/Vercel - use absolute paths without /public/
+                availableModels = [
+                    { key: 'goetheviertel_textures', name: 'Goetheviertel With Textures', url: '/Goetheviertel_250812_with-textures.glb', type: 'GLB', source: 'Production' },
+                    { key: 'goetheviertel_webp', name: 'Goetheviertel WebP', url: '/Goetheviertel_250812_with-textures_webp.glb', type: 'GLB', source: 'Production' },
+                    { key: 'goetheviertel_webp15', name: 'Goetheviertel WebP15', url: '/Goetheviertel_250812_with-textures_webp15.glb', type: 'GLB', source: 'Production' },
+                    { key: 'goetheviertel_webp25', name: 'Goetheviertel WebP25', url: '/Goetheviertel_250812_with-textures_webp25.glb', type: 'GLB', source: 'Production' }
+                ];
+            }
             
             MODEL_URLS = {};
             availableModels.forEach(model => {
