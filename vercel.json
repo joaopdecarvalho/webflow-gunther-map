@@ -13,12 +13,8 @@
       "destination": "/Advanced-3D-Testing-Suite.html"
     },
     {
-      "source": "/staging/(.*)",
-      "destination": "/webflow-staging-site-files/$1"
-    },
-    {
       "source": "/staging",
-      "destination": "/webflow-staging-site-files/index.html"
+      "destination": "/staging.html"
     }
   ],
   "headers": [
