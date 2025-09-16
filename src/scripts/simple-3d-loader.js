@@ -162,7 +162,7 @@ class Simple3DLoader {
 
   playWelcomeAnimation() {
     const animConfig = this.config.animations.welcomeAnimation;
-    console.log('🎬 Playing welcome animation with custom start/end positions...');
+    console.log('🎬 Playing welcome animation with custom start/end positions (expo.inOut easing)...');
     
     // Custom animation parameters from user specification
     const startPos = new THREE.Vector3(27.7, 41.2, 42.6);
@@ -183,12 +183,18 @@ class Simple3DLoader {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
-      // Apply easing (easeInOut)
+      // Apply exponential InOut easing (like GSAP's expo.inOut)
       let easedProgress = progress;
       if (animConfig.easing === 'easeInOut') {
-        easedProgress = progress < 0.5 
-          ? 2 * progress * progress 
-          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+        if (progress === 0) {
+          easedProgress = 0;
+        } else if (progress === 1) {
+          easedProgress = 1;
+        } else if (progress < 0.5) {
+          easedProgress = Math.pow(2, 20 * progress - 10) / 2;
+        } else {
+          easedProgress = (2 - Math.pow(2, -20 * progress + 10)) / 2;
+        }
       }
       
       // Interpolate camera position and target
