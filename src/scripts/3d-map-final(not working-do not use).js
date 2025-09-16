@@ -152,8 +152,8 @@
             enableRotate: true,
             enableDamping: true,
             dampingFactor: 0.05,
-            minPolarAngle: 0,
-            maxPolarAngle: 1.5707963267948966,
+            minPolarAngle: Math.PI * 0.1, // 18 degrees from top
+            maxPolarAngle: Math.PI * 0.48, // 86.4 degrees (prevents looking under)
             autoRotate: false,
             autoRotateSpeed: 0.5
           },
@@ -777,7 +777,10 @@
         // Use configuration values for distance limits
         this.controls.minDistance = camConfig.minDistance || 20;
         this.controls.maxDistance = camConfig.maxDistance || 800;
-        this.controls.maxPolarAngle = Math.PI / 2.1;
+        
+        // Restrict vertical rotation to prevent looking under the model
+        this.controls.minPolarAngle = Math.PI * 0.1; // 18 degrees from top
+        this.controls.maxPolarAngle = Math.PI * 0.48; // 86.4 degrees (prevents looking under)
         
         // Set camera target for controls
         if (camConfig.target && Array.isArray(camConfig.target) && camConfig.target.length === 3) {

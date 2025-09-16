@@ -733,7 +733,11 @@ class Simple3DLoader {
     // Apply configuration settings
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
-    this.controls.maxPolarAngle = Math.PI / 2;
+    
+    // Restrict vertical rotation to prevent looking under the model
+    this.controls.minPolarAngle = Math.PI * 0.1; // 18 degrees from top (prevents looking too far down)
+    this.controls.maxPolarAngle = Math.PI * 0.48; // 86.4 degrees (prevents looking under the model)
+    
     this.controls.minDistance = cameraConfig.minDistance;
     this.controls.maxDistance = cameraConfig.maxDistance;
     
