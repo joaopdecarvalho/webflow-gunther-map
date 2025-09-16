@@ -19,13 +19,18 @@ class Simple3DLoader {
   constructor() {
     // Inject CSS immediately to prevent any flash
     this.injectAntiFlashCSS();
-    
+
     this.scene = null;
     this.camera = null;
     this.renderer = null;
     this.container = null;
     this.model = null;
     this.controls = null;
+
+    // Performance and development flags
+    this.isDevelopment = this.detectDevelopmentMode();
+    this.lastDebugUpdate = 0;
+    this.pauseRendering = false;
     
     // Default configuration based on your 3d-config.json
     this.config = {
@@ -81,6 +86,15 @@ class Simple3DLoader {
     this.init();
   }
 
+  detectDevelopmentMode() {
+    // Check for localhost, development domains, or debug flags
+    return location.hostname === 'localhost' ||
+           location.hostname === '127.0.0.1' ||
+           location.hostname.includes('dev') ||
+           location.search.includes('debug=true') ||
+           location.hostname.includes('5173'); // Vite dev server
+  }
+
   injectAntiFlashCSS() {
     // Create and inject CSS to prevent any white flash
     const style = document.createElement('style');
@@ -125,7 +139,7 @@ class Simple3DLoader {
       // Setup controls
       this.setupControls();
       
-      // Handle window resize
+      // Handle window resize and visibility changes
       this.setupEventListeners();
       
       // Start render loop
@@ -140,10 +154,239 @@ class Simple3DLoader {
       this.finishLoading();
       
       console.log('✅ 3D scene initialized successfully!');
-      
+
     } catch (error) {
       console.error('❌ Error initializing 3D scene:', error);
     }
+  }
+
+  // Progressive loading alternative for better performance
+  async initProgressive() {
+    try {
+      console.log('🚀 Starting progressive 3D initialization...');
+
+      // Find the container element first
+      this.container = document.querySelector('#webgl-container') ||
+                       document.querySelector('.webgl-container') ||
+                       document.querySelector('[data-webgl-container]');
+
+      if (!this.container) {
+        console.error('WebGL container not found! Looking for #webgl-container');
+        return;
+      }
+
+      // Apply initial styling immediately
+      this.applyInitialStyling();
+
+      // Phase 1: Load core components and show basic scene
+      console.log('📦 Phase 1: Loading core components...');
+      await this.loadCoreComponents();
+      this.showBasicScene();
+
+      // Phase 2: Load model with progress tracking
+      console.log('🏗️ Phase 2: Loading 3D model...');
+      await this.loadModelProgressive();
+
+      // Phase 3: Enhance scene with animations and controls
+      console.log('✨ Phase 3: Enhancing scene...');
+      this.enhanceScene();
+
+      console.log('🎉 Progressive 3D initialization complete!');
+
+    } catch (error) {
+      console.error('❌ Error in progressive initialization:', error);
+      this.initFallbackMode();
+    }
+  }
+
+  async loadCoreComponents() {
+    // Load Three.js with retry logic
+    await this.loadThreeJS();
+
+    // Setup basic scene without model
+    this.setupScene();
+    this.setupEventListeners();
+
+    console.log('✅ Core components loaded');
+  }
+
+  showBasicScene() {
+    // Start basic render loop
+    this.animate();
+
+    // Show a simple loading state in the scene
+    const loadingGeometry = new THREE.BoxGeometry(10, 10, 10);
+    const loadingMaterial = new THREE.MeshBasicMaterial({
+      color: 0x4a90e2,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.3
+    });
+    const loadingCube = new THREE.Mesh(loadingGeometry, loadingMaterial);
+    this.scene.add(loadingCube);
+
+    // Animate the loading cube
+    const animateLoadingCube = () => {
+      if (loadingCube.parent) { // Still in scene
+        loadingCube.rotation.x += 0.01;
+        loadingCube.rotation.y += 0.01;
+        requestAnimationFrame(animateLoadingCube);
+      }
+    };
+    animateLoadingCube();
+
+    this.loadingCube = loadingCube; // Store reference for cleanup
+    console.log('🎬 Basic scene visible with loading indicator');
+  }
+
+  async loadModelProgressive() {
+    try {
+      // Remove loading cube
+      if (this.loadingCube) {
+        this.scene.remove(this.loadingCube);
+        this.loadingCube.geometry.dispose();
+        this.loadingCube.material.dispose();
+        this.loadingCube = null;
+      }
+
+      // Load the actual model
+      await this.loadModel();
+
+      console.log('✅ Model loaded and added to scene');
+
+    } catch (error) {
+      console.error('❌ Model loading failed:', error);
+      // Keep the loading cube as fallback
+    }
+  }
+
+  enhanceScene() {
+    // Setup controls
+    this.setupControls();
+
+    // Finish loading sequence
+    this.finishLoading();
+
+    // Play welcome animation if enabled
+    if (this.config.animations.welcomeAnimation.enabled) {
+      this.playWelcomeAnimation();
+    }
+
+    console.log('✨ Scene enhancement complete');
+  }
+
+  // WebGL capability detection and performance adaptation
+  detectCapabilities() {
+    if (!this.renderer) {
+      console.warn('⚠️ Renderer not available for capability detection');
+      return null;
+    }
+
+    const gl = this.renderer.getContext();
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+
+    const capabilities = {
+      // Basic WebGL info
+      maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+      maxViewportDims: gl.getParameter(gl.MAX_VIEWPORT_DIMS),
+      maxVertexAttribs: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
+
+      // Extensions
+      supportsFloatTextures: !!gl.getExtension('OES_texture_float'),
+      supportsHalfFloatTextures: !!gl.getExtension('OES_texture_half_float'),
+      supportsAnisotropy: !!gl.getExtension('EXT_texture_filter_anisotropic'),
+      supportsInstancing: !!gl.getExtension('ANGLE_instanced_arrays'),
+      supportsDepthTexture: !!gl.getExtension('WEBGL_depth_texture'),
+
+      // GPU info (if available)
+      vendor: gl.getParameter(gl.VENDOR),
+      renderer: gl.getParameter(gl.RENDERER),
+      version: gl.getParameter(gl.VERSION),
+      shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION)
+    };
+
+    // Get unmasked renderer info for better GPU detection
+    if (debugInfo) {
+      capabilities.unmaskedVendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+      capabilities.unmaskedRenderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+    }
+
+    console.log('🔍 WebGL Capabilities detected:', capabilities);
+    return capabilities;
+  }
+
+  // Adaptive quality based on device capabilities
+  adaptQualitySettings() {
+    const capabilities = this.detectCapabilities();
+    if (!capabilities) return;
+
+    // Default to current config
+    let qualityAdjustments = {
+      enableAntialiasing: this.config.performance.enableAntialiasing,
+      pixelRatio: this.config.performance.pixelRatio,
+      shadowMapSize: 2048
+    };
+
+    // Detect mobile devices
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Performance classification based on GPU
+    const gpuInfo = (capabilities.unmaskedRenderer || capabilities.renderer || '').toLowerCase();
+    let performanceTier = 'high';
+
+    if (isMobile || gpuInfo.includes('intel') || gpuInfo.includes('powervr') || gpuInfo.includes('adreno')) {
+      performanceTier = 'medium';
+    }
+
+    if (capabilities.maxTextureSize < 4096 || gpuInfo.includes('mali-400') || gpuInfo.includes('adreno 3')) {
+      performanceTier = 'low';
+    }
+
+    // Apply quality adjustments based on performance tier
+    switch (performanceTier) {
+      case 'low':
+        qualityAdjustments = {
+          enableAntialiasing: false,
+          pixelRatio: Math.min(0.75, window.devicePixelRatio),
+          shadowMapSize: 512
+        };
+        console.log('📱 Low-end device detected - applying performance optimizations');
+        break;
+
+      case 'medium':
+        qualityAdjustments = {
+          enableAntialiasing: true,
+          pixelRatio: Math.min(1.5, window.devicePixelRatio),
+          shadowMapSize: 1024
+        };
+        console.log('💻 Medium-performance device detected - balanced settings');
+        break;
+
+      case 'high':
+      default:
+        qualityAdjustments = {
+          enableAntialiasing: true,
+          pixelRatio: Math.min(2.0, window.devicePixelRatio),
+          shadowMapSize: 2048
+        };
+        console.log('🚀 High-performance device detected - maximum quality');
+        break;
+    }
+
+    // Apply the adjustments to renderer
+    if (this.renderer) {
+      this.renderer.setPixelRatio(qualityAdjustments.pixelRatio);
+
+      // Update shadow map size if shadows are enabled
+      if (this.renderer.shadowMap.enabled) {
+        this.renderer.shadowMap.autoUpdate = true;
+        // Note: Shadow map size would need to be set per light, not globally
+      }
+
+      console.log('⚙️ Quality settings adapted:', qualityAdjustments);
+    }
+
+    return qualityAdjustments;
   }
 
   playWelcomeAnimation() {
@@ -161,12 +404,12 @@ class Simple3DLoader {
     this.controls.target.copy(startTarget);
     this.controls.update();
     
-    // Animation parameters
-    const startTime = Date.now();
-    const duration = animConfig.duration; // 1700ms
+    // Animation parameters - using high precision timing
+    const startTime = performance.now();
+    const duration = animConfig.duration; // 1300ms
     
     const animateCamera = () => {
-      const elapsed = Date.now() - startTime;
+      const elapsed = performance.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
       // Apply smooth exponential InOut easing (gentler curve than standard expo)
@@ -255,12 +498,12 @@ class Simple3DLoader {
     }
 
     console.log('✨ Starting model fade-in animation...');
-    
+
     const duration = 2000; // 2 seconds fade-in
-    const startTime = Date.now();
-    
+    const startTime = performance.now();
+
     const fadeAnimation = () => {
-      const elapsed = Date.now() - startTime;
+      const elapsed = performance.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       
       // Smooth easing function (ease-out)
@@ -286,14 +529,40 @@ class Simple3DLoader {
   }
 
   async loadThreeJS() {
+    return this.loadThreeJSWithRetry(3);
+  }
+
+  async loadThreeJSWithRetry(maxRetries = 3) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`📦 Loading Three.js (attempt ${attempt}/${maxRetries})...`);
+        await this.attemptThreeJSLoad();
+        console.log('✅ Three.js loaded successfully!');
+        return;
+      } catch (error) {
+        console.warn(`❌ Three.js loading attempt ${attempt} failed:`, error.message);
+
+        if (attempt === maxRetries) {
+          console.error('💥 All Three.js loading attempts failed, initializing fallback mode');
+          this.initFallbackMode();
+          return;
+        }
+
+        // Exponential backoff delay
+        const delayMs = 1000 * Math.pow(2, attempt - 1);
+        console.log(`⏳ Retrying in ${delayMs}ms...`);
+        await this.delay(delayMs);
+      }
+    }
+  }
+
+  async attemptThreeJSLoad() {
     return new Promise((resolve, reject) => {
       if (window.THREE) {
         console.log('✅ Three.js already loaded');
         resolve();
         return;
       }
-
-      console.log('📦 Loading Three.js from CDN...');
       
       // Load Three.js core using ES modules approach
       const threeScript = document.createElement('script');
@@ -341,11 +610,63 @@ class Simple3DLoader {
       // Timeout fallback
       setTimeout(() => {
         if (!window.THREE) {
-          console.warn('⚠️ Three.js loading timeout, trying fallback...');
-          this.loadThreeJSFallback().then(resolve).catch(reject);
+          reject(new Error('Three.js loading timeout'));
         }
       }, 10000);
     });
+  }
+
+  // Utility method for delays
+  async delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Fallback mode when Three.js completely fails to load
+  initFallbackMode() {
+    console.log('🛟 Initializing fallback mode...');
+
+    // Create a simple fallback message
+    const fallbackDiv = document.createElement('div');
+    fallbackDiv.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #3c5e71 0%, #2a4a5c 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        z-index: 1000;
+      ">
+        <div style="text-align: center; max-width: 400px; padding: 2rem;">
+          <div style="font-size: 4rem; margin-bottom: 1rem;">🏗️</div>
+          <h2 style="margin: 0 0 1rem 0; font-weight: 300;">3D Experience Loading</h2>
+          <p style="margin: 0; opacity: 0.8; line-height: 1.5;">
+            We're preparing an immersive 3D experience for you.
+            Please refresh the page or try again later.
+          </p>
+          <button onclick="location.reload()" style="
+            margin-top: 1.5rem;
+            padding: 0.75rem 2rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+          ">
+            Retry
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.container.appendChild(fallbackDiv);
+    console.log('🛟 Fallback mode initialized with user-friendly interface');
   }
 
   async loadThreeJSFallback() {
@@ -484,6 +805,9 @@ class Simple3DLoader {
 
     // Add renderer to container
     this.container.appendChild(this.renderer.domElement);
+
+    // Detect capabilities and adapt quality settings
+    this.adaptQualitySettings();
 
     // Add lights
     this.setupLighting();
@@ -670,7 +994,26 @@ class Simple3DLoader {
   }
 
   setupEventListeners() {
+    // Window resize handling
     window.addEventListener('resize', () => this.onWindowResize());
+
+    // Visibility API for performance optimization
+    document.addEventListener('visibilitychange', () => this.handleVisibilityChange());
+
+    console.log('🎧 Event listeners setup complete (resize, visibility)');
+  }
+
+  handleVisibilityChange() {
+    if (document.hidden) {
+      // Tab is hidden - pause rendering to save battery/CPU
+      this.pauseRendering = true;
+      console.log('⏸️ Rendering paused (tab hidden)');
+    } else {
+      // Tab is visible - resume rendering
+      this.pauseRendering = false;
+      this.animate(); // Restart animation loop
+      console.log('▶️ Rendering resumed (tab visible)');
+    }
   }
 
   onWindowResize() {
@@ -688,7 +1031,14 @@ class Simple3DLoader {
   }
 
   animate() {
+    // Check if rendering is paused (e.g., tab hidden)
+    if (this.pauseRendering) {
+      return;
+    }
+
     requestAnimationFrame(() => this.animate());
+
+    const now = performance.now();
 
     // Update controls
     if (this.controls && this.controls.update) {
@@ -697,8 +1047,11 @@ class Simple3DLoader {
       this.updateBasicControls();
     }
 
-    // Update camera info panel (DEVELOPMENT ONLY - remove for production if not needed)
-    this.updateCameraInfo();
+    // Throttled debug updates (development only)
+    if (this.isDevelopment && (now - this.lastDebugUpdate) > 100) {
+      this.updateCameraInfo();
+      this.lastDebugUpdate = now;
+    }
 
     // Render scene
     if (this.renderer && this.scene && this.camera) {
@@ -775,7 +1128,7 @@ class Simple3DLoader {
   updateConfig(newConfig) {
     this.config = { ...this.config, ...newConfig };
     console.log('⚙️ Configuration updated:', this.config);
-    
+
     // Apply camera settings if scene is initialized
     if (this.camera && this.controls) {
       this.camera.position.set(...this.config.camera.position);
@@ -784,6 +1137,88 @@ class Simple3DLoader {
       this.controls.maxDistance = this.config.camera.maxDistance;
       this.controls.update();
     }
+  }
+
+  // Memory management - comprehensive resource disposal
+  dispose() {
+    console.log('🧹 Starting comprehensive resource cleanup...');
+
+    // Pause rendering immediately
+    this.pauseRendering = true;
+
+    // Clean up model and its materials/geometries
+    if (this.model) {
+      this.model.traverse((child) => {
+        if (child.isMesh) {
+          // Dispose geometry
+          if (child.geometry) {
+            child.geometry.dispose();
+          }
+
+          // Dispose materials and textures
+          if (child.material) {
+            if (Array.isArray(child.material)) {
+              child.material.forEach(material => this.disposeMaterial(material));
+            } else {
+              this.disposeMaterial(child.material);
+            }
+          }
+        }
+      });
+
+      // Remove model from scene
+      if (this.scene) {
+        this.scene.remove(this.model);
+      }
+      this.model = null;
+    }
+
+    // Dispose renderer
+    if (this.renderer) {
+      this.renderer.dispose();
+      if (this.renderer.domElement && this.renderer.domElement.parentNode) {
+        this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
+      }
+      this.renderer = null;
+    }
+
+    // Clean up controls
+    if (this.controls) {
+      if (this.controls.dispose) {
+        this.controls.dispose();
+      }
+      this.controls = null;
+    }
+
+    // Remove event listeners
+    window.removeEventListener('resize', this.onWindowResize);
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+
+    // Clear references
+    this.scene = null;
+    this.camera = null;
+    this.container = null;
+
+    console.log('✅ Resource cleanup complete - memory freed');
+  }
+
+  // Helper method to dispose materials and their textures
+  disposeMaterial(material) {
+    if (!material) return;
+
+    // Dispose all textures used by the material
+    const textureProperties = ['map', 'normalMap', 'bumpMap', 'displacementMap',
+                              'roughnessMap', 'metalnessMap', 'alphaMap', 'aoMap',
+                              'emissiveMap', 'envMap', 'lightMap'];
+
+    textureProperties.forEach(prop => {
+      if (material[prop] && material[prop].dispose) {
+        material[prop].dispose();
+      }
+    });
+
+    // Dispose the material itself
+    material.dispose();
   }
 }
 
