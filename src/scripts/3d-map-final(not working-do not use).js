@@ -133,9 +133,9 @@
         this.container = null;
         this.animationId = null;
         
-        // Production model URLs from GitHub (with absolute texture and bin file URLs)
+        // Production model URLs from Vercel (faster updates and more reliable)
         this.modelUrls = {
-          goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp25.glb'
+          goetheviertel: 'https://webflow-gunther-map.vercel.app/Goetheviertel_250812_with-textures_webp25.glb'
         };
         
         // Default configuration (fallback)
@@ -202,11 +202,11 @@
           }
         };
         
-        // Environment-aware configuration URL (same as embed code)
+        // Environment-aware configuration URL (now using Vercel for faster updates)
         const isDev = location.hostname.includes('.webflow.io') || location.hostname.includes('localhost');
         const baseUrl = window.SCRIPT_BASE_URL || (isDev 
           ? 'http://localhost:8080/src' 
-          : 'https://joaopdecarvalho.github.io/webflow-gunther-map/src');
+          : 'https://webflow-gunther-map.vercel.app/src');
         this.configUrl = baseUrl + '/config/3d-config.json';
         
         this.currentModelUrl = this.modelUrls[this.config.models.primary];

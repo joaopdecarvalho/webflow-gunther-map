@@ -15,8 +15,8 @@ class WebflowIntegrationValidator {
     
     this.endpoints = {
       local: 'http://localhost:8080',
-      github: 'https://joaopdecarvalho.github.io/webflow-gunther-map',
-      config: 'https://joaopdecarvalho.github.io/webflow-gunther-map/src/config/3d-config.json'
+      vercel: 'https://webflow-gunther-map.vercel.app',
+      config: 'https://webflow-gunther-map.vercel.app/src/config/3d-config.json'
     };
   }
 

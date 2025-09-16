@@ -9,9 +9,9 @@ Interactive 3D map system for Webflow integration using Three.js. Features dual-
 ```javascript
 // Environment detection in router.js
 const isDev = location.hostname.includes('.webflow.io');
-const baseUrl = isDev ? 'http://localhost:8080/src' : 'https://joaopdecarvalho.github.io/webflow-gunther-map/src';
-// Configuration loading from GitHub Pages
-const configUrl = 'https://joaopdecarvalho.github.io/webflow-gunther-map/src/config/3d-config.json';
+const baseUrl = isDev ? 'http://localhost:8080/src' : 'https://webflow-gunther-map.vercel.app/src';
+// Configuration loading from Vercel (faster updates than GitHub Pages)
+const configUrl = 'https://webflow-gunther-map.vercel.app/src/config/3d-config.json';
 ```
 
 ## Development Workflow
@@ -37,12 +37,12 @@ const configUrl = 'https://joaopdecarvalho.github.io/webflow-gunther-map/src/con
 - **Security**: Input validation, CSP compliance, and graceful error handling
 
 ```javascript
-// Model URLs pattern - always use GitHub raw URLs for CORS
+// Model URLs pattern - now using Vercel for faster deployment and updates
 this.modelUrls = {
-  goetheviertel: 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp25.glb'
+  goetheviertel: 'https://webflow-gunther-map.vercel.app/Goetheviertel_250812_with-textures_webp25.glb'
 };
-// Configuration loading from GitHub Pages
-await this.loadConfiguration('https://joaopdecarvalho.github.io/webflow-gunther-map/src/config/3d-config.json');
+// Configuration loading from Vercel (faster than GitHub Pages)
+await this.loadConfiguration('https://webflow-gunther-map.vercel.app/src/config/3d-config.json');
 ```
 
 ## Webflow Integration

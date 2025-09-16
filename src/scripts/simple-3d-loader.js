@@ -89,8 +89,8 @@ class Simple3DLoader {
       }
     };
     
-    // Model URL - using GitHub raw URL for CORS-free loading
-    this.modelUrl = 'https://raw.githubusercontent.com/joaopdecarvalho/webflow-gunther-map/master/public/Goetheviertel_250812_with-textures_webp25.glb';
+    // Model URL - using Vercel URL for faster loading and updates
+    this.modelUrl = 'https://webflow-gunther-map.vercel.app/Goetheviertel_250812_with-textures_webp25.glb';
     
     this.init();
   }

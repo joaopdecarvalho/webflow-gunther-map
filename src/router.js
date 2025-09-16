@@ -12,7 +12,7 @@
     const isDev = location.hostname.includes('.webflow.io') || location.hostname.includes('localhost');
     return isDev
       ? 'http://localhost:8080/src'
-      : 'https://joaopdecarvalho.github.io/webflow-gunther-map/src';
+      : 'https://webflow-gunther-map.vercel.app/src';
   };
 
   const baseUrl = getBaseUrl();

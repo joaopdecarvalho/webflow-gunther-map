@@ -8,12 +8,12 @@
 <script>
 (function() {
   // UNCOMMENT the next line to force PRODUCTION mode (test before going live!)
-  // window.SCRIPT_BASE_URL = 'https://joaopdecarvalho.github.io/webflow-gunther-map/src';
+  // window.SCRIPT_BASE_URL = 'https://webflow-gunther-map.vercel.app/src';
   
   const isDev = location.hostname.includes('.webflow.io');
   const baseUrl = window.SCRIPT_BASE_URL || (isDev 
     ? 'http://localhost:8080/src' 
-    : 'https://joaopdecarvalho.github.io/webflow-gunther-map/src');
+    : 'https://webflow-gunther-map.vercel.app/src');
   
   // Scripts that load on EVERY page
   window.globalScripts = [];  // No global scripts needed
@@ -127,7 +127,8 @@ webflow-gunther-map/
 - **Repository:** webflow-gunther-map
 - **Webflow Domain:** go-goethe-quartier-ebde32.webflow.io
 
-- **GitHub Pages URL:** https://joaopdecarvalho.github.io/webflow-gunther-map
+- **Vercel App URL:** https://webflow-gunther-map.vercel.app
+- **GitHub Pages URL (deprecated):** https://joaopdecarvalho.github.io/webflow-gunther-map
 
 ---
 
