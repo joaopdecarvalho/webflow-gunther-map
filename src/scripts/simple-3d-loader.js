@@ -4,7 +4,7 @@
  * This script provides a clean, straightforward implementation to load
  * a GLB model into the webgl-container element using Three.js with your custom configuration.
  * 
- * Last Updated: January 22, 2025 - Custom Animation Coordinates (27.7,41.2,42.6) → (10.3,21.9,16.0)
+ * Last Updated: September 16, 2025 - Removed placeholder model fallback
  * 
  * DEVELOPMENT NOTE: This script includes camera position panel functionality for debugging.
  * When deploying to production:
@@ -566,9 +566,8 @@ class Simple3DLoader {
       console.log('📁 Loading GLB model:', this.modelUrl);
       
       if (!window.GLTFLoader) {
-        console.warn('⚠️ GLTFLoader not available, creating placeholder');
-        this.createPlaceholderModel();
-        resolve();
+        console.error('❌ GLTFLoader not available, cannot load model');
+        reject(new Error('GLTFLoader not available'));
         return;
       }
       
@@ -608,84 +607,10 @@ class Simple3DLoader {
         },
         (error) => {
           console.error('❌ Error loading model:', error);
-          console.log('🔄 Creating placeholder model instead...');
-          this.createPlaceholderModel();
-          resolve(); // Continue with placeholder instead of rejecting
+          reject(error);
         }
       );
     });
-  }
-
-  createPlaceholderModel() {
-    console.log('🏗️ Creating placeholder 3D model...');
-    
-    // Create a simple building-like structure as placeholder
-    const buildingGroup = new THREE.Group();
-    
-    // Base building
-    const buildingGeometry = new THREE.BoxGeometry(20, 30, 15);
-    const buildingMaterial = new THREE.MeshLambertMaterial({ color: 0x8bc34a });
-    const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-    building.position.y = 15;
-    building.castShadow = true;
-    building.receiveShadow = true;
-    buildingGroup.add(building);
-    
-    // Roof
-    const roofGeometry = new THREE.ConeGeometry(12, 8, 4);
-    const roofMaterial = new THREE.MeshLambertMaterial({ color: 0xd32f2f });
-    const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-    roof.position.y = 34;
-    roof.rotation.y = Math.PI / 4;
-    roof.castShadow = true;
-    buildingGroup.add(roof);
-    
-    // Add some smaller buildings
-    for (let i = 0; i < 5; i++) {
-      const smallGeometry = new THREE.BoxGeometry(8, 15 + Math.random() * 10, 8);
-      const colors = [0x2196f3, 0xff9800, 0x9c27b0, 0x4caf50, 0xff5722];
-      const smallMaterial = new THREE.MeshLambertMaterial({ color: colors[i] });
-      const smallBuilding = new THREE.Mesh(smallGeometry, smallMaterial);
-      
-      const angle = (i / 5) * Math.PI * 2;
-      const radius = 25;
-      smallBuilding.position.x = Math.cos(angle) * radius;
-      smallBuilding.position.z = Math.sin(angle) * radius;
-      smallBuilding.position.y = smallBuilding.geometry.parameters.height / 2;
-      smallBuilding.castShadow = true;
-      smallBuilding.receiveShadow = true;
-      
-      buildingGroup.add(smallBuilding);
-    }
-    
-    // Add ground plane
-    const groundGeometry = new THREE.PlaneGeometry(100, 100);
-    const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x4caf50 });
-    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
-    buildingGroup.add(ground);
-    
-    this.model = buildingGroup;
-    
-    // Set initial opacity to 0 for all materials in the placeholder
-    this.model.traverse((child) => {
-      if (child.isMesh && child.material) {
-        child.material.transparent = true;
-        child.material.opacity = 0;
-      }
-    });
-    
-    this.scene.add(this.model);
-    
-    // Position camera to view the placeholder
-    this.camera.position.set(50, 40, 50);
-    this.camera.lookAt(0, 15, 0);
-    
-    // Start fade-in animation for the placeholder model
-    this.fadeInModel();
-    
-    console.log('✅ Placeholder model created and added to scene');
   }
 
   centerModel() {
