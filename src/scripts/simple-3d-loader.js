@@ -27,10 +27,40 @@ class Simple3DLoader {
     this.model = null;
     this.controls = null;
 
+    // =============================================================================
+    // PRODUCTION - FLAG POI SYSTEM
+    // =============================================================================
+    this.flags = [];
+    this.flagCoordinates = [
+      { id: 1, position: { x: -10.02, y: -7.89, z: 15.98 }, flagFile: "Fahne1.svg" },
+      { id: 2, position: { x: 0.87, y: -7.04, z: 5.25 }, flagFile: "Fahne2.svg" },
+      { id: 3, position: { x: 3.83, y: -7.24, z: -0.31 }, flagFile: "Fahne3.svg" },
+      { id: 4, position: { x: -2.08, y: -7.06, z: -2.12 }, flagFile: "Fahne4.svg" },
+      { id: 5, position: { x: 0.96, y: -7.21, z: -3.3 }, flagFile: "Fahne5.svg" },
+      { id: 6, position: { x: 3.44, y: -7.14, z: -5.94 }, flagFile: "Fahne6.svg" },
+      { id: 7, position: { x: 13.31, y: -7.22, z: 3.47 }, flagFile: "Fahne7.svg" },
+      { id: 8, position: { x: 14.92, y: -7.61, z: -0.03 }, flagFile: "Fahne8.svg" },
+      { id: 9, position: { x: 14.49, y: -7.24, z: -4.19 }, flagFile: "Fahne9.svg" },
+      { id: 10, position: { x: 18.04, y: -7.28, z: -12.59 }, flagFile: "Fahne10.svg" }
+    ];
+
     // Performance and development flags
     this.isDevelopment = this.detectDevelopmentMode();
     this.lastDebugUpdate = 0;
     this.pauseRendering = false;
+
+    // =============================================================================
+    // DEVELOPMENT ONLY - POI MAPPING SYSTEM
+    // =============================================================================
+    // PRODUCTION NOTE: Remove this entire section for production deployment
+    if (this.isDevelopment) {
+      this.poiMappingMode = false;
+      this.tempPOIs = [];
+      this.poiMarkers = [];
+      this.raycaster = null;
+      this.mouse = null; // Will be initialized after Three.js loads
+      console.log('🎯 POI Mapping System initialized (DEV ONLY)');
+    }
     
     // Default configuration based on your 3d-config.json
     this.config = {
@@ -812,6 +842,14 @@ class Simple3DLoader {
     // Add lights
     this.setupLighting();
 
+    // =============================================================================
+    // DEVELOPMENT ONLY - POI MAPPING INITIALIZATION
+    // =============================================================================
+    // PRODUCTION NOTE: Remove this section for production deployment
+    if (this.isDevelopment) {
+      this.initializePOIMapping();
+    }
+
     console.log('✅ Scene setup complete');
   }
 
@@ -866,10 +904,13 @@ class Simple3DLoader {
           
           // Center and scale model
           this.centerModel();
-          
+
+          // Initialize flag POI system
+          this.initializeFlags();
+
           // Start fade-in animation for the model
           this.fadeInModel();
-          
+
           resolve();
         },
         (progress) => {
@@ -1047,6 +1088,9 @@ class Simple3DLoader {
       this.updateBasicControls();
     }
 
+    // Animate flags
+    this.animateFlags();
+
     // Throttled debug updates (development only)
     if (this.isDevelopment && (now - this.lastDebugUpdate) > 100) {
       this.updateCameraInfo();
@@ -1146,6 +1190,17 @@ class Simple3DLoader {
     // Pause rendering immediately
     this.pauseRendering = true;
 
+    // Clean up flags
+    this.disposeFlags();
+
+    // =============================================================================
+    // DEVELOPMENT ONLY - POI CLEANUP
+    // =============================================================================
+    // PRODUCTION NOTE: Remove this section for production deployment
+    if (this.isDevelopment) {
+      this.disposePOIMapping();
+    }
+
     // Clean up model and its materials/geometries
     if (this.model) {
       this.model.traverse((child) => {
@@ -1220,6 +1275,368 @@ class Simple3DLoader {
     // Dispose the material itself
     material.dispose();
   }
+
+  // =============================================================================
+  // PRODUCTION - FLAG POI SYSTEM METHODS
+  // =============================================================================
+
+  initializeFlags() {
+    console.log('🚩 Initializing flag POI system...');
+
+    this.flagCoordinates.forEach((flagData, index) => {
+      this.createFlag(flagData, index);
+    });
+
+    console.log(`✅ ${this.flags.length} flags created and positioned`);
+  }
+
+  createFlag(flagData, index) {
+    // Create flag pole (cylinder)
+    const poleGeometry = new THREE.CylinderGeometry(0.05, 0.05, 3, 8);
+    const poleMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 }); // Brown pole
+    const pole = new THREE.Mesh(poleGeometry, poleMaterial);
+
+    // Position pole at captured coordinates, slightly raised
+    pole.position.set(
+      flagData.position.x,
+      flagData.position.y + 1.5, // Raise pole above ground
+      flagData.position.z
+    );
+
+    // Create flag plane for SVG texture
+    const flagGeometry = new THREE.PlaneGeometry(1.5, 1, 8, 8);
+
+    // Load SVG as texture
+    const loader = new THREE.TextureLoader();
+    const flagTexture = loader.load(
+      `http://localhost:8080/fahnen/${flagData.flagFile}`,
+      (texture) => {
+        console.log(`✅ Loaded flag: ${flagData.flagFile}`);
+      },
+      (progress) => {
+        // Loading progress
+      },
+      (error) => {
+        console.warn(`⚠️ Failed to load flag: ${flagData.flagFile}`, error);
+      }
+    );
+
+    const flagMaterial = new THREE.MeshLambertMaterial({
+      map: flagTexture,
+      transparent: true,
+      side: THREE.DoubleSide,
+      alphaTest: 0.1
+    });
+
+    const flag = new THREE.Mesh(flagGeometry, flagMaterial);
+
+    // Position flag at top of pole
+    flag.position.set(
+      flagData.position.x + 0.75, // Offset to side of pole
+      flagData.position.y + 2.25, // At top of pole
+      flagData.position.z
+    );
+
+    // Create flag group
+    const flagGroup = new THREE.Group();
+    flagGroup.add(pole);
+    flagGroup.add(flag);
+
+    // Add flag wave animation
+    flag.userData = {
+      originalPosition: flag.position.clone(),
+      time: Math.random() * Math.PI * 2,
+      flagIndex: index
+    };
+
+    // Store references
+    this.flags.push({
+      group: flagGroup,
+      flag: flag,
+      pole: pole,
+      data: flagData
+    });
+
+    // Add to scene
+    this.scene.add(flagGroup);
+  }
+
+  animateFlags() {
+    if (!this.flags.length) return;
+
+    const time = performance.now() * 0.001;
+
+    this.flags.forEach((flagObj) => {
+      const flag = flagObj.flag;
+      if (flag.userData) {
+        // Gentle waving animation
+        const waveTime = time + flag.userData.time;
+
+        // Update vertex positions for wave effect
+        const positions = flag.geometry.attributes.position;
+        for (let i = 0; i < positions.count; i++) {
+          const x = positions.getX(i);
+          const y = positions.getY(i);
+
+          // Create wave effect based on x position
+          const waveY = Math.sin(waveTime * 2 + x * 3) * 0.1;
+          const waveZ = Math.sin(waveTime * 1.5 + x * 2) * 0.05;
+
+          positions.setY(i, y + waveY);
+          positions.setZ(i, waveZ);
+        }
+        positions.needsUpdate = true;
+      }
+    });
+  }
+
+  disposeFlags() {
+    console.log('🧹 Cleaning up flags...');
+
+    this.flags.forEach(flagObj => {
+      // Remove from scene
+      this.scene.remove(flagObj.group);
+
+      // Dispose geometries and materials
+      flagObj.flag.geometry.dispose();
+      flagObj.flag.material.dispose();
+      if (flagObj.flag.material.map) {
+        flagObj.flag.material.map.dispose();
+      }
+
+      flagObj.pole.geometry.dispose();
+      flagObj.pole.material.dispose();
+    });
+
+    this.flags = [];
+    console.log('✅ Flags disposed');
+  }
+
+  // =============================================================================
+  // DEVELOPMENT ONLY - POI MAPPING METHODS
+  // =============================================================================
+  // PRODUCTION NOTE: Remove this entire section for production deployment
+
+  initializePOIMapping() {
+    if (!this.isDevelopment) return;
+
+    console.log('🎯 Initializing POI mapping system...');
+
+    // Initialize raycaster and mouse vector for 3D intersection detection
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
+
+    // Add click event listener for POI placement
+    this.renderer.domElement.addEventListener('click', (event) => {
+      if (this.poiMappingMode) {
+        this.placePOI(event);
+      }
+    });
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'p' && event.ctrlKey && event.altKey) {
+        event.preventDefault();
+        this.togglePOIMappingMode();
+      }
+      if (event.key === 'c' && event.ctrlKey && this.poiMappingMode) {
+        event.preventDefault();
+        this.clearAllPOIs();
+      }
+    });
+
+    console.log('✅ POI mapping system ready (Ctrl+Alt+P to toggle, Ctrl+C to clear)');
+  }
+
+  togglePOIMappingMode() {
+    if (!this.isDevelopment) return;
+
+    this.poiMappingMode = !this.poiMappingMode;
+
+    if (this.poiMappingMode) {
+      console.log('🎯 POI Mapping Mode: ENABLED - Click on the 3D model to place POIs');
+      this.showPOIMappingNotification('POI Mapping Mode: ENABLED\nClick on the 3D model to place POIs\nCtrl+C to clear all POIs');
+
+      // Change cursor to crosshair
+      this.renderer.domElement.style.cursor = 'crosshair';
+
+      // Disable orbit controls to prevent interference
+      if (this.controls) {
+        this.controls.enabled = false;
+      }
+    } else {
+      console.log('🎯 POI Mapping Mode: DISABLED');
+      this.showPOIMappingNotification('POI Mapping Mode: DISABLED');
+
+      // Restore normal cursor
+      this.renderer.domElement.style.cursor = 'default';
+
+      // Re-enable orbit controls
+      if (this.controls) {
+        this.controls.enabled = true;
+      }
+    }
+  }
+
+  placePOI(event) {
+    if (!this.isDevelopment || !this.model) return;
+
+    // Calculate mouse position in normalized device coordinates (-1 to +1)
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+    // Update the raycaster with camera and mouse position
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    // Calculate intersections with the model
+    const intersects = this.raycaster.intersectObject(this.model, true);
+
+    if (intersects.length > 0) {
+      const intersection = intersects[0];
+      const position = intersection.point;
+
+      // Create POI data
+      const poiData = {
+        id: this.tempPOIs.length + 1,
+        position: {
+          x: parseFloat(position.x.toFixed(2)),
+          y: parseFloat(position.y.toFixed(2)),
+          z: parseFloat(position.z.toFixed(2))
+        },
+        name: `POI ${this.tempPOIs.length + 1}`,
+        type: 'default',
+        timestamp: new Date().toISOString()
+      };
+
+      // Add to temporary POI list
+      this.tempPOIs.push(poiData);
+
+      // Create visual marker
+      this.createPOIMarker(poiData);
+
+      console.log('🎯 POI placed:', poiData);
+      this.updatePOIExport();
+    }
+  }
+
+  createPOIMarker(poiData) {
+    if (!this.isDevelopment) return;
+
+    // Create a visual marker at the POI position
+    const markerGeometry = new THREE.SphereGeometry(0.5, 8, 6);
+    const markerMaterial = new THREE.MeshBasicMaterial({
+      color: 0xff4444,
+      transparent: true,
+      opacity: 0.8
+    });
+    const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+
+    marker.position.set(poiData.position.x, poiData.position.y, poiData.position.z);
+    marker.userData = { poiId: poiData.id, isPOIMarker: true };
+
+    this.scene.add(marker);
+    this.poiMarkers.push(marker);
+
+    // Create text label
+    this.createPOILabel(poiData, marker);
+  }
+
+  createPOILabel(poiData, marker) {
+    if (!this.isDevelopment) return;
+
+    // Create a simple text label using CSS3D (simplified approach)
+    // This is a basic implementation - could be enhanced with HTML labels
+    const labelGeometry = new THREE.PlaneGeometry(2, 0.5);
+    const labelMaterial = new THREE.MeshBasicMaterial({
+      color: 0x000000,
+      transparent: true,
+      opacity: 0.6
+    });
+    const label = new THREE.Mesh(labelGeometry, labelMaterial);
+
+    label.position.copy(marker.position);
+    label.position.y += 1; // Position above the marker
+    label.lookAt(this.camera.position);
+
+    this.scene.add(label);
+    this.poiMarkers.push(label);
+  }
+
+  clearAllPOIs() {
+    if (!this.isDevelopment) return;
+
+    console.log('🧹 Clearing all POI markers...');
+
+    // Remove visual markers from scene
+    this.poiMarkers.forEach(marker => {
+      this.scene.remove(marker);
+      if (marker.geometry) marker.geometry.dispose();
+      if (marker.material) marker.material.dispose();
+    });
+
+    // Clear arrays
+    this.tempPOIs = [];
+    this.poiMarkers = [];
+
+    this.updatePOIExport();
+    console.log('✅ All POI markers cleared');
+  }
+
+  updatePOIExport() {
+    if (!this.isDevelopment) return;
+
+    // Update export data display in console
+    if (this.tempPOIs.length > 0) {
+      console.log('📊 Current POIs:', this.tempPOIs);
+      console.log('📋 Export data:', JSON.stringify(this.tempPOIs, null, 2));
+    }
+  }
+
+  showPOIMappingNotification(message) {
+    if (!this.isDevelopment) return;
+
+    // Create a temporary notification
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 14px;
+      white-space: pre-line;
+      z-index: 10000;
+      max-width: 300px;
+    `;
+    notification.textContent = message;
+
+    document.body.appendChild(notification);
+
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 3000);
+  }
+
+  // Add POI cleanup to existing dispose method
+  disposePOIMapping() {
+    if (!this.isDevelopment) return;
+
+    console.log('🧹 Cleaning up POI mapping system...');
+
+    // Clear all POI markers
+    this.clearAllPOIs();
+
+    // Remove event listeners (handled by main dispose method)
+    this.poiMappingMode = false;
+    this.raycaster = null;
+  }
 }
 
 // =============================================================================
@@ -1280,6 +1697,79 @@ window.copyCurrentPosition = async function() {
     alert('Copy failed - check console for camera position code');
   }
 };
+
+// =============================================================================
+// DEVELOPMENT ONLY - POI MAPPING GLOBAL FUNCTIONS
+// =============================================================================
+// PRODUCTION NOTE: Remove this entire section for production deployment
+
+window.togglePOIMapping = function() {
+  const loader = window.simple3DLoader;
+  if (!loader || !loader.isDevelopment) return;
+
+  loader.togglePOIMappingMode();
+};
+
+window.clearPOIs = function() {
+  const loader = window.simple3DLoader;
+  if (!loader || !loader.isDevelopment) return;
+
+  loader.clearAllPOIs();
+};
+
+window.exportPOIs = async function() {
+  const loader = window.simple3DLoader;
+  if (!loader || !loader.isDevelopment || loader.tempPOIs.length === 0) {
+    console.log('No POIs to export');
+    return;
+  }
+
+  const poiConfig = {
+    pois: loader.tempPOIs.map(poi => ({
+      id: poi.id,
+      name: poi.name,
+      type: poi.type,
+      position: poi.position,
+      // Template for additional POI data
+      content: {
+        title: poi.name,
+        description: "Add POI description here",
+        image: "path/to/poi/image.jpg",
+        website: "https://example.com"
+      }
+    })),
+    exportedAt: new Date().toISOString(),
+    totalPOIs: loader.tempPOIs.length
+  };
+
+  const exportData = JSON.stringify(poiConfig, null, 2);
+
+  try {
+    await navigator.clipboard.writeText(exportData);
+    console.log('📋 POI configuration copied to clipboard!');
+    console.log('📊 Exported POIs:', poiConfig);
+
+    // Show notification
+    if (loader.showPOIMappingNotification) {
+      loader.showPOIMappingNotification(`✅ ${poiConfig.totalPOIs} POIs exported to clipboard!\n\nPaste into your POI configuration file.`);
+    }
+  } catch (err) {
+    console.warn('Copy failed, POI data logged to console:', exportData);
+    alert('Copy failed - check console for POI configuration');
+  }
+};
+
+// Console helper commands
+if (typeof window !== 'undefined' && window.simple3DLoader && window.simple3DLoader.isDevelopment) {
+  console.log(`
+🎯 POI Mapping Commands Available:
+- togglePOIMapping() - Enable/disable POI placement mode
+- clearPOIs() - Remove all placed POI markers
+- exportPOIs() - Copy POI configuration to clipboard
+- Ctrl+Alt+P - Toggle POI mapping mode
+- Ctrl+C - Clear all POIs (when in POI mode)
+  `);
+}
 
 // Auto-initialization
 if (document.readyState === 'loading') {

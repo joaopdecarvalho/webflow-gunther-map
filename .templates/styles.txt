@@ -1,0 +1,120 @@
+<!-- WebGL Container Styling -->
+  <style>
+    .webgl-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .webgl-container canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    
+    /* Camera Position Panel Styles */
+    .camera-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid rgba(75, 85, 99, 0.5);
+      border-radius: 12px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      color: #e5e7eb;
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      min-width: 280px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    .camera-panel h3 {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #f9fafb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+    
+    .camera-info div {
+      margin: 8px 0;
+      padding: 6px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(156, 163, 175, 0.1);
+      transition: all 0.2s ease;
+    }
+    
+    .camera-info div:last-child {
+      border-bottom: none;
+    }
+    
+    .camera-info div:hover {
+      background: rgba(243, 244, 246, 0.05);
+      padding: 6px 8px;
+      border-radius: 6px;
+      margin: 8px -8px;
+    }
+    
+    .camera-info span {
+      font-weight: 600;
+      color: #059669;
+      font-family: monospace;
+    }
+    
+    .copy-btn {
+      background: #374151;
+      border: 1px solid #4b5563;
+      color: #e5e7eb;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 12px;
+      width: 100%;
+      transition: all 0.2s ease;
+    }
+    
+    .copy-btn:hover {
+      background: #4b5563;
+      border-color: #6b7280;
+    }
+    
+    .minimize-btn {
+      background: none;
+      border: none;
+      color: #9ca3af;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 0;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .panel-content {
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+    
+    .panel-content.hidden {
+      max-height: 0;
+      opacity: 0;
+      padding: 0;
+      margin: 0;
+    }
+    
+    /* DEVELOPMENT ONLY: Camera panel visible for staging - remove for production if not needed */
+    /* .camera-panel { display: none !important; } */
+  </style>

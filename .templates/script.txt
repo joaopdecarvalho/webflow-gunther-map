@@ -1,0 +1,1 @@
+23:  <script src="http://localhost:8080/src/scripts/simple-3d-loader.js"></script>
