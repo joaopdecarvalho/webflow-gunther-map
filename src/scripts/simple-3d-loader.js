@@ -43,20 +43,6 @@ class Simple3DLoader {
           "intensity": 3.9,
           "skyColor": "#fff5f5",
           "groundColor": "#bd9a1f"
-        },
-        "mainLight": {
-          "enabled": false,
-          "intensity": 1,
-          "castShadows": false
-        },
-        "fillLight": {
-          "enabled": false,
-          "intensity": 0.4,
-          "color": "#87ceeb"
-        },
-        "ambientLight": {
-          "enabled": false,
-          "intensity": 0.6
         }
       },
       "models": {
@@ -165,8 +151,8 @@ class Simple3DLoader {
     console.log('🎬 Playing welcome animation with custom start/end positions (smooth expo.inOut easing)...');
     
     // Custom animation parameters from user specification
-    const startPos = new THREE.Vector3(27.7, 41.2, 42.6);
-    const startTarget = new THREE.Vector3(-0.4, -36.6, -9.4);
+    const startPos = new THREE.Vector3(26.6, 29.9, 43.7);
+    const startTarget = new THREE.Vector3(-0.8, -37.3, -9.4);
     const endPos = new THREE.Vector3(10.3, 21.9, 16.0);
     const endTarget = new THREE.Vector3(-6.5, -34.2, -11.8);
     
@@ -519,45 +505,6 @@ class Simple3DLoader {
       console.log('💡 Warm ambient lighting added');
     }
 
-    // Main directional light (optional)
-    if (lightingConfig.mainLight.enabled) {
-      const directionalLight = new THREE.DirectionalLight(0xffffff, lightingConfig.mainLight.intensity);
-      directionalLight.position.set(100, 100, 100);
-      directionalLight.castShadow = lightingConfig.mainLight.castShadows;
-      
-      if (lightingConfig.mainLight.castShadows) {
-        directionalLight.shadow.mapSize.width = 2048;
-        directionalLight.shadow.mapSize.height = 2048;
-        directionalLight.shadow.camera.near = 0.5;
-        directionalLight.shadow.camera.far = 500;
-        directionalLight.shadow.camera.left = -100;
-        directionalLight.shadow.camera.right = 100;
-        directionalLight.shadow.camera.top = 100;
-        directionalLight.shadow.camera.bottom = -100;
-      }
-      
-      this.scene.add(directionalLight);
-      console.log('💡 Main directional light added');
-    }
-
-    // Fill light (optional)
-    if (lightingConfig.fillLight.enabled) {
-      const fillLight = new THREE.DirectionalLight(
-        lightingConfig.fillLight.color, 
-        lightingConfig.fillLight.intensity
-      );
-      fillLight.position.set(-50, 50, 50);
-      this.scene.add(fillLight);
-      console.log('💡 Fill light added');
-    }
-
-    // Standard ambient light (fallback)
-    if (lightingConfig.ambientLight.enabled) {
-      const ambientLight = new THREE.AmbientLight(0xffffff, lightingConfig.ambientLight.intensity);
-      this.scene.add(ambientLight);
-      console.log('💡 Standard ambient light added');
-    }
-
     console.log('✅ Lighting setup complete with configuration');
   }
 
@@ -566,9 +513,8 @@ class Simple3DLoader {
       console.log('📁 Loading GLB model:', this.modelUrl);
       
       if (!window.GLTFLoader) {
-        console.warn('⚠️ GLTFLoader not available, creating placeholder');
-        this.createPlaceholderModel();
-        resolve();
+        console.error('❌ GLTFLoader not available');
+        reject(new Error('GLTFLoader not available'));
         return;
       }
       
@@ -608,84 +554,10 @@ class Simple3DLoader {
         },
         (error) => {
           console.error('❌ Error loading model:', error);
-          console.log('🔄 Creating placeholder model instead...');
-          this.createPlaceholderModel();
-          resolve(); // Continue with placeholder instead of rejecting
+          reject(error);
         }
       );
     });
-  }
-
-  createPlaceholderModel() {
-    console.log('🏗️ Creating placeholder 3D model...');
-    
-    // Create a simple building-like structure as placeholder
-    const buildingGroup = new THREE.Group();
-    
-    // Base building
-    const buildingGeometry = new THREE.BoxGeometry(20, 30, 15);
-    const buildingMaterial = new THREE.MeshLambertMaterial({ color: 0x8bc34a });
-    const building = new THREE.Mesh(buildingGeometry, buildingMaterial);
-    building.position.y = 15;
-    building.castShadow = true;
-    building.receiveShadow = true;
-    buildingGroup.add(building);
-    
-    // Roof
-    const roofGeometry = new THREE.ConeGeometry(12, 8, 4);
-    const roofMaterial = new THREE.MeshLambertMaterial({ color: 0xd32f2f });
-    const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-    roof.position.y = 34;
-    roof.rotation.y = Math.PI / 4;
-    roof.castShadow = true;
-    buildingGroup.add(roof);
-    
-    // Add some smaller buildings
-    for (let i = 0; i < 5; i++) {
-      const smallGeometry = new THREE.BoxGeometry(8, 15 + Math.random() * 10, 8);
-      const colors = [0x2196f3, 0xff9800, 0x9c27b0, 0x4caf50, 0xff5722];
-      const smallMaterial = new THREE.MeshLambertMaterial({ color: colors[i] });
-      const smallBuilding = new THREE.Mesh(smallGeometry, smallMaterial);
-      
-      const angle = (i / 5) * Math.PI * 2;
-      const radius = 25;
-      smallBuilding.position.x = Math.cos(angle) * radius;
-      smallBuilding.position.z = Math.sin(angle) * radius;
-      smallBuilding.position.y = smallBuilding.geometry.parameters.height / 2;
-      smallBuilding.castShadow = true;
-      smallBuilding.receiveShadow = true;
-      
-      buildingGroup.add(smallBuilding);
-    }
-    
-    // Add ground plane
-    const groundGeometry = new THREE.PlaneGeometry(100, 100);
-    const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x4caf50 });
-    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
-    buildingGroup.add(ground);
-    
-    this.model = buildingGroup;
-    
-    // Set initial opacity to 0 for all materials in the placeholder
-    this.model.traverse((child) => {
-      if (child.isMesh && child.material) {
-        child.material.transparent = true;
-        child.material.opacity = 0;
-      }
-    });
-    
-    this.scene.add(this.model);
-    
-    // Position camera to view the placeholder
-    this.camera.position.set(50, 40, 50);
-    this.camera.lookAt(0, 15, 0);
-    
-    // Start fade-in animation for the placeholder model
-    this.fadeInModel();
-    
-    console.log('✅ Placeholder model created and added to scene');
   }
 
   centerModel() {
