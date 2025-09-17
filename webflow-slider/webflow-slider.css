@@ -1,0 +1,76 @@
+  /* Your existing CSS */
+  .station-gallery-slider{ opacity:0; transition:opacity .2s ease; }
+  .station-gallery-slider.is-ready{ opacity:1; }
+  .station-gallery-list{ position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden; }
+X
+
+  .modal_scroll {
+    height: 100% !important;
+    overflow-y: auto !important;
+  }
+
+  /* FIXED: Slider and image sizing */
+  .station-gallery-slider {
+    height: 70vh !important;
+    min-height: 500px !important;
+  }
+
+  .station-gallery-slider .w-slider-mask {
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .station-gallery-slider .w-slide {
+    height: 100% !important;
+  }
+
+  /* Make images fill the slide properly */
+  .station-gallery-slider .w-slide img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* Changed from contain to cover */
+    object-position: center !important;
+    display: block !important;
+  }
+
+  /* Ensure slider arrows are visible */
+  .station-gallery-slider .w-slider-arrow-left,
+  .station-gallery-slider .w-slider-arrow-right {
+    position: absolute !important;
+    z-index: 10 !important;
+    background: rgba(255,255,255,0.8) !important;
+    border-radius: 50% !important;
+  }
+
+  /* Force slider redraw after modal opens */
+  .modal_dialog[style*="display: block"] .station-gallery-slider {
+    opacity: 0;
+    animation: redrawSlider 0.1s ease forwards;
+  }
+
+  @keyframes redrawSlider {
+    to { opacity: 1; }
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    .modal_content {
+      height: 80vh !important;
+    }
+
+    .station-gallery-slider {
+      height: 60vh !important;
+      min-height: 400px !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .modal_content {
+      height: 75vh !important;
+    }
+
+    .station-gallery-slider {
+      height: 50vh !important;
+      min-height: 300px !important;
+    }
+  }

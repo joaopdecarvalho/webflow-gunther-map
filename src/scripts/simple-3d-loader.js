@@ -1088,9 +1088,6 @@ class Simple3DLoader {
       this.updateBasicControls();
     }
 
-    // Animate flags
-    this.animateFlags();
-
     // Throttled debug updates (development only)
     if (this.isDevelopment && (now - this.lastDebugUpdate) > 100) {
       this.updateCameraInfo();
@@ -1291,103 +1288,129 @@ class Simple3DLoader {
   }
 
   createFlag(flagData, index) {
-    // Create flag pole (cylinder)
-    const poleGeometry = new THREE.CylinderGeometry(0.05, 0.05, 3, 8);
-    const poleMaterial = new THREE.MeshLambertMaterial({ color: 0x8B4513 }); // Brown pole
+    // Create 3D flag group to hold all components
+    const flagGroup = new THREE.Group();
+
+    // =============================================================================
+    // 1. CREATE FLAG POLE (VERTICAL CYLINDER)
+    // =============================================================================
+    const poleGeometry = new THREE.CylinderGeometry(0.05, 0.05, 4, 8); // radius, height, segments
+    const poleMaterial = new THREE.MeshLambertMaterial({
+      color: 0xffe886 // Same yellow as flag (#ffe886)
+    });
     const pole = new THREE.Mesh(poleGeometry, poleMaterial);
+    pole.position.y = 2; // Center pole vertically
+    flagGroup.add(pole);
 
-    // Position pole at captured coordinates, slightly raised
-    pole.position.set(
-      flagData.position.x,
-      flagData.position.y + 1.5, // Raise pole above ground
-      flagData.position.z
+    // =============================================================================
+    // 2. CREATE FLAG SHAPE (CURVED TRIANGULAR)
+    // =============================================================================
+    // Create custom flag geometry based on SVG path analysis
+    const flagShape = new THREE.Shape();
+
+    // Scale down the SVG coordinates to reasonable 3D size (original was 334x434)
+    const scale = 0.01; // Scale factor to convert SVG to 3D units
+
+    // Recreate the curved triangular flag shape from SVG path
+    flagShape.moveTo(16.988 * scale, 0);
+    flagShape.lineTo((16.988 + 82.193) * scale, 4.364 * scale);
+
+    // Create curved edge using quadratic curves to approximate the SVG path
+    flagShape.quadraticCurveTo(
+      (16.988 + 82.193 + 100) * scale, 30 * scale,
+      (16.988 + 82.193 + 150) * scale, 60 * scale
+    );
+    flagShape.quadraticCurveTo(
+      (16.988 + 82.193 + 200) * scale, 100 * scale,
+      (16.988 + 82.193 + 226.731) * scale, (4.364 + 84.821) * scale
     );
 
-    // Create flag plane for SVG texture
-    const flagGeometry = new THREE.PlaneGeometry(1.5, 1, 8, 8);
-
-    // Load SVG as texture
-    const loader = new THREE.TextureLoader();
-    const flagTexture = loader.load(
-      `http://localhost:8080/fahnen/${flagData.flagFile}`,
-      (texture) => {
-        console.log(`✅ Loaded flag: ${flagData.flagFile}`);
-      },
-      (progress) => {
-        // Loading progress
-      },
-      (error) => {
-        console.warn(`⚠️ Failed to load flag: ${flagData.flagFile}`, error);
-      }
+    // Complete the flag outline with more curved sections
+    flagShape.quadraticCurveTo(
+      250 * scale, 150 * scale,
+      200 * scale, 200 * scale
     );
+    flagShape.quadraticCurveTo(
+      150 * scale, 230 * scale,
+      100 * scale, 230 * scale
+    );
+    flagShape.lineTo(16.988 * scale, 230 * scale);
+    flagShape.lineTo(16.988 * scale, 0);
 
-    const flagMaterial = new THREE.MeshLambertMaterial({
-      map: flagTexture,
-      transparent: true,
-      side: THREE.DoubleSide,
-      alphaTest: 0.1
+    const flagGeometry = new THREE.ExtrudeGeometry(flagShape, {
+      depth: 0.05, // Thin flag
+      bevelEnabled: false
     });
 
-    const flag = new THREE.Mesh(flagGeometry, flagMaterial);
+    const flagMaterial = new THREE.MeshLambertMaterial({
+      color: 0xffe886, // Yellow color from SVG (#ffe886)
+      side: THREE.DoubleSide
+    });
 
-    // Position flag at top of pole
-    flag.position.set(
-      flagData.position.x + 0.75, // Offset to side of pole
-      flagData.position.y + 2.25, // At top of pole
+    const flagMesh = new THREE.Mesh(flagGeometry, flagMaterial);
+
+    // Position flag next to pole
+    flagMesh.position.x = 1.2; // Offset from pole
+    flagMesh.position.y = 2.8; // Upper part of pole
+    flagMesh.rotation.y = Math.PI / 2; // Face outward from pole
+
+    flagGroup.add(flagMesh);
+
+    // =============================================================================
+    // 3. CREATE 3D NUMBER TEXT
+    // =============================================================================
+    // Create a canvas-based number texture for the flag
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+    const context = canvas.getContext('2d');
+
+    // Draw number on canvas
+    context.fillStyle = '#000000'; // Black text
+    context.font = 'bold 80px Arial';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(flagData.id.toString(), 64, 64);
+
+    // Create texture from canvas
+    const numberTexture = new THREE.CanvasTexture(canvas);
+    const numberGeometry = new THREE.PlaneGeometry(0.8, 0.8);
+    const numberMaterial = new THREE.MeshLambertMaterial({
+      map: numberTexture,
+      transparent: true,
+      side: THREE.DoubleSide
+    });
+
+    const numberMesh = new THREE.Mesh(numberGeometry, numberMaterial);
+    numberMesh.position.x = 1.8; // On the flag
+    numberMesh.position.y = 3.2; // Upper area of flag
+    numberMesh.rotation.y = Math.PI / 2; // Face same direction as flag
+
+    flagGroup.add(numberMesh);
+
+    // =============================================================================
+    // POSITION THE ENTIRE FLAG GROUP
+    // =============================================================================
+    flagGroup.position.set(
+      flagData.position.x,
+      flagData.position.y + 2.1, // Adjust height so base of pole touches ground
       flagData.position.z
     );
-
-    // Create flag group
-    const flagGroup = new THREE.Group();
-    flagGroup.add(pole);
-    flagGroup.add(flag);
-
-    // Add flag wave animation
-    flag.userData = {
-      originalPosition: flag.position.clone(),
-      time: Math.random() * Math.PI * 2,
-      flagIndex: index
-    };
 
     // Store references
     this.flags.push({
-      group: flagGroup,
-      flag: flag,
-      pole: pole,
+      flag: flagGroup,
       data: flagData
     });
 
     // Add to scene
     this.scene.add(flagGroup);
+
+    console.log(`📍 3D Flag ${flagData.id} created at (${flagData.position.x}, ${flagData.position.y}, ${flagData.position.z})`);
   }
 
   animateFlags() {
-    if (!this.flags.length) return;
-
-    const time = performance.now() * 0.001;
-
-    this.flags.forEach((flagObj) => {
-      const flag = flagObj.flag;
-      if (flag.userData) {
-        // Gentle waving animation
-        const waveTime = time + flag.userData.time;
-
-        // Update vertex positions for wave effect
-        const positions = flag.geometry.attributes.position;
-        for (let i = 0; i < positions.count; i++) {
-          const x = positions.getX(i);
-          const y = positions.getY(i);
-
-          // Create wave effect based on x position
-          const waveY = Math.sin(waveTime * 2 + x * 3) * 0.1;
-          const waveZ = Math.sin(waveTime * 1.5 + x * 2) * 0.05;
-
-          positions.setY(i, y + waveY);
-          positions.setZ(i, waveZ);
-        }
-        positions.needsUpdate = true;
-      }
-    });
+    // No animation needed - flags are static
   }
 
   disposeFlags() {
@@ -1395,7 +1418,7 @@ class Simple3DLoader {
 
     this.flags.forEach(flagObj => {
       // Remove from scene
-      this.scene.remove(flagObj.group);
+      this.scene.remove(flagObj.flag);
 
       // Dispose geometries and materials
       flagObj.flag.geometry.dispose();
@@ -1403,9 +1426,6 @@ class Simple3DLoader {
       if (flagObj.flag.material.map) {
         flagObj.flag.material.map.dispose();
       }
-
-      flagObj.pole.geometry.dispose();
-      flagObj.pole.material.dispose();
     });
 
     this.flags = [];
