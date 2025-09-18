@@ -24,7 +24,7 @@ function getBaseUrl() {
   return baseUrl;
 }
 
-// Script loader utility
+// Script loader utility with dev fallback
 const loadScript = (scriptPath) => {
   return new Promise((resolve, reject) => {
     // Check if script already loaded
@@ -34,26 +34,38 @@ const loadScript = (scriptPath) => {
       return;
     }
 
-    const script = document.createElement('script');
-    const fullUrl = `${getBaseUrl()}/scripts/${scriptPath}`;
-    
-    script.src = fullUrl;
-    script.async = true;
-    script.defer = true;
-    script.setAttribute('data-script-id', scriptPath);
-    script.setAttribute('crossorigin', 'anonymous');
-    
-    script.onload = () => {
-      console.log(`✅ Script loaded: ${scriptPath}`);
-      resolve();
+    const tryLoadScript = (url, isRetry = false) => {
+      const script = document.createElement('script');
+      script.src = url;
+      script.async = true;
+      script.defer = true;
+      script.setAttribute('data-script-id', scriptPath);
+      script.setAttribute('crossorigin', 'anonymous');
+
+      script.onload = () => {
+        console.log(`✅ Script loaded: ${scriptPath} from ${url}`);
+        resolve();
+      };
+
+      script.onerror = (error) => {
+        console.error(`❌ Failed to load script: ${scriptPath} from ${url}`, error);
+
+        // If we're in dev and this was the localhost attempt, try Vercel fallback
+        if (isLocal && !isRetry) {
+          console.log(`🔄 Retrying with Vercel fallback for: ${scriptPath}`);
+          const vercelUrl = `https://webflow-gunther-map.vercel.app/src/scripts/${scriptPath}`;
+          tryLoadScript(vercelUrl, true);
+        } else {
+          reject(new Error(`Failed to load script: ${scriptPath}`));
+        }
+      };
+
+      document.head.appendChild(script);
     };
-    
-    script.onerror = (error) => {
-      console.error(`❌ Failed to load script: ${scriptPath}`, error);
-      reject(new Error(`Failed to load script: ${scriptPath}`));
-    };
-    
-    document.head.appendChild(script);
+
+    // Start with the primary URL
+    const primaryUrl = `${getBaseUrl()}/scripts/${scriptPath}`;
+    tryLoadScript(primaryUrl);
   });
 };
 
