@@ -71,7 +71,7 @@ const loadScript = (scriptPath) => {
 
 // Global scripts (loaded on every page)
 window.globalScripts = [
-  'cms-data-integration.js'  // CMS data integration for all pages
+  // No global scripts currently needed
 ];
 
 // Page-specific scripts

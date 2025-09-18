@@ -39,12 +39,12 @@ const configUrl = isLocal
 
 **Claude and other Agents has access to multiple MCP (Model Context Protocol) servers to enhance development capabilities:**
 
-* **Webflow MCP:** Direct integration with Webflow API for CMS management, component updates, page publishing, and site configuration
+* **Webflow MCP:** Direct integration with Webflow API for component updates, page publishing, and site configuration
 * **Playwright MCP:** Automated browser testing, visual regression testing, and end-to-end test scenarios
 * **Ref(lightweight) or Context7 MCP:** Up-to-date documentation and code examples for any library or framework
 
 **Usage Guidelines:**
-- Leverage Webflow MCP for direct site management and CMS operations
+- Leverage Webflow MCP for direct site management operations
 - Use Playwright MCP for comprehensive testing workflows and browser automation
 - Access Ref or Context7 for real-time library documentation and implementation examples
 - Combine multiple MCPs for complex workflows (e.g., update Webflow site → test with Playwright)

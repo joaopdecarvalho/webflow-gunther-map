@@ -25,20 +25,20 @@ const getScriptEntries = () => {
 export default defineConfig({
   server: {
     port: 8080,
-    host: 'localhost',
+    host: '0.0.0.0', // Allow external connections
+    https: false, // Set to true for HTTPS if needed
     cors: {
-      origin: [
-        'http://localhost:*',
-        'https://*.webflow.io',
-        'https://*.webflow.com'
-      ],
-      credentials: true,
-      methods: ['GET', 'POST'],
+      origin: true, // Allow all origins during development
+      credentials: false,
+      methods: ['GET', 'POST', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      preflightContinue: false,
+      optionsSuccessStatus: 204
     },
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization'
     }
   },
   plugins: [
