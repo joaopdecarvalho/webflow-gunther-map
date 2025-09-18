@@ -59,7 +59,7 @@ const loadScript = (scriptPath) => {
 
 // Global scripts (loaded on every page)
 window.globalScripts = [
-  // Add any scripts that should load on every page
+  'cms-data-integration.js'  // CMS data integration for all pages
 ];
 
 // Page-specific scripts
@@ -73,21 +73,32 @@ window.pageScripts = {
 // Auto-detect homepage and load appropriate scripts
 function detectAndLoadScripts() {
   const currentPath = window.location.pathname;
-  const isHomepage = currentPath === '/' || currentPath === '' || currentPath === '/index.html';
-  
+  const isHomepage = currentPath === '/' ||
+                    currentPath === '' ||
+                    currentPath === '/index.html' ||
+                    currentPath.includes('/index.html') ||
+                    currentPath.includes('webflow-staging-site-files');
+
+  console.log('🔍 Current path:', currentPath);
+  console.log('🏠 Is homepage?', isHomepage);
+
   // Load global scripts first
   const globalPromises = (window.globalScripts || []).map(script => loadScript(script));
-  
+
   // Load page-specific scripts
   let pagePromises = [];
   if (isHomepage) {
+    console.log('📍 Loading homepage scripts...');
     pagePromises = (window.pageScripts['/'] || []).map(script => loadScript(script));
   }
-  
+
   // Wait for all scripts to load
   Promise.all([...globalPromises, ...pagePromises])
     .then(() => {
       console.log('🚀 All scripts loaded successfully');
+      if (isHomepage) {
+        console.log('🌍 3D loader should be active');
+      }
     })
     .catch((error) => {
       console.error('❌ Error loading scripts:', error);
