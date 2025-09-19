@@ -66,16 +66,16 @@ class Simple3DLoader {
     this.config = {
       "version": "1.0.0",
       "camera": {
-        "position": [12.2, 7.1, 79.2],
-        "target": [-17.5, -68.8, 36.7],
+        "position": [10.3, 1.2, 85.4],
+        "target": [-14.0, -61.5, 33.4],
         "fov": 60,
-        "minDistance": 50,
+        "minDistance": 85,
         "maxDistance": 125
       },
       "controls": {
-        "minPolarAngle": 22,
-        "maxPolarAngle": 104,
-        "minDistance": 50,
+        "minPolarAngle": 27,
+        "maxPolarAngle": 54,
+        "minDistance": 85,
         "maxDistance": 125,
         "enableZoom": true,
         "enableRotate": true,
@@ -101,8 +101,8 @@ class Simple3DLoader {
           "easing": "easeInOut",
           "startPosition": [30.7, 20.7, 107.5],
           "startTarget": [-18.7, -72.1, 39.8],
-          "endPosition": [12.2, 7.1, 79.2],
-          "endTarget": [-17.5, -68.8, 36.7]
+          "endPosition": [10.3, 1.2, 85.4],
+          "endTarget": [-14.0, -61.5, 33.4]
         }
       },
       "performance": {
@@ -1296,13 +1296,13 @@ class Simple3DLoader {
           <div style="color: #FFC107; margin-bottom: 4px;"><strong>Rotation Limits:</strong></div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
             <label style="width: 45%;">Min Polar (°):</label>
-            <input type="range" id="minPolar" min="0" max="90" step="1" value="22" style="width: 40%;">
-            <span id="minPolarValue" style="width: 10%; text-align: right;">22</span>
+            <input type="range" id="minPolar" min="0" max="90" step="1" value="27" style="width: 40%;">
+            <span id="minPolarValue" style="width: 10%; text-align: right;">27</span>
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
             <label style="width: 45%;">Max Polar (°):</label>
-            <input type="range" id="maxPolar" min="45" max="180" step="1" value="104" style="width: 40%;">
-            <span id="maxPolarValue" style="width: 10%; text-align: right;">104</span>
+            <input type="range" id="maxPolar" min="45" max="180" step="1" value="54" style="width: 40%;">
+            <span id="maxPolarValue" style="width: 10%; text-align: right;">54</span>
           </div>
         </div>
 
@@ -1311,8 +1311,8 @@ class Simple3DLoader {
           <div style="color: #4CAF50; margin-bottom: 4px;"><strong>Distance Limits:</strong></div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
             <label style="width: 45%;">Min Distance:</label>
-            <input type="range" id="minDistance" min="10" max="100" step="5" value="50" style="width: 40%;">
-            <span id="minDistanceValue" style="width: 10%; text-align: right;">50</span>
+            <input type="range" id="minDistance" min="10" max="150" step="5" value="85" style="width: 40%;">
+            <span id="minDistanceValue" style="width: 10%; text-align: right;">85</span>
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
             <label style="width: 45%;">Max Distance:</label>
