@@ -347,6 +347,44 @@ class Simple3DLoader {
 
   // =====================================================================
   
+  async loadThreeJS() {
+    console.log('📦 Loading Three.js library...');
+    
+    if (typeof THREE !== 'undefined') {
+      console.log('✅ Three.js already loaded');
+      return;
+    }
+
+    try {
+      // Load Three.js from CDN with retry logic
+      const threeJSUrl = 'https://unpkg.com/three@0.158.0/build/three.module.js';
+      const { THREE: loadedTHREE } = await import(threeJSUrl);
+      window.THREE = loadedTHREE;
+      
+      // Load additional modules
+      const [
+        { OrbitControls }, 
+        { GLTFLoader }, 
+        { DRACOLoader }
+      ] = await Promise.all([
+        import('https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js'),
+        import('https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js'),
+        import('https://unpkg.com/three@0.158.0/examples/jsm/loaders/DRACOLoader.js')
+      ]);
+      
+      // Make modules globally available
+      window.THREE.OrbitControls = OrbitControls;
+      window.THREE.GLTFLoader = GLTFLoader;
+      window.THREE.DRACOLoader = DRACOLoader;
+      
+      console.log('✅ Three.js modules loaded successfully');
+      
+    } catch (error) {
+      console.error('❌ Error loading Three.js:', error);
+      throw new Error('Failed to load Three.js library');
+    }
+  }
+
   setupScene() {
     console.log('🎬 Setting up Three.js scene...');
     
