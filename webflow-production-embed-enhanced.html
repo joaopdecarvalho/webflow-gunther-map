@@ -6,8 +6,8 @@
   
   function interceptVideo(video) {
     if (video.src && !video.hasAttribute('data-lazy-src')) {
-      // Check if video is in a modal container
-      const modalContainer = video.closest('[id^="station-"], [data-modal], [data-modal-id]');
+      // Check if video is in a modal container - Updated to include .modal_dialog
+      const modalContainer = video.closest('[id^="station-"], [data-modal], [data-modal-id], .modal_dialog');
       if (modalContainer) {
         console.log('🚫 Early intercepting modal video:', video.src);
         const originalSrc = video.src;
@@ -21,6 +21,8 @@
         
         // Store reference for the main loader
         window.interceptedVideos = window.interceptedVideos || interceptedVideos;
+        
+        console.log('🚫 Video intercepted in modal container:', modalContainer.className || modalContainer.id);
       }
     }
   }

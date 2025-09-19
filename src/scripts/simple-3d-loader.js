@@ -361,7 +361,16 @@ class Simple3DLoader {
     if (this.interceptedVideos.size === 0) {
       this.interceptModalVideos();
     } else {
-      console.log('📹 Using pre-intercepted videos:', this.interceptedVideos.size);
+      console.log('📹 [VIDEO DEBUG] Using pre-intercepted videos:', this.interceptedVideos.size);
+      // Log the intercepted videos for debugging
+      this.interceptedVideos.forEach((originalSrc, video) => {
+        console.log('📹 [VIDEO DEBUG] Pre-intercepted video:', {
+          src: originalSrc,
+          video: video,
+          parentClass: video.parentElement?.className,
+          parentId: video.parentElement?.id
+        });
+      });
     }
     
     // Set up mutation observer to catch any additional videos
@@ -371,11 +380,23 @@ class Simple3DLoader {
   }
 
   interceptModalVideos() {
-    // Find videos in modal containers that have src attributes
-    const modalContainers = document.querySelectorAll('[id^="station-"], [data-modal], [data-modal-id]');
+    // Find videos in modal containers that have src attributes - Updated to include .modal_dialog
+    const modalContainers = document.querySelectorAll('[id^="station-"], [data-modal], [data-modal-id], .modal_dialog');
+    
+    console.log('📹 [VIDEO DEBUG] Found modal containers:', modalContainers.length);
+    modalContainers.forEach((container, index) => {
+      console.log(`📹 [VIDEO DEBUG] Modal container ${index + 1}:`, {
+        tagName: container.tagName,
+        id: container.id,
+        className: container.className,
+        'data-modal': container.getAttribute('data-modal'),
+        'data-modal-id': container.getAttribute('data-modal-id')
+      });
+    });
     
     modalContainers.forEach(container => {
       const videos = container.querySelectorAll('video[src]');
+      console.log(`📹 [VIDEO DEBUG] Found ${videos.length} videos in container:`, container.className || container.id);
       
       videos.forEach(video => {
         if (!video.hasAttribute('data-lazy-src')) {
@@ -406,8 +427,8 @@ class Simple3DLoader {
             const videos = node.tagName === 'VIDEO' ? [node] : node.querySelectorAll?.('video[src]') || [];
             
             videos.forEach((video) => {
-              // Only intercept videos in modal containers
-              const modalContainer = video.closest('[id^="station-"], [data-modal], [data-modal-id]');
+              // Only intercept videos in modal containers - Updated to include .modal_dialog
+              const modalContainer = video.closest('[id^="station-"], [data-modal], [data-modal-id], .modal_dialog');
               if (modalContainer && video.src && !video.hasAttribute('data-lazy-src')) {
                 console.log('🔄 Intercepting dynamically added modal video:', video.src);
                 
@@ -466,32 +487,66 @@ class Simple3DLoader {
   restoreVideoSrc(modalId) {
     console.log('📹 [VIDEO DEBUG] Attempting to restore video sources for modal:', modalId);
     
-    // Find modal container
+    // Find modal container - Updated to include .modal_dialog and more flexible searching
     const selectors = [
       `[data-modal-id="${modalId}"]`,
       `[data-modal="${modalId}"]`,
-      `#${modalId}`
+      `#${modalId}`,
+      `.modal_dialog[id*="${modalId}"]`, // Modal dialog with ID containing modalId
+      `.modal_dialog:has([id="${modalId}"])`, // Modal dialog containing element with modalId
+      `.modal_dialog` // Fallback: any modal dialog (if there's only one open)
     ];
     
     let modalEl = null;
     console.log('📹 [VIDEO DEBUG] Searching for modal with selectors:', selectors);
     
     for (const sel of selectors) {
-      modalEl = document.querySelector(sel);
-      if (modalEl) {
-        console.log('📹 [VIDEO DEBUG] Found modal element with selector:', sel, modalEl);
-        break;
+      try {
+        const elements = document.querySelectorAll(sel);
+        console.log(`📹 [VIDEO DEBUG] Selector "${sel}" found ${elements.length} elements`);
+        
+        if (elements.length === 1) {
+          modalEl = elements[0];
+          console.log('📹 [VIDEO DEBUG] Found unique modal element with selector:', sel, modalEl);
+          break;
+        } else if (elements.length > 1) {
+          // Multiple matches - try to find the visible one
+          for (const el of elements) {
+            if (this._isElementVisible && this._isElementVisible(el)) {
+              modalEl = el;
+              console.log('📹 [VIDEO DEBUG] Found visible modal element with selector:', sel, modalEl);
+              break;
+            }
+          }
+          if (modalEl) break;
+        }
+      } catch (e) {
+        console.log('📹 [VIDEO DEBUG] Selector failed:', sel, e.message);
       }
     }
     
     if (!modalEl) {
       console.warn('⚠️ [VIDEO DEBUG] Could not find modal element for video restoration:', modalId);
       console.log('📹 [VIDEO DEBUG] Available elements with modal-related attributes:');
-      document.querySelectorAll('[id^="station-"], [data-modal], [data-modal-id]').forEach(el => {
-        console.log('  -', el.tagName, {
+      
+      // Check for various modal-related elements
+      const modalRelated = [
+        ...document.querySelectorAll('[id^="station-"]'),
+        ...document.querySelectorAll('[data-modal]'),
+        ...document.querySelectorAll('[data-modal-id]'),
+        ...document.querySelectorAll('.modal_dialog'),
+        ...document.querySelectorAll('[class*="modal"]'),
+        ...document.querySelectorAll('[id*="modal"]')
+      ];
+      
+      modalRelated.forEach(el => {
+        console.log('  📹 [VIDEO DEBUG] Modal element found:', {
+          tagName: el.tagName,
           id: el.id,
+          className: el.className,
           'data-modal': el.getAttribute('data-modal'),
-          'data-modal-id': el.getAttribute('data-modal-id')
+          'data-modal-id': el.getAttribute('data-modal-id'),
+          visible: this._isElementVisible ? this._isElementVisible(el) : 'unknown'
         });
       });
       return;
@@ -2492,17 +2547,38 @@ class Simple3DLoader {
     const selectors = [
       `[data-modal-id="${modalId}"]`,
       `[data-modal="${modalId}"]`,
-      `#${modalId}`
+      `#${modalId}`,
+      `.modal_dialog[id*="${modalId}"]`, // Modal dialog with ID containing modalId
+      `.modal_dialog:has([id="${modalId}"])`, // Modal dialog containing element with modalId
+      `.modal_dialog` // Fallback: any modal dialog (if there's only one open)
     ];
     
     console.log('🔄 [ASSET DEBUG] Searching for modal with selectors:', selectors);
     
     let modalEl = null;
     for (const sel of selectors) {
-      modalEl = document.querySelector(sel);
-      if (modalEl) {
-        console.log('🔄 [ASSET DEBUG] Found modal element with selector:', sel);
-        break;
+      try {
+        const elements = document.querySelectorAll(sel);
+        console.log(`🔄 [ASSET DEBUG] Selector "${sel}" found ${elements.length} elements`);
+        
+        if (elements.length === 1) {
+          modalEl = elements[0];
+          console.log('🔄 [ASSET DEBUG] Found unique modal element with selector:', sel);
+          break;
+        } else if (elements.length > 1) {
+          // Multiple matches - try to find the visible one
+          for (const el of elements) {
+            const rect = el.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+              modalEl = el;
+              console.log('🔄 [ASSET DEBUG] Found visible modal element with selector:', sel);
+              break;
+            }
+          }
+          if (modalEl) break;
+        }
+      } catch (e) {
+        console.log('🔄 [ASSET DEBUG] Selector failed:', sel, e.message);
       }
     }
 
