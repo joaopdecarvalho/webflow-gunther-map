@@ -355,34 +355,56 @@ class Simple3DLoader {
       return;
     }
 
-    try {
-      // Load Three.js from CDN with retry logic
-      const threeJSUrl = 'https://unpkg.com/three@0.158.0/build/three.module.js';
-      const { THREE: loadedTHREE } = await import(threeJSUrl);
-      window.THREE = loadedTHREE;
-      
-      // Load additional modules
-      const [
-        { OrbitControls }, 
-        { GLTFLoader }, 
-        { DRACOLoader }
-      ] = await Promise.all([
-        import('https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js'),
-        import('https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js'),
-        import('https://unpkg.com/three@0.158.0/examples/jsm/loaders/DRACOLoader.js')
-      ]);
-      
-      // Make modules globally available
-      window.THREE.OrbitControls = OrbitControls;
-      window.THREE.GLTFLoader = GLTFLoader;
-      window.THREE.DRACOLoader = DRACOLoader;
-      
-      console.log('✅ Three.js modules loaded successfully');
-      
-    } catch (error) {
-      console.error('❌ Error loading Three.js:', error);
-      throw new Error('Failed to load Three.js library');
-    }
+    return new Promise((resolve, reject) => {
+      // Load Three.js core library first
+      const threeScript = document.createElement('script');
+      threeScript.src = 'https://unpkg.com/three@0.158.0/build/three.min.js';
+      threeScript.onload = () => {
+        console.log('✅ Three.js core loaded');
+        
+        // Load OrbitControls
+        const orbitScript = document.createElement('script');
+        orbitScript.src = 'https://unpkg.com/three@0.158.0/examples/js/controls/OrbitControls.js';
+        orbitScript.onload = () => {
+          console.log('✅ OrbitControls loaded');
+          
+          // Load GLTFLoader
+          const gltfScript = document.createElement('script');
+          gltfScript.src = 'https://unpkg.com/three@0.158.0/examples/js/loaders/GLTFLoader.js';
+          gltfScript.onload = () => {
+            console.log('✅ GLTFLoader loaded');
+            
+            // Load DRACOLoader
+            const dracoScript = document.createElement('script');
+            dracoScript.src = 'https://unpkg.com/three@0.158.0/examples/js/loaders/DRACOLoader.js';
+            dracoScript.onload = () => {
+              console.log('✅ All Three.js modules loaded successfully');
+              resolve();
+            };
+            dracoScript.onerror = () => {
+              console.error('❌ Failed to load DRACOLoader');
+              reject(new Error('Failed to load DRACOLoader'));
+            };
+            document.head.appendChild(dracoScript);
+          };
+          gltfScript.onerror = () => {
+            console.error('❌ Failed to load GLTFLoader');
+            reject(new Error('Failed to load GLTFLoader'));
+          };
+          document.head.appendChild(gltfScript);
+        };
+        orbitScript.onerror = () => {
+          console.error('❌ Failed to load OrbitControls');
+          reject(new Error('Failed to load OrbitControls'));
+        };
+        document.head.appendChild(orbitScript);
+      };
+      threeScript.onerror = () => {
+        console.error('❌ Failed to load Three.js core');
+        reject(new Error('Failed to load Three.js core'));
+      };
+      document.head.appendChild(threeScript);
+    });
   }
 
   setupScene() {
