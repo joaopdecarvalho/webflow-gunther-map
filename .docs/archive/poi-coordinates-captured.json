@@ -1,0 +1,125 @@
+{
+  "captureDate": "2025-09-16T14:56:00.000Z",
+  "model": "Goetheviertel_250812_with-textures_webp25.glb",
+  "totalPOIs": 10,
+  "coordinateSystem": "Three.js world space",
+  "pois": [
+    {
+      "id": 1,
+      "position": {
+        "x": -10.02,
+        "y": -7.89,
+        "z": 15.98
+      },
+      "name": "POI 1",
+      "type": "default",
+      "timestamp": "2025-09-16T14:55:36.357Z"
+    },
+    {
+      "id": 2,
+      "position": {
+        "x": 0.87,
+        "y": -7.04,
+        "z": 5.25
+      },
+      "name": "POI 2",
+      "type": "default",
+      "timestamp": "2025-09-16T14:55:44.088Z"
+    },
+    {
+      "id": 3,
+      "position": {
+        "x": 3.83,
+        "y": -7.24,
+        "z": -0.31
+      },
+      "name": "POI 3",
+      "type": "default",
+      "timestamp": "2025-09-16T14:55:48.498Z"
+    },
+    {
+      "id": 4,
+      "position": {
+        "x": -2.08,
+        "y": -7.06,
+        "z": -2.12
+      },
+      "name": "POI 4",
+      "type": "default",
+      "timestamp": "2025-09-16T14:55:56.462Z"
+    },
+    {
+      "id": 5,
+      "position": {
+        "x": 0.96,
+        "y": -7.21,
+        "z": -3.3
+      },
+      "name": "POI 5",
+      "type": "default",
+      "timestamp": "2025-09-16T14:56:01.629Z"
+    },
+    {
+      "id": 6,
+      "position": {
+        "x": 3.44,
+        "y": -7.14,
+        "z": -5.94
+      },
+      "name": "POI 6",
+      "type": "default",
+      "timestamp": "2025-09-16T14:56:06.137Z"
+    },
+    {
+      "id": 7,
+      "position": {
+        "x": 13.31,
+        "y": -7.22,
+        "z": 3.47
+      },
+      "name": "POI 7",
+      "type": "default",
+      "timestamp": "2025-09-16T14:56:09.639Z"
+    },
+    {
+      "id": 8,
+      "position": {
+        "x": 14.92,
+        "y": -7.61,
+        "z": -0.03
+      },
+      "name": "POI 8",
+      "type": "default",
+      "timestamp": "2025-09-16T14:56:12.916Z"
+    },
+    {
+      "id": 9,
+      "position": {
+        "x": 14.49,
+        "y": -7.24,
+        "z": -4.19
+      },
+      "name": "POI 9",
+      "type": "default",
+      "timestamp": "2025-09-16T14:56:16.757Z"
+    },
+    {
+      "id": 10,
+      "position": {
+        "x": 18.04,
+        "y": -7.28,
+        "z": -12.59
+      },
+      "name": "POI 10",
+      "type": "default",
+      "timestamp": "2025-09-16T14:56:18.647Z"
+    }
+  ],
+  "notes": {
+    "yLevel": "Most POIs are around Y=-7 level, indicating they're placed on the ground plane",
+    "xRange": "X coordinates range from -10.02 to 18.04",
+    "zRange": "Z coordinates range from -12.59 to 15.98",
+    "precision": "Coordinates captured with 2-decimal precision",
+    "captureMethod": "Direct 3D model raycasting via Ctrl+Alt+P interface"
+  }
+}
