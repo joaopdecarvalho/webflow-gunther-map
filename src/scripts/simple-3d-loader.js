@@ -1,177 +1,19 @@
 /**
- * Three.js GLB Loader for Webflow Integration
-
-/**
- * Simple Station Modal Image Preloader
- * Preloads images in station modal sliders after page load
+ * Simple Three.js GLB Loader for Webflow Integration with Default Configuration
+ * 
+ * This script provides a clean, straightforward implementation to load
+ * a GLB model into the webgl-container element using Three.js with your custom configuration.
+ * 
+ * Last Updated: January 22, 2025 - Custom Animation Coordinates (27.7,41.2,42.6) → (10.3,21.9,16.0)
+ * 
+ * DEVELOPMENT NOTE: This script includes camera position panel functionality for debugging.
+ * When deploying to production:
+ * 1. The camera panel is hidden by CSS in staging but code remains
+ * 2. Consider removing updateCameraInfo(), toggleCameraPanel(), copyCurrentPosition() 
+ *    functions if not needed in production
+ * 3. Remove camera panel HTML from staging site before copying to production
+ * 4. Panel functions are safe to leave - they won't break if DOM elements don't exist
  */
-class SimpleModalImagePreloader {
-  constructor() {
-    this.preloadDelay = 800; // ms after window load
-    this.maxConcurrent = 4;  // parallel preloads
-    this.isEnabled = true;
-    this.isInitialized = false;
-  }
-
-  initialize() {
-    if (!this.isEnabled || this.isInitialized) return;
-    this.isInitialized = true;
-    
-    window.addEventListener('load', () => {
-      setTimeout(() => this.preloadStationImages(), this.preloadDelay);
-    });
-  }
-
-  async preloadStationImages() {
-    // Find all images in station modal sliders
-    const selectors = [
-      '[id^="station-"] .w-slider img',
-      '[id^="station-"] .w-slide img', 
-      '.station-gallery-image'
-    ];
-
-    const images = [];
-    selectors.forEach(selector => {
-      document.querySelectorAll(selector).forEach(img => {
-        if (img.src && !img.dataset.preloaded) {
-          images.push(img);
-        }
-      });
-    });
-
-    if (!images.length) {
-      console.log('ℹ️ No station modal images found to preload');
-      return;
-    }
-
-    console.log(`🚀 Preloading ${images.length} station modal images`);
-
-    // Preload with concurrency control
-    await this.preloadWithConcurrency(images);
-    
-    console.log('✅ Station modal images preloaded');
-  }
-
-  async preloadWithConcurrency(images) {
-    let index = 0;
-    const inProgress = [];
-
-    const preloadNext = async () => {
-      if (index >= images.length) return;
-      
-      const img = images[index++];
-      const promise = this.preloadImage(img);
-      inProgress.push(promise);
-      
-      try {
-        await promise;
-        img.dataset.preloaded = 'true';
-      } catch (error) {
-        console.warn('Failed to preload image:', img.src, error);
-      }
-      
-      const promiseIndex = inProgress.indexOf(promise);
-      if (promiseIndex > -1) {
-        inProgress.splice(promiseIndex, 1);
-      }
-    };
-
-    // Start initial batch
-    while (inProgress.length < this.maxConcurrent && index < images.length) {
-      preloadNext();
-    }
-
-    // Continue until all done
-    while (inProgress.length > 0 || index < images.length) {
-      if (inProgress.length < this.maxConcurrent && index < images.length) {
-        preloadNext();
-      }
-      if (inProgress.length > 0) {
-        await Promise.race(inProgress.filter(p => p));
-      }
-    }
-  }
-
-  preloadImage(img) {
-    return new Promise((resolve, reject) => {
-      const preloader = new Image();
-      preloader.onload = () => resolve();
-      preloader.onerror = () => reject(new Error('Failed to load'));
-      
-      // Handle srcset if present
-      if (img.srcset) {
-        preloader.srcset = img.srcset;
-        preloader.sizes = img.sizes || '100vw';
-      }
-      preloader.src = img.src;
-    });
-  }
-
-  dispose() {
-    this.isInitialized = false;
-    console.log('✅ Simple Modal Image Preloader disposed');
-  }
-}
-
-// =============================================================================
-// PHASE 2B: SIMPLE MODAL IMAGE PRELOADER - Image and Modal Asset Optimization  
-// =============================================================================
-// Handles image preloading for station modal sliders after page load.
-// Uses lightweight approach with controlled concurrency and preload delay.
-    /* this.mutationObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            // Check if the added node is a video or contains videos
-            const videos = node.tagName === 'VIDEO' ? [node] : node.querySelectorAll?.('video[src]') || [];
-
-            videos.forEach((video) => {
-              if (video.src && !video.hasAttribute('data-lazy-src')) {
-                console.log('🔄 Intercepting dynamically added video:', video.src);
-                const originalSrc = video.src;
-                video.removeAttribute('src');
-                video.setAttribute('data-lazy-src', originalSrc);
-
-                const placeholder = this.createVideoPlaceholder();
-                video.appendChild(placeholder);
-                this.videoPlaceholders.set(video, originalSrc);
-              }
-            });
-          }
-        });
-      }); */
-// Global modal image preloader instance
-const globalModalImagePreloader = new SimpleModalImagePreloader();
-
-// Initialize preloader when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    globalModalImagePreloader.initialize();
-  });
-} else {
-  globalModalImagePreloader.initialize();
-}
-
-// =============================================================================
-// PHASE 2B: (Removed) ASSET RESOURCE MANAGER - Image and Modal Asset Optimization
-// =============================================================================
-// The Asset Resource Manager has been removed as it's no longer needed.
-// Image preloading is now handled by the SimpleModalImagePreloader class above.
-
-// Asset manager removed: no global instance or scheduling
-
-// =============================================================================
-// PHASE 3: (Removed) Smart Loading Manager
-// =============================================================================
-// The previous SmartLoadingManager (connection/device/preference-aware throttling)
-// has been fully removed per performance strategy shift: load as fast as possible.
-// If future selective prefetch or prioritization is required, implement targeted
-// helpers instead of a monolithic manager to keep baseline logic lean.
-
-// Backwards compatibility no-ops (avoid errors if templates still call old globals)
-window.getAssetCategorizationReport = () => ({ removed: true });
-window.loadStationWithPriority = () => Promise.resolve();
-window.getStationAssetMap = () => undefined;
 
 class Simple3DLoader {
   constructor() {
@@ -192,27 +34,7 @@ class Simple3DLoader {
     this.lastDebugUpdate = 0;
     this.pauseRendering = false;
 
-    // Phase 1: Lazy Loading Implementation
-    this.lazyLoadingEnabled = true;
-    this.intersectionObserver = null;
-    this.loadingState = 'pending'; // pending, loading, loaded, error
-    this.loadTriggers = {
-      viewport: true,      // Load when container comes into viewport
-      userInteraction: true, // Load on first click/touch
-      delay: false,        // Load after a delay
-      manual: false        // Load only when explicitly called
-    };
-    this.delayTimer = null;
-    this.userHasInteracted = false;
-
-  // Phase 3 (Removed): smart loading manager no longer used
-  this.smartLoadingManager = null;
-
-  // Master toggle for on-screen debug panels (camera, controls, stations)
-  // Kept in codebase but disabled by default per current requirement.
-  // Set to true (e.g., via console: loader.debugPanelsEnabled = true) and refresh to re-enable.
-  this.debugPanelsEnabled = false;
-
+    // (Phase 2 Cleanup) Legacy POI mapping system removed
 
     // =====================================================================
     // Phase 3: New Interactive Station System (Skeleton Implementation)
@@ -300,15 +122,6 @@ class Simple3DLoader {
         "respectMotionPreference": true,
         "keyboardControls": true,
         "ariaLabels": true
-      },
-      "lazyLoading": {
-        "enabled": true,
-        "triggers": {
-          "viewport": true,
-          "userInteraction": true,
-          "delay": false
-        },
-        "delay": 2000
       }
     };
     
@@ -318,20 +131,8 @@ class Simple3DLoader {
       production: 'https://webflow-gunther-map.vercel.app/Goetheviertel_250919_with_flags_webp80.glb'
     };
     this.modelUrl = this.isDevelopment ? this.modelUrls.local : this.modelUrls.production;
-
-    // Initialize video lazy loading system before anything else
-    // Video lazy loading system simplified - Webflow handles data-src natively
-    console.log('📹 Video lazy loading system ready (using Webflow native data-src)');
-
-    // Phase 1: Initialize lazy loading or direct loading based on configuration
-    const lazyConfig = this.config.lazyLoading;
-    if (this.lazyLoadingEnabled && lazyConfig.enabled) {
-      // Override load triggers with configuration
-      this.loadTriggers = { ...this.loadTriggers, ...lazyConfig.triggers };
-      this.initLazyLoading();
-    } else {
-      this.init();
-    }
+    
+    this.init();
   }
 
   detectDevelopmentMode() {
@@ -345,65 +146,682 @@ class Simple3DLoader {
            location.hostname.includes('5173'); // Vite dev server
   }
 
-  // =====================================================================
-  
-  async loadThreeJS() {
-    console.log('📦 Loading Three.js library...');
+  injectAntiFlashCSS() {
+    // Create and inject CSS to prevent any white flash
+    const style = document.createElement('style');
+    style.textContent = `
+      #webgl-container,
+      .webgl-container,
+      [data-webgl-container] {
+        background-color: #3c5e71 !important;
+        transition: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+    console.log('🚫 Anti-flash CSS injected');
+  }
+
+  async init() {
+    try {
+      // Find the container element
+      this.container = document.querySelector('#webgl-container') || 
+                       document.querySelector('.webgl-container') ||
+                       document.querySelector('[data-webgl-container]');
+      
+      if (!this.container) {
+        console.error('WebGL container not found! Looking for #webgl-container');
+        return;
+      }
+
+      console.log('✅ Container found:', this.container);
+
+      // Apply initial styling to prevent gradient flash
+      this.applyInitialStyling();
+
+      // Load Three.js from CDN
+      await this.loadThreeJS();
+      
+      // Setup Three.js scene
+      this.setupScene();
+      
+      // Load the GLB model
+      await this.loadModel();
+      
+      // Setup controls
+      this.setupControls();
+      
+      // Handle window resize and visibility changes
+      this.setupEventListeners();
+      
+      // Start render loop
+      this.animate();
+      
+      // Play welcome animation if enabled
+      if (this.config.animations.welcomeAnimation.enabled) {
+        this.playWelcomeAnimation();
+      }
+      
+      // Remove loading state after everything is initialized
+      this.finishLoading();
+      
+      // Create camera info panel in development mode
+      if (this.isDevelopment) {
+        this.createCameraInfoPanel();
+        this.createControlsPanel();
+      }
+      
+      console.log('✅ 3D scene initialized successfully!');
+
+    } catch (error) {
+      console.error('❌ Error initializing 3D scene:', error);
+    }
+  }
+
+  // Progressive loading alternative for better performance
+  async initProgressive() {
+    try {
+      console.log('🚀 Starting progressive 3D initialization...');
+
+      // Find the container element first
+      this.container = document.querySelector('#webgl-container') ||
+                       document.querySelector('.webgl-container') ||
+                       document.querySelector('[data-webgl-container]');
+
+      if (!this.container) {
+        console.error('WebGL container not found! Looking for #webgl-container');
+        return;
+      }
+
+      // Apply initial styling immediately
+      this.applyInitialStyling();
+
+      // Phase 1: Load core components and show basic scene
+      console.log('📦 Phase 1: Loading core components...');
+      await this.loadCoreComponents();
+      this.showBasicScene();
+
+      // Phase 2: Load model with progress tracking
+      console.log('🏗️ Phase 2: Loading 3D model...');
+      await this.loadModelProgressive();
+
+      // Phase 3: Enhance scene with animations and controls
+      console.log('✨ Phase 3: Enhancing scene...');
+      this.enhanceScene();
+
+      console.log('🎉 Progressive 3D initialization complete!');
+
+    } catch (error) {
+      console.error('❌ Error in progressive initialization:', error);
+      this.initFallbackMode();
+    }
+  }
+
+  async loadCoreComponents() {
+    // Load Three.js with retry logic
+    await this.loadThreeJS();
+
+    // Setup basic scene without model
+    this.setupScene();
+    this.setupEventListeners();
+
+    console.log('✅ Core components loaded');
+  }
+
+  showBasicScene() {
+    // Start basic render loop
+    this.animate();
+
+    // Show a simple loading state in the scene
+    const loadingGeometry = new THREE.BoxGeometry(10, 10, 10);
+    const loadingMaterial = new THREE.MeshBasicMaterial({
+      color: 0x4a90e2,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.3
+    });
+    const loadingCube = new THREE.Mesh(loadingGeometry, loadingMaterial);
+    this.scene.add(loadingCube);
+
+    // Animate the loading cube
+    const animateLoadingCube = () => {
+      if (loadingCube.parent) { // Still in scene
+        loadingCube.rotation.x += 0.01;
+        loadingCube.rotation.y += 0.01;
+        requestAnimationFrame(animateLoadingCube);
+      }
+    };
+    animateLoadingCube();
+
+    this.loadingCube = loadingCube; // Store reference for cleanup
+    console.log('🎬 Basic scene visible with loading indicator');
+  }
+
+  async loadModelProgressive() {
+    try {
+      // Remove loading cube
+      if (this.loadingCube) {
+        this.scene.remove(this.loadingCube);
+        this.loadingCube.geometry.dispose();
+        this.loadingCube.material.dispose();
+        this.loadingCube = null;
+      }
+
+      // Load the actual model
+      await this.loadModel();
+
+      console.log('✅ Model loaded and added to scene');
+
+    } catch (error) {
+      console.error('❌ Model loading failed:', error);
+      // Keep the loading cube as fallback
+    }
+  }
+
+  enhanceScene() {
+    // Setup controls
+    this.setupControls();
+
+    // Finish loading sequence
+    this.finishLoading();
+
+    // Play welcome animation if enabled
+    if (this.config.animations.welcomeAnimation.enabled) {
+      this.playWelcomeAnimation();
+    }
+
+    console.log('✨ Scene enhancement complete');
+  }
+
+  // WebGL capability detection and performance adaptation
+  detectCapabilities() {
+    if (!this.renderer) {
+      console.warn('⚠️ Renderer not available for capability detection');
+      return null;
+    }
+
+    const gl = this.renderer.getContext();
+    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+
+    const capabilities = {
+      // Basic WebGL info
+      maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
+      maxViewportDims: gl.getParameter(gl.MAX_VIEWPORT_DIMS),
+      maxVertexAttribs: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
+
+      // Extensions
+      supportsFloatTextures: !!gl.getExtension('OES_texture_float'),
+      supportsHalfFloatTextures: !!gl.getExtension('OES_texture_half_float'),
+      supportsAnisotropy: !!gl.getExtension('EXT_texture_filter_anisotropic'),
+      supportsInstancing: !!gl.getExtension('ANGLE_instanced_arrays'),
+      supportsDepthTexture: !!gl.getExtension('WEBGL_depth_texture'),
+
+      // GPU info (if available)
+      vendor: gl.getParameter(gl.VENDOR),
+      renderer: gl.getParameter(gl.RENDERER),
+      version: gl.getParameter(gl.VERSION),
+      shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION)
+    };
+
+    // Get unmasked renderer info for better GPU detection
+    if (debugInfo) {
+      capabilities.unmaskedVendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+      capabilities.unmaskedRenderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+    }
+
+    console.log('🔍 WebGL Capabilities detected:', capabilities);
+    return capabilities;
+  }
+
+  // Adaptive quality based on device capabilities
+  adaptQualitySettings() {
+    const capabilities = this.detectCapabilities();
+    if (!capabilities) return;
+
+    // Default to current config
+    let qualityAdjustments = {
+      enableAntialiasing: this.config.performance.enableAntialiasing,
+      pixelRatio: this.config.performance.pixelRatio,
+      shadowMapSize: 2048
+    };
+
+    // Detect mobile devices
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    // Performance classification based on GPU
+    const gpuInfo = (capabilities.unmaskedRenderer || capabilities.renderer || '').toLowerCase();
+    let performanceTier = 'high';
+
+    if (isMobile || gpuInfo.includes('intel') || gpuInfo.includes('powervr') || gpuInfo.includes('adreno')) {
+      performanceTier = 'medium';
+    }
+
+    if (capabilities.maxTextureSize < 4096 || gpuInfo.includes('mali-400') || gpuInfo.includes('adreno 3')) {
+      performanceTier = 'low';
+    }
+
+    // Apply quality adjustments based on performance tier
+    switch (performanceTier) {
+      case 'low':
+        qualityAdjustments = {
+          enableAntialiasing: false,
+          pixelRatio: Math.min(0.75, window.devicePixelRatio),
+          shadowMapSize: 512
+        };
+        console.log('📱 Low-end device detected - applying performance optimizations');
+        break;
+
+      case 'medium':
+        qualityAdjustments = {
+          enableAntialiasing: true,
+          pixelRatio: Math.min(1.5, window.devicePixelRatio),
+          shadowMapSize: 1024
+        };
+        console.log('💻 Medium-performance device detected - balanced settings');
+        break;
+
+      case 'high':
+      default:
+        qualityAdjustments = {
+          enableAntialiasing: true,
+          pixelRatio: Math.min(2.0, window.devicePixelRatio),
+          shadowMapSize: 2048
+        };
+        console.log('🚀 High-performance device detected - maximum quality');
+        break;
+    }
+
+    // Apply the adjustments to renderer
+    if (this.renderer) {
+      this.renderer.setPixelRatio(qualityAdjustments.pixelRatio);
+
+      // Update shadow map size if shadows are enabled
+      if (this.renderer.shadowMap.enabled) {
+        this.renderer.shadowMap.autoUpdate = true;
+        // Note: Shadow map size would need to be set per light, not globally
+      }
+
+      console.log('⚙️ Quality settings adapted:', qualityAdjustments);
+    }
+
+    return qualityAdjustments;
+  }
+
+  playWelcomeAnimation() {
+    const animConfig = this.config.animations.welcomeAnimation;
+    console.log('🎬 Playing welcome animation with updated start/end positions (smooth expo.inOut easing)...');
     
-    if (typeof THREE !== 'undefined') {
-      console.log('✅ Three.js already loaded');
+    // Use configuration values for animation positions
+    const startPos = new THREE.Vector3(...animConfig.startPosition);
+    const startTarget = new THREE.Vector3(...animConfig.startTarget);
+    const endPos = new THREE.Vector3(...animConfig.endPosition);
+    const endTarget = new THREE.Vector3(...animConfig.endTarget);
+    
+    // Set initial camera position and target
+    this.camera.position.copy(startPos);
+    this.controls.target.copy(startTarget);
+    this.controls.update();
+    
+    // Animation parameters - using high precision timing
+    const startTime = performance.now();
+    const duration = animConfig.duration; // 1300ms
+    
+    const animateCamera = () => {
+      const elapsed = performance.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Apply smooth exponential InOut easing (gentler curve than standard expo)
+      let easedProgress = progress;
+      if (animConfig.easing === 'easeInOut') {
+        if (progress === 0) {
+          easedProgress = 0;
+        } else if (progress === 1) {
+          easedProgress = 1;
+        } else if (progress < 0.5) {
+          // Gentler exponential ease in (reduced from 20 to 12 for smoother curve)
+          easedProgress = Math.pow(2, 12 * progress - 6) / 2;
+        } else {
+          // Gentler exponential ease out
+          easedProgress = (2 - Math.pow(2, -12 * progress + 6)) / 2;
+        }
+      }
+      
+      // Interpolate camera position and target
+      this.camera.position.lerpVectors(startPos, endPos, easedProgress);
+      this.controls.target.lerpVectors(startTarget, endTarget, easedProgress);
+      this.controls.update();
+      
+      if (progress < 1) {
+        requestAnimationFrame(animateCamera);
+      } else {
+        // Ensure final positions are exact
+        this.camera.position.copy(endPos);
+        this.controls.target.copy(endTarget);
+        this.controls.update();
+        console.log('✅ Welcome animation complete - new camera positions applied');
+      }
+    };
+    
+    requestAnimationFrame(animateCamera);
+  }
+
+  applyInitialStyling() {
+    console.log('🎨 Applying initial styling to prevent flash...');
+    
+    // Store original styles to restore later
+    this.originalContainerStyles = {
+      background: this.container.style.background,
+      opacity: this.container.style.opacity,
+      transition: this.container.style.transition
+    };
+    
+    // Apply loading styles to prevent gradient flash
+    this.container.style.background = '#3c5e71'; // Set target color immediately
+    this.container.style.opacity = '1'; // Keep visible but with correct background
+    this.container.style.transition = 'none'; // Remove transition during setup
+    
+    // Ensure container covers the full viewport
+    this.container.style.width = '100vw';
+    this.container.style.height = '100vh';
+    this.container.style.position = 'fixed';
+    this.container.style.top = '0';
+    this.container.style.left = '0';
+    this.container.style.zIndex = '1';
+    
+    console.log('✅ Initial styling applied - full viewport coverage with target background');
+  }
+
+  finishLoading() {
+    console.log('🎉 Finishing loading sequence...');
+    
+    // Set the final scene background now that everything is loaded
+    if (this.scene) {
+      this.scene.background = new THREE.Color(0x3c5e71); // Blue-gray background
+      console.log('🎨 Scene background set to final color');
+    }
+    
+    // Update renderer clear color for proper rendering
+    if (this.renderer) {
+      this.renderer.setClearColor(0x3c5e71, 1); // Opaque background
+    }
+    
+    // Container is already visible with correct background - just log completion
+    console.log('✅ 3D scene ready and visible');
+  }
+
+  fadeInModel() {
+    if (!this.model) {
+      console.warn('⚠️ No model to fade in');
       return;
     }
 
+    console.log('✨ Starting model fade-in animation...');
+
+    const duration = 2000; // 2 seconds fade-in
+    const startTime = performance.now();
+
+    const fadeAnimation = () => {
+      const elapsed = performance.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Smooth easing function (ease-out)
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+      
+      // Apply opacity to all meshes in the model
+      this.model.traverse((child) => {
+        if (child.isMesh && child.material && child.material.transparent) {
+          child.material.opacity = easedProgress;
+          child.material.needsUpdate = true;
+        }
+      });
+      
+      if (progress < 1) {
+        requestAnimationFrame(fadeAnimation);
+      } else {
+        console.log('✅ Model fade-in complete');
+      }
+    };
+    
+    // Start the fade-in animation
+    requestAnimationFrame(fadeAnimation);
+  }
+
+  async loadThreeJS() {
+    return this.loadThreeJSWithRetry(3);
+  }
+
+  async loadThreeJSWithRetry(maxRetries = 3) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`📦 Loading Three.js (attempt ${attempt}/${maxRetries})...`);
+        await this.attemptThreeJSLoad();
+        console.log('✅ Three.js loaded successfully!');
+        return;
+      } catch (error) {
+        console.warn(`❌ Three.js loading attempt ${attempt} failed:`, error.message);
+
+        if (attempt === maxRetries) {
+          console.error('💥 All Three.js loading attempts failed, initializing fallback mode');
+          this.initFallbackMode();
+          return;
+        }
+
+        // Exponential backoff delay
+        const delayMs = 1000 * Math.pow(2, attempt - 1);
+        console.log(`⏳ Retrying in ${delayMs}ms...`);
+        await this.delay(delayMs);
+      }
+    }
+  }
+
+  async attemptThreeJSLoad() {
     return new Promise((resolve, reject) => {
-      // Load Three.js core library first
+      if (window.THREE) {
+        console.log('✅ Three.js already loaded');
+        resolve();
+        return;
+      }
+      
+      // Load Three.js core using ES modules approach
       const threeScript = document.createElement('script');
-      threeScript.src = 'https://unpkg.com/three@0.158.0/build/three.min.js';
-      threeScript.onload = () => {
-        console.log('✅ Three.js core loaded');
-        
-        // Load OrbitControls
-        const orbitScript = document.createElement('script');
-        orbitScript.src = 'https://unpkg.com/three@0.158.0/examples/js/controls/OrbitControls.js';
-        orbitScript.onload = () => {
-          console.log('✅ OrbitControls loaded');
-          
-          // Load GLTFLoader
-          const gltfScript = document.createElement('script');
-          gltfScript.src = 'https://unpkg.com/three@0.158.0/examples/js/loaders/GLTFLoader.js';
-          gltfScript.onload = () => {
-            console.log('✅ GLTFLoader loaded');
-            
-            // Load DRACOLoader
-            const dracoScript = document.createElement('script');
-            dracoScript.src = 'https://unpkg.com/three@0.158.0/examples/js/loaders/DRACOLoader.js';
-            dracoScript.onload = () => {
-              console.log('✅ All Three.js modules loaded successfully');
-              resolve();
-            };
-            dracoScript.onerror = () => {
-              console.error('❌ Failed to load DRACOLoader');
-              reject(new Error('Failed to load DRACOLoader'));
-            };
-            document.head.appendChild(dracoScript);
-          };
-          gltfScript.onerror = () => {
-            console.error('❌ Failed to load GLTFLoader');
-            reject(new Error('Failed to load GLTFLoader'));
-          };
-          document.head.appendChild(gltfScript);
-        };
-        orbitScript.onerror = () => {
-          console.error('❌ Failed to load OrbitControls');
-          reject(new Error('Failed to load OrbitControls'));
-        };
-        document.head.appendChild(orbitScript);
-      };
-      threeScript.onerror = () => {
-        console.error('❌ Failed to load Three.js core');
-        reject(new Error('Failed to load Three.js core'));
-      };
+      threeScript.type = 'importmap';
+      threeScript.textContent = JSON.stringify({
+        "imports": {
+          "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+        }
+      });
       document.head.appendChild(threeScript);
+
+      // Load the main script that imports Three.js
+      const mainScript = document.createElement('script');
+      mainScript.type = 'module';
+      mainScript.textContent = `
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        
+        // Make THREE available globally
+        window.THREE = THREE;
+        window.GLTFLoader = GLTFLoader;
+        window.OrbitControls = OrbitControls;
+        
+        console.log('✅ Three.js loaded successfully via ES modules');
+        
+        // Dispatch custom event to signal loading completion
+        window.dispatchEvent(new CustomEvent('threeJSLoaded'));
+      `;
+
+      // Listen for the custom event
+      window.addEventListener('threeJSLoaded', () => {
+        console.log('✅ Three.js modules ready');
+        resolve();
+      }, { once: true });
+
+      mainScript.onerror = () => {
+        console.warn('⚠️ ES modules approach failed, trying fallback...');
+        this.loadThreeJSFallback().then(resolve).catch(reject);
+      };
+
+      document.head.appendChild(mainScript);
+
+      // Timeout fallback
+      setTimeout(() => {
+        if (!window.THREE) {
+          reject(new Error('Three.js loading timeout'));
+        }
+      }, 10000);
+    });
+  }
+
+  // Utility method for delays
+  async delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Fallback mode when Three.js completely fails to load
+  initFallbackMode() {
+    console.log('🛟 Initializing fallback mode...');
+
+    // Create a simple fallback message
+    const fallbackDiv = document.createElement('div');
+    fallbackDiv.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #3c5e71 0%, #2a4a5c 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        z-index: 1000;
+      ">
+        <div style="text-align: center; max-width: 400px; padding: 2rem;">
+          <div style="font-size: 4rem; margin-bottom: 1rem;">🏗️</div>
+          <h2 style="margin: 0 0 1rem 0; font-weight: 300;">3D Experience Loading</h2>
+          <p style="margin: 0; opacity: 0.8; line-height: 1.5;">
+            We're preparing an immersive 3D experience for you.
+            Please refresh the page or try again later.
+          </p>
+          <button onclick="location.reload()" style="
+            margin-top: 1.5rem;
+            padding: 0.75rem 2rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+          ">
+            Retry
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.container.appendChild(fallbackDiv);
+    console.log('🛟 Fallback mode initialized with user-friendly interface');
+  }
+
+  async loadThreeJSFallback() {
+    return new Promise((resolve, reject) => {
+      console.log('🔄 Loading Three.js using fallback method...');
+      
+      // Try loading Three.js from different CDNs
+      const cdnUrls = [
+        'https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js',
+        'https://unpkg.com/three@0.158.0/build/three.min.js',
+        'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js'
+      ];
+
+      let currentCdnIndex = 0;
+
+      const tryNextCdn = () => {
+        if (currentCdnIndex >= cdnUrls.length) {
+          reject(new Error('All CDN sources failed to load Three.js'));
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = cdnUrls[currentCdnIndex];
+        
+        script.onload = () => {
+          console.log(`✅ Three.js loaded from: ${cdnUrls[currentCdnIndex]}`);
+          
+          // Load additional modules manually
+          this.loadAdditionalModules().then(resolve).catch(reject);
+        };
+        
+        script.onerror = () => {
+          console.warn(`❌ Failed to load from: ${cdnUrls[currentCdnIndex]}`);
+          currentCdnIndex++;
+          tryNextCdn();
+        };
+        
+        document.head.appendChild(script);
+      };
+
+      tryNextCdn();
+    });
+  }
+
+  async loadAdditionalModules() {
+    return new Promise((resolve, reject) => {
+      if (!window.THREE) {
+        reject(new Error('Three.js not available for module loading'));
+        return;
+      }
+
+      console.log('📦 Loading additional Three.js modules...');
+
+      // Create a simple GLTFLoader and OrbitControls using basic Three.js
+      const moduleScript = document.createElement('script');
+      moduleScript.textContent = `
+        // Basic GLTFLoader implementation
+        window.GLTFLoader = function() {
+          this.load = function(url, onLoad, onProgress, onError) {
+            fetch(url)
+              .then(response => response.arrayBuffer())
+              .then(data => {
+                // This is a simplified loader - for production use proper GLTFLoader
+                console.log('⚠️ Using simplified model loader');
+                if (onError) onError(new Error('Simplified loader - model format not supported'));
+              })
+              .catch(error => {
+                console.error('Model loading error:', error);
+                if (onError) onError(error);
+              });
+          };
+        };
+
+        // Basic OrbitControls
+        window.OrbitControls = function(camera, domElement) {
+          console.log('⚠️ Using simplified orbit controls');
+          this.update = function() {};
+          this.enableDamping = false;
+          this.dampingFactor = 0.05;
+        };
+
+        console.log('✅ Simplified modules loaded');
+      `;
+
+      moduleScript.onload = () => {
+        console.log('✅ Additional modules ready');
+        resolve();
+      };
+
+      moduleScript.onerror = () => {
+        console.warn('⚠️ Module loading failed, continuing with basic Three.js');
+        resolve(); // Continue anyway
+      };
+
+      document.head.appendChild(moduleScript);
+      
+      // Resolve immediately since inline scripts execute synchronously
+      setTimeout(resolve, 100);
     });
   }
 
@@ -456,41 +874,7 @@ class Simple3DLoader {
   // Initialize new interaction system core (Phase 3 skeleton)
   this.initializeInteractionSystem();
 
-    // Setup button modal handlers for data-button triggered modals
-    this.setupButtonModalHandlers();
-
     console.log('✅ Scene setup complete');
-  }
-
-  setupButtonModalHandlers() {
-    console.log('🎯 [SETUP DEBUG] Setting up button modal handlers...');
-    
-    // Find button with data-button="projekt-info"
-    const projektInfoButton = document.querySelector('[data-button="projekt-info"]');
-    
-    if (projektInfoButton) {
-      console.log('🎯 [SETUP DEBUG] Found projekt-info button, adding click listener');
-      
-      projektInfoButton.addEventListener('click', () => {
-        console.log('🔘 [CLICK DEBUG] Projekt-info button clicked, triggering video lazy loading');
-        
-        // Small delay to allow modal to open before scanning for videos
-        setTimeout(() => {
-          this.lazyLoadModalAssets();
-        }, 100);
-      });
-    } else {
-      console.log('⚠️ [SETUP DEBUG] Projekt-info button not found');
-    }
-    
-    // Also check for any other data-button attributes
-    const allDataButtons = document.querySelectorAll('[data-button]');
-    console.log(`🎯 [SETUP DEBUG] Found ${allDataButtons.length} total data-button elements`);
-    
-    allDataButtons.forEach((button, index) => {
-      const buttonType = button.getAttribute('data-button');
-      console.log(`   Button ${index + 1}: data-button="${buttonType}"`);
-    });
   }
 
   setupLighting() {
@@ -567,9 +951,6 @@ class Simple3DLoader {
         (progress) => {
           const percent = (progress.loaded / progress.total * 100).toFixed(0);
           console.log(`📊 Loading progress: ${percent}%`);
-
-          // Update loading placeholder with progress
-          this.updateLoadingState(`Loading 3D Model... ${percent}%`);
         },
         (error) => {
           console.error('❌ Error loading model:', error);
@@ -733,408 +1114,6 @@ class Simple3DLoader {
     console.log('📱 Viewport resized:', { width, height });
   }
 
-  injectAntiFlashCSS() {
-    // Create and inject CSS to prevent any white flash
-    const style = document.createElement('style');
-    style.textContent = `
-      #webgl-container,
-      .webgl-container,
-      [data-webgl-container] {
-        background-color: #3c5e71 !important;
-        transition: none !important;
-      }
-    `;
-    document.head.appendChild(style);
-    console.log('🚫 Anti-flash CSS injected');
-  }
-
-  // Phase 1: Lazy Loading Initialization
-  initLazyLoading() {
-    try {
-      // Find the container element first
-      this.container = document.querySelector('#webgl-container') ||
-                       document.querySelector('.webgl-container') ||
-                       document.querySelector('[data-webgl-container]');
-
-      if (!this.container) {
-        console.error('WebGL container not found! Loading disabled.');
-        return;
-      }
-
-      console.log('🔄 Lazy loading initialized for:', this.container);
-      this.showLoadingPlaceholder();
-
-      // Set up triggers based on configuration
-      if (this.loadTriggers.viewport) {
-        this.setupViewportTrigger();
-      }
-
-      if (this.loadTriggers.userInteraction) {
-        this.setupInteractionTriggers();
-      }
-
-      if (this.loadTriggers.delay) {
-        this.setupDelayTrigger();
-      }
-
-      // If manual mode, just wait for explicit load call
-      if (this.loadTriggers.manual) {
-        console.log('📋 Manual loading mode - call loader.load() to start');
-      }
-
-    } catch (error) {
-      console.error('❌ Error initializing lazy loading:', error);
-      // Fallback to direct loading
-      this.init();
-    }
-  }
-
-  showLoadingPlaceholder() {
-    if (!this.container) return;
-
-    // Apply initial styling
-    this.applyInitialStyling();
-
-    // Create a minimal loading placeholder
-    const placeholder = document.createElement('div');
-    placeholder.className = 'lazy-loading-placeholder';
-    placeholder.innerHTML = `
-      <div style="
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        color: rgba(255, 255, 255, 0.8);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        z-index: 2;
-      ">
-        <div style="
-          width: 40px;
-          height: 40px;
-          border: 3px solid rgba(255, 255, 255, 0.3);
-          border-top: 3px solid #ffffff;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin: 0 auto 15px;
-        "></div>
-        <div style="font-size: 14px; font-weight: 500;">Loading 3D Experience</div>
-        <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">Interactive map preparing...</div>
-      </div>
-      <style>
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      </style>
-    `;
-
-    this.container.appendChild(placeholder);
-    console.log('📍 Loading placeholder displayed');
-  }
-
-  setupViewportTrigger() {
-    if (!this.container || !('IntersectionObserver' in window)) {
-      console.warn('⚠️ IntersectionObserver not supported, using fallback');
-      // Fallback: load immediately if intersection observer not supported
-      setTimeout(() => this.triggerLoad('viewport-fallback'), 100);
-      return;
-    }
-
-    const options = {
-      root: null,
-      rootMargin: '100px', // Start loading 100px before entering viewport
-      threshold: 0.1
-    };
-
-    this.intersectionObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && this.loadingState === 'pending') {
-          console.log('👁️ Container entered viewport - triggering load');
-          this.triggerLoad('viewport');
-        }
-      });
-    }, options);
-
-    this.intersectionObserver.observe(this.container);
-    console.log('👁️ Viewport trigger setup complete');
-  }
-
-  setupInteractionTriggers() {
-    if (!this.container) return;
-
-    const triggerLoad = (type) => {
-      if (this.loadingState === 'pending' && !this.userHasInteracted) {
-        this.userHasInteracted = true;
-        console.log(`🖱️ User interaction detected (${type}) - triggering load`);
-        this.triggerLoad('interaction');
-      }
-    };
-
-    // Mouse events
-    this.container.addEventListener('click', () => triggerLoad('click'), { once: true });
-    this.container.addEventListener('mouseenter', () => triggerLoad('hover'), { once: true });
-
-    // Touch events
-    this.container.addEventListener('touchstart', () => triggerLoad('touch'), { once: true, passive: true });
-
-    // Keyboard events (for accessibility)
-    this.container.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        triggerLoad('keyboard');
-      }
-    }, { once: true });
-
-    console.log('🖱️ Interaction triggers setup complete');
-  }
-
-  setupDelayTrigger() {
-    const delay = this.config.lazyLoading?.delay || 2000; // Default 2 seconds
-
-    this.delayTimer = setTimeout(() => {
-      if (this.loadingState === 'pending') {
-        console.log(`⏰ Delay trigger activated (${delay}ms) - triggering load`);
-        this.triggerLoad('delay');
-      }
-    }, delay);
-
-    console.log(`⏰ Delay trigger setup complete (${delay}ms)`);
-  }
-
-  triggerLoad(trigger) {
-    if (this.loadingState !== 'pending') {
-      console.log(`⚠️ Load already triggered (state: ${this.loadingState})`);
-      return;
-    }
-
-    console.log(`🚀 Loading triggered by: ${trigger}`);
-    this.loadingState = 'loading';
-
-    // Clear any delay timer
-    if (this.delayTimer) {
-      clearTimeout(this.delayTimer);
-      this.delayTimer = null;
-    }
-
-    // Disconnect intersection observer
-    if (this.intersectionObserver) {
-      this.intersectionObserver.disconnect();
-      this.intersectionObserver = null;
-    }
-
-    // Update placeholder to show loading state
-    this.updateLoadingState('Loading 3D Model...');
-
-    // Start the actual loading process
-    this.init();
-  }
-
-  updateLoadingState(message) {
-    const placeholder = this.container?.querySelector('.lazy-loading-placeholder');
-    if (placeholder) {
-      const textElement = placeholder.querySelector('div:last-child');
-      if (textElement) {
-        textElement.textContent = message;
-      }
-    }
-  }
-
-  removeLazyLoadingPlaceholder() {
-    const placeholder = this.container?.querySelector('.lazy-loading-placeholder');
-    if (placeholder) {
-      placeholder.remove();
-      console.log('✅ Loading placeholder removed');
-    }
-  }
-
-  // Public method to manually trigger loading
-  load() {
-    this.triggerLoad('manual');
-  }
-
-  showErrorState(error) {
-    this.removeLazyLoadingPlaceholder();
-
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'lazy-loading-error';
-    errorDiv.innerHTML = `
-      <div style="
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        color: rgba(255, 255, 255, 0.9);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        z-index: 2;
-        max-width: 400px;
-        padding: 20px;
-      ">
-        <div style="
-          font-size: 48px;
-          margin-bottom: 15px;
-        ">⚠️</div>
-        <div style="font-size: 16px; font-weight: 500; margin-bottom: 10px;">Loading Failed</div>
-        <div style="font-size: 14px; opacity: 0.8; margin-bottom: 15px; line-height: 1.4;">
-          Unable to load the 3D experience. Please check your connection and try again.
-        </div>
-        <button onclick="location.reload()" style="
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          color: white;
-          padding: 10px 20px;
-          border-radius: 6px;
-          cursor: pointer;
-          font-size: 14px;
-          transition: background-color 0.2s;
-        " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'"
-           onmouseout="this.style.backgroundColor='rgba(255,255,255,0.1)'">
-          Retry
-        </button>
-      </div>
-    `;
-
-    if (this.container) {
-      this.container.appendChild(errorDiv);
-    }
-
-    console.log('❌ Error state displayed');
-  }
-
-  async init() {
-    try {
-      // Find the container element (if not already found in lazy loading)
-      if (!this.container) {
-        this.container = document.querySelector('#webgl-container') ||
-                         document.querySelector('.webgl-container') ||
-                         document.querySelector('[data-webgl-container]');
-      }
-
-      if (!this.container) {
-        console.error('WebGL container not found! Looking for #webgl-container');
-        this.loadingState = 'error';
-        return;
-      }
-
-      console.log('✅ Container found:', this.container);
-
-      // Apply initial styling to prevent gradient flash (if not already applied)
-      if (this.loadingState !== 'loading') {
-        this.applyInitialStyling();
-      }
-
-      // Optionally attach debug panels if requested (via URL/global flag)
-      await this.maybeAttachDebugPanels();
-
-      // Load Three.js from CDN
-      await this.loadThreeJS();
-      
-      // Setup Three.js scene
-      this.setupScene();
-      
-      // Load the GLB model
-      await this.loadModel();
-      
-      // Setup controls
-      this.setupControls();
-      
-      // Handle window resize and visibility changes
-      this.setupEventListeners();
-      
-      // Start render loop
-      this.animate();
-      
-      // Play welcome animation if enabled
-      if (this.config.animations.welcomeAnimation.enabled) {
-        this.playWelcomeAnimation();
-      }
-      
-      // Remove loading state after everything is initialized
-      this.finishLoading();
-
-      // Mark loading as complete
-      this.loadingState = 'loaded';
-
-      console.log('✅ 3D scene initialized successfully!');
-
-    } catch (error) {
-      console.error('❌ Error initializing 3D scene:', error);
-      this.loadingState = 'error';
-      this.showErrorState(error);
-    }
-  }
-
-  applyInitialStyling() {
-    console.log('🎨 Applying initial styling to prevent flash...');
-    
-    // Store original styles to restore later
-    this.originalContainerStyles = {
-      background: this.container.style.background,
-      opacity: this.container.style.opacity,
-      transition: this.container.style.transition
-    };
-    
-    // Apply loading styles to prevent gradient flash
-    this.container.style.background = '#3c5e71'; // Set target color immediately
-    this.container.style.opacity = '1'; // Keep visible but with correct background
-    this.container.style.transition = 'none'; // Remove transition during setup
-    
-    // Ensure container covers the full viewport
-    this.container.style.width = '100vw';
-    this.container.style.height = '100vh';
-    this.container.style.position = 'fixed';
-    this.container.style.top = '0';
-    this.container.style.left = '0';
-    this.container.style.zIndex = '1';
-    
-    console.log('✅ Initial styling applied - full viewport coverage with target background');
-  }
-
-  finishLoading() {
-    console.log('🎉 Finishing loading sequence...');
-
-    // Remove lazy loading placeholder if it exists
-    this.removeLazyLoadingPlaceholder();
-
-    // Set the final scene background now that everything is loaded
-    if (this.scene) {
-      this.scene.background = new THREE.Color(0x3c5e71); // Blue-gray background
-      console.log('🎨 Scene background set to final color');
-    }
-
-    // Update renderer clear color for proper rendering
-    if (this.renderer) {
-      this.renderer.setClearColor(0x3c5e71, 1); // Opaque background
-    }
-
-    // Container is already visible with correct background - just log completion
-    console.log('✅ 3D scene ready and visible');
-  }
-
-  // Conditionally load and attach debug panels module
-  async maybeAttachDebugPanels() {
-    try {
-      const params = new URLSearchParams(window.location.search || '');
-      const shouldEnable = Boolean(
-        window.ENABLE_3D_DEBUG_PANELS ||
-        params.has('debug3d') ||
-        params.get('debug-panels') === '1' ||
-        params.get('debug') === '3d'
-      );
-      if (!shouldEnable) return;
-
-      // Dynamic import to keep main bundle lean
-      const mod = await import('./debug-panels.js');
-      if (mod && typeof mod.attachDebugPanels === 'function') {
-        mod.attachDebugPanels(this);
-        this.debugPanelsEnabled = true;
-        console.log('🧩 Debug panels module loaded');
-      }
-    } catch (e) {
-      console.warn('Failed to load debug panels module:', e);
-    }
-  }
-
   animate() {
     // Check if rendering is paused (e.g., tab hidden)
     if (this.pauseRendering) {
@@ -1152,13 +1131,8 @@ class Simple3DLoader {
       this.updateBasicControls();
     }
 
-    // Throttled debug updates (development only and only if panels enabled)
-    if (
-      this.isDevelopment &&
-      this.debugPanelsEnabled &&
-      typeof this.updateCameraInfo === 'function' &&
-      (now - this.lastDebugUpdate) > 100
-    ) {
+    // Throttled debug updates (development only)
+    if (this.isDevelopment && (now - this.lastDebugUpdate) > 100) {
       this.updateCameraInfo();
       this.lastDebugUpdate = now;
     }
@@ -1175,10 +1149,325 @@ class Simple3DLoader {
   }
 
   // =============================================================================
-  // Debug Panels moved to separate module: src/scripts/debug-panels.js
-  // Methods (createCameraInfoPanel, updateCameraInfo, createControlsPanel,
-  // setupControlsListeners) are attached by that module when enabled.
+  // DEVELOPMENT/DEBUG FUNCTIONS - Camera Position Panel
   // =============================================================================
+  // These functions support the camera position panel for development/debugging.
+  // Safe to remove for production if camera panel HTML is not included.
+  // Panel is now VISIBLE in development mode and automatically created.
+  
+  createCameraInfoPanel() {
+    // Check if panel already exists
+    if (document.getElementById('camera-debug-panel')) {
+      console.log('📊 Camera panel already exists');
+      return;
+    }
+
+    console.log('📊 Creating camera info panel for development...');
+
+    // Create panel HTML
+    const panel = document.createElement('div');
+    panel.id = 'camera-debug-panel';
+    panel.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        z-index: 10000;
+        min-width: 250px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      ">
+        <div style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          padding-bottom: 8px;
+        ">
+          <strong style="color: #4CAF50;">📷 Camera Debug</strong>
+          <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+          ">×</button>
+        </div>
+        <div><strong>Position:</strong> <span id="camera-position">-</span></div>
+        <div><strong>Target:</strong> <span id="camera-target">-</span></div>
+        <div><strong>Distance:</strong> <span id="camera-distance">-</span></div>
+        <div><strong>Rotation:</strong> <span id="camera-rotation">-</span></div>
+        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+          <button onclick="window.copyCurrentPosition && window.copyCurrentPosition()" style="
+            background: #2196F3;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            width: 100%;
+          ">📋 Copy Position</button>
+        </div>
+      </div>
+    `;
+
+    // Add to body
+    document.body.appendChild(panel);
+    console.log('✅ Camera info panel created and visible');
+  }
+  
+  updateCameraInfo() {
+    if (!this.camera || !this.controls) return;
+    
+    const pos = this.camera.position;
+    const target = this.controls.target;
+    const distance = pos.distanceTo(target);
+    
+    // Calculate rotation in degrees
+    const euler = new THREE.Euler().setFromQuaternion(this.camera.quaternion, 'YXZ');
+    const rotX = THREE.MathUtils.radToDeg(euler.x);
+    const rotY = THREE.MathUtils.radToDeg(euler.y);
+    
+    // Update DOM elements if they exist
+    const posElement = document.getElementById('camera-position');
+    const targetElement = document.getElementById('camera-target');
+    const distanceElement = document.getElementById('camera-distance');
+    const rotationElement = document.getElementById('camera-rotation');
+    
+    if (posElement) {
+      posElement.textContent = `${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)}`;
+    }
+    if (targetElement) {
+      targetElement.textContent = `${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)}`;
+    }
+    if (distanceElement) {
+      distanceElement.textContent = distance.toFixed(1);
+    }
+    if (rotationElement) {
+      rotationElement.textContent = `${rotX.toFixed(1)}°, ${rotY.toFixed(1)}°`;
+    }
+  }
+
+  createControlsPanel() {
+    // Check if panel already exists
+    if (document.getElementById('controls-debug-panel')) {
+      console.log('🎮 Controls panel already exists');
+      return;
+    }
+
+    console.log('🎮 Creating controls debug panel...');
+
+    // Create panel HTML
+    const panel = document.createElement('div');
+    panel.id = 'controls-debug-panel';
+    panel.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        z-index: 10000;
+        min-width: 280px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      ">
+        <div style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          padding-bottom: 8px;
+        ">
+          <strong style="color: #FF9800;">🎮 Controls Debug</strong>
+          <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+          ">×</button>
+        </div>
+        
+        <!-- Rotation Limits -->
+        <div style="margin-bottom: 8px;">
+          <div style="color: #FFC107; margin-bottom: 4px;"><strong>Rotation Limits:</strong></div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+            <label style="width: 45%;">Min Polar (°):</label>
+            <input type="range" id="minPolar" min="0" max="90" step="1" value="27" style="width: 40%;">
+            <span id="minPolarValue" style="width: 10%; text-align: right;">27</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <label style="width: 45%;">Max Polar (°):</label>
+            <input type="range" id="maxPolar" min="45" max="180" step="1" value="54" style="width: 40%;">
+            <span id="maxPolarValue" style="width: 10%; text-align: right;">54</span>
+          </div>
+        </div>
+
+        <!-- Distance Limits -->
+        <div style="margin-bottom: 8px;">
+          <div style="color: #4CAF50; margin-bottom: 4px;"><strong>Distance Limits:</strong></div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+            <label style="width: 45%;">Min Distance:</label>
+            <input type="range" id="minDistance" min="10" max="150" step="5" value="85" style="width: 40%;">
+            <span id="minDistanceValue" style="width: 10%; text-align: right;">85</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <label style="width: 45%;">Max Distance:</label>
+            <input type="range" id="maxDistance" min="50" max="200" step="5" value="125" style="width: 40%;">
+            <span id="maxDistanceValue" style="width: 10%; text-align: right;">125</span>
+          </div>
+        </div>
+
+        <!-- Control Toggles -->
+        <div style="margin-bottom: 8px;">
+          <div style="color: #2196F3; margin-bottom: 4px;"><strong>Control Options:</strong></div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+            <label>Enable Zoom:</label>
+            <input type="checkbox" id="enableZoom" checked style="margin-left: auto;">
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+            <label>Enable Rotate:</label>
+            <input type="checkbox" id="enableRotate" checked style="margin-left: auto;">
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <label>Enable Pan:</label>
+            <input type="checkbox" id="enablePan" checked style="margin-left: auto;">
+          </div>
+        </div>
+
+        <!-- Damping -->
+        <div style="margin-bottom: 8px;">
+          <div style="color: #9C27B0; margin-bottom: 4px;"><strong>Damping:</strong></div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <label style="width: 45%;">Damping Factor:</label>
+            <input type="range" id="dampingFactor" min="0.01" max="0.2" step="0.01" value="0.02" style="width: 40%;">
+            <span id="dampingFactorValue" style="width: 10%; text-align: right;">0.02</span>
+          </div>
+        </div>
+
+        <!-- Export Button -->
+        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+          <button onclick="window.exportControlsConfig && window.exportControlsConfig()" style="
+            background: #4CAF50;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            width: 100%;
+          ">📋 Export Controls Config</button>
+        </div>
+      </div>
+    `;
+
+    // Add to body
+    document.body.appendChild(panel);
+
+    // Setup event listeners for real-time updates
+    this.setupControlsListeners();
+
+    console.log('✅ Controls debug panel created');
+  }
+
+  setupControlsListeners() {
+    // Polar angle controls
+    const minPolarSlider = document.getElementById('minPolar');
+    const maxPolarSlider = document.getElementById('maxPolar');
+    const minPolarValue = document.getElementById('minPolarValue');
+    const maxPolarValue = document.getElementById('maxPolarValue');
+
+    minPolarSlider.addEventListener('input', (e) => {
+      const value = parseFloat(e.target.value);
+      minPolarValue.textContent = value;
+      if (this.controls) {
+        this.controls.minPolarAngle = THREE.MathUtils.degToRad(value);
+      }
+    });
+
+    maxPolarSlider.addEventListener('input', (e) => {
+      const value = parseFloat(e.target.value);
+      maxPolarValue.textContent = value;
+      if (this.controls) {
+        this.controls.maxPolarAngle = THREE.MathUtils.degToRad(value);
+      }
+    });
+
+    // Distance controls
+    const minDistanceSlider = document.getElementById('minDistance');
+    const maxDistanceSlider = document.getElementById('maxDistance');
+    const minDistanceValue = document.getElementById('minDistanceValue');
+    const maxDistanceValue = document.getElementById('maxDistanceValue');
+
+    minDistanceSlider.addEventListener('input', (e) => {
+      const value = parseFloat(e.target.value);
+      minDistanceValue.textContent = value;
+      if (this.controls) {
+        this.controls.minDistance = value;
+      }
+    });
+
+    maxDistanceSlider.addEventListener('input', (e) => {
+      const value = parseFloat(e.target.value);
+      maxDistanceValue.textContent = value;
+      if (this.controls) {
+        this.controls.maxDistance = value;
+      }
+    });
+
+    // Control toggles
+    const enableZoom = document.getElementById('enableZoom');
+    const enableRotate = document.getElementById('enableRotate');
+    const enablePan = document.getElementById('enablePan');
+
+    enableZoom.addEventListener('change', (e) => {
+      if (this.controls) {
+        this.controls.enableZoom = e.target.checked;
+      }
+    });
+
+    enableRotate.addEventListener('change', (e) => {
+      if (this.controls) {
+        this.controls.enableRotate = e.target.checked;
+      }
+    });
+
+    enablePan.addEventListener('change', (e) => {
+      if (this.controls) {
+        this.controls.enablePan = e.target.checked;
+      }
+    });
+
+    // Damping factor
+    const dampingFactorSlider = document.getElementById('dampingFactor');
+    const dampingFactorValue = document.getElementById('dampingFactorValue');
+
+    dampingFactorSlider.addEventListener('input', (e) => {
+      const value = parseFloat(e.target.value);
+      dampingFactorValue.textContent = value;
+      if (this.controls) {
+        this.controls.dampingFactor = value;
+      }
+    });
+
+    console.log('✅ Controls panel event listeners setup');
+  }
 
   // Public method to get model stats
   getStats() {
@@ -1228,37 +1517,9 @@ class Simple3DLoader {
     // Pause rendering immediately
     this.pauseRendering = true;
 
-    // Clean up lazy loading resources
-    if (this.intersectionObserver) {
-      this.intersectionObserver.disconnect();
-      this.intersectionObserver = null;
-    }
+  // (Phase 1 Cleanup) Flag system disposal removed
 
-    if (this.delayTimer) {
-      clearTimeout(this.delayTimer);
-      this.delayTimer = null;
-    }
-
-    // Clean up video lazy loading resources
-    if (this.videoMutationObserver) {
-      this.videoMutationObserver.disconnect();
-      this.videoMutationObserver = null;
-    }
-
-    if (this.interceptedVideos) {
-      this.interceptedVideos.clear();
-      this.interceptedVideos = null;
-    }
-
-    // Remove any lazy loading UI elements
-    this.removeLazyLoadingPlaceholder();
-    const errorElement = this.container?.querySelector('.lazy-loading-error');
-
-    // Cleanup: no external managers remain in simplified build
-    this.smartLoadingManager = null;
-    if (errorElement) {
-      errorElement.remove();
-    }
+    // (Phase 2 Cleanup) POI mapping disposal removed
 
   // Phase 3: Interaction system disposal
   this.disposeInteractionSystem && this.disposeInteractionSystem();
@@ -1337,6 +1598,10 @@ class Simple3DLoader {
     // Dispose the material itself
     material.dispose();
   }
+
+  // (Phase 1 Cleanup) Legacy flag POI system methods removed (initializeFlags, createFlag, animateFlags, disposeFlags)
+
+  // (Phase 2 Cleanup) POI mapping methods removed
 
   // =====================================================================
   // Phase 3: Interactive Station System (Skeleton)
@@ -1467,18 +1732,14 @@ class Simple3DLoader {
 
   // Discover interactive station objects within the loaded model
   setupInteractiveObjects() {
-    console.log('🎯 [SETUP DEBUG] setupInteractiveObjects called');
-    
     if (!this.model) {
-      console.warn('⚠️ [SETUP DEBUG] Cannot setup interactive objects before model loads');
+      console.warn('⚠️ Cannot setup interactive objects before model loads');
       return;
     }
     if (!this.stationMapping) {
-      console.warn('⚠️ [SETUP DEBUG] Station mapping not defined');
+      console.warn('⚠️ Station mapping not defined');
       return;
     }
-
-    console.log('🎯 [SETUP DEBUG] Station mapping:', this.stationMapping);
 
     this.interactiveObjects = [];
     this._interactiveMetaMap = new Map();
@@ -1486,23 +1747,13 @@ class Simple3DLoader {
     const stationKeys = Object.keys(this.stationMapping);
     let foundCount = 0;
 
-    console.log('🎯 [SETUP DEBUG] Looking for station keys:', stationKeys);
-
     const foundKeys = new Set();
 
     this.model.traverse((child) => {
       if (!child.isMesh || !child.name) return;
-      
-      // Log all mesh names for debugging
-      if (child.isMesh && child.name) {
-        console.log('🎯 [SETUP DEBUG] Found mesh:', child.name);
-      }
-      
       for (const key of stationKeys) {
         // Allow partial / case-insensitive match (e.g., 'Station01', 'station01_mesh')
         if (child.name.toLowerCase().includes(key.toLowerCase())) {
-          console.log('🎯 [SETUP DEBUG] Found matching station mesh:', { childName: child.name, stationKey: key });
-          
           // Clone material to prevent shared-material side effects when highlighting
             if (child.material && !child.material._isClonedForInteraction) {
               child.material = child.material.clone();
@@ -1539,10 +1790,8 @@ class Simple3DLoader {
     } else {
       console.log('✅ All station mapping keys found in model');
     }
-    // Development overlay (stations debug) - only if debug panels enabled
-    if (this.debugPanelsEnabled) {
-      this.createInteractionDebugOverlay && this.createInteractionDebugOverlay(foundKeys, missing);
-    }
+    // Development overlay
+    this.createInteractionDebugOverlay && this.createInteractionDebugOverlay(foundKeys, missing);
   }
 
   // Handle pointer movement for hover detection
@@ -1578,48 +1827,23 @@ class Simple3DLoader {
 
   // Handle click / touch interaction
   onClick(event) {
-    console.log('🖱️ [CLICK DEBUG] onClick triggered', { event: event.type, hasRaycaster: !!this.raycaster, hasMouse: !!this.mouse, hasCamera: !!this.camera });
-    
-    if (!this.raycaster || !this.mouse || !this.camera) {
-      console.warn('⚠️ [CLICK DEBUG] Missing required components for click detection');
-      return;
-    }
-    
+    if (!this.raycaster || !this.mouse || !this.camera) return;
     this.updateNormalizedPointer(event);
-    console.log('🖱️ [CLICK DEBUG] Mouse coordinates:', { x: this.mouse.x, y: this.mouse.y });
 
     if (!this.interactiveObjects || this.interactiveObjects.length === 0) {
-      console.log('🖱️ [CLICK DEBUG] No interactive objects available');
-      console.log('🖱️ [CLICK DEBUG] Interactive system initialized:', this.interactionSystemInitialized);
-      console.log('🖱️ [CLICK DEBUG] Station mapping:', this.stationMapping);
       return;
     }
-
-    console.log('🖱️ [CLICK DEBUG] Interactive objects available:', this.interactiveObjects.length);
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
     const candidates = this.interactiveObjects.map(m => m.object);
-    console.log('🖱️ [CLICK DEBUG] Raycasting against candidates:', candidates.length);
-    
     const intersections = this.raycaster.intersectObjects(candidates, true);
-    console.log('🖱️ [CLICK DEBUG] Intersections found:', intersections.length);
-    
-    if (intersections.length === 0) {
-      console.log('🖱️ [CLICK DEBUG] No intersections with interactive objects');
-      return;
-    }
+    if (intersections.length === 0) return;
 
     const hit = intersections[0].object;
-    console.log('🖱️ [CLICK DEBUG] Hit object:', { name: hit.name, uuid: hit.uuid });
-    
     const meta = this._interactiveMetaMap && this._interactiveMetaMap.get(hit.uuid);
-    console.log('🖱️ [CLICK DEBUG] Meta data for hit:', meta);
-    
     if (meta) {
-      console.log(`🖱️ [CLICK DEBUG] Station clicked: ${meta.stationKey} -> modal '${meta.modalId}'`);
+      console.log(`🖱️ Station clicked: ${meta.stationKey} -> modal '${meta.modalId}'`);
       this.triggerModal(meta.modalId, meta.stationKey);
-    } else {
-      console.warn('⚠️ [CLICK DEBUG] No metadata found for hit object');
     }
   }
 
@@ -1673,14 +1897,48 @@ class Simple3DLoader {
     });
   }
 
-  // Development helper overlay & diagnostics moved to debug-panels.js
+  // Development helper overlay & diagnostics
+  createInteractionDebugOverlay(foundKeys, missingKeys) {
+    if (!this.isDevelopment) return;
+    if (document.getElementById('interaction-debug-overlay')) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'interaction-debug-overlay';
+    overlay.style.cssText = 'position:fixed;left:20px;bottom:20px;z-index:10001;font:11px/1.4 monospace;background:rgba(0,0,0,0.65);color:#fff;padding:10px 12px;border:1px solid rgba(255,255,255,0.15);border-radius:6px;max-width:260px;backdrop-filter:blur(6px);';
+    const foundList = Array.from(foundKeys).sort().join(', ') || '—';
+    const missingList = missingKeys.length ? missingKeys.join(', ') : 'None';
+    overlay.innerHTML = `
+      <div style="font-weight:bold;margin-bottom:4px;color:#ffd54f;">Stations Debug</div>
+      <div><strong>Found:</strong> ${foundList}</div>
+      <div><strong>Missing:</strong> <span style="color:${missingKeys.length?'#ff8080':'#8bc34a'};">${missingList}</span></div>
+      <div><strong>Interactive Objects:</strong> ${this.interactiveObjects.length}</div>
+      <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+        <button id="reload-interactive" style="flex:1 1 auto;background:#374151;color:#fff;border:1px solid #555;padding:4px 6px;border-radius:4px;cursor:pointer;">Reload</button>
+        <button id="diag-interactive" style="flex:1 1 auto;background:#2563eb;color:#fff;border:1px solid #1d4ed8;padding:4px 6px;border-radius:4px;cursor:pointer;">Diag</button>
+        <button id="close-interactive" style="flex:0 1 auto;background:#555;color:#fff;border:1px solid #666;padding:4px 6px;border-radius:4px;cursor:pointer;">×</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#reload-interactive').addEventListener('click', () => { try { this.setupInteractiveObjects(); } catch(e){ console.error(e);} });
+    overlay.querySelector('#diag-interactive').addEventListener('click', () => { this.runInteractionDiagnostics && this.runInteractionDiagnostics(); });
+    overlay.querySelector('#close-interactive').addEventListener('click', () => overlay.remove());
+  }
+
+  runInteractionDiagnostics() {
+    const results = { totalMapped: Object.keys(this.stationMapping||{}).length, interactiveCount: this.interactiveObjects.length, missing: [], duplicatedMaterials: 0 };
+    const found = new Set(this.interactiveObjects.map(m => m.stationKey));
+    Object.keys(this.stationMapping||{}).forEach(k => { if (!found.has(k)) results.missing.push(k); });
+    const matUsage = new Map();
+    this.interactiveObjects.forEach(meta => { const mat = meta.object.material; if (!mat) return; matUsage.set(mat.uuid, (matUsage.get(mat.uuid)||0)+1); });
+    matUsage.forEach(count => { if (count>1) results.duplicatedMaterials++; });
+    console.log('🧪 Interaction Diagnostics:', results);
+    if (results.missing.length) console.warn('⚠️ Missing station mapping keys:', results.missing); else console.log('✅ All station mapping keys present.');
+    if (results.duplicatedMaterials>0) console.warn('⚠️ Some interactive objects still share materials:', results.duplicatedMaterials); else console.log('✅ All interactive materials properly cloned.');
+    return results;
+  }
 
   // Trigger modal by creating (if needed) a temporary hidden element
   triggerModal(modalId, stationKey = '') {
-    console.log('🎯 [MODAL DEBUG] triggerModal called with:', { modalId, stationKey });
-    
     if (!modalId) {
-      console.warn('⚠️ [MODAL DEBUG] triggerModal called without modalId');
+      console.warn('⚠️ triggerModal called without modalId');
       return;
     }
 
@@ -1688,26 +1946,19 @@ class Simple3DLoader {
     const now = performance.now();
     this._lastModalTriggerMap = this._lastModalTriggerMap || new Map();
     const lastTime = this._lastModalTriggerMap.get(modalId) || 0;
-    if (now - lastTime < 400) {
-      console.log('🎯 [MODAL DEBUG] Debouncing duplicate trigger for:', modalId);
-      return; // debounce duplicate rapid triggers
-    }
+    if (now - lastTime < 400) return; // debounce duplicate rapid triggers
     this._lastModalTriggerMap.set(modalId, now);
 
     // Find existing triggers (could be multiple)
     const matches = Array.from(document.querySelectorAll(`[data-modal-trigger="${modalId}"]`));
-    console.log('🎯 [MODAL DEBUG] Found modal triggers:', matches.length, matches);
-    
     let triggerEl = null;
     if (matches.length > 0) {
       // Prefer visible element with anchor/button child
       triggerEl = matches.find(el => this._isElementVisible(el)) || matches[0];
-      console.log('🎯 [MODAL DEBUG] Selected trigger element:', triggerEl);
     }
 
     let created = false;
     if (!triggerEl) {
-      console.log('🎯 [MODAL DEBUG] Creating temporary trigger element for:', modalId);
       // Create a temporary structural element closer to example markup (li > a)
       const temp = document.createElement('li');
       temp.dataset.modalTrigger = modalId;
@@ -1724,39 +1975,25 @@ class Simple3DLoader {
 
     // Determine best dispatch target (anchor/button inside or the element itself)
     let targetEl = triggerEl.matches('a,button') ? triggerEl : triggerEl.querySelector('a,button') || triggerEl;
-    console.log('🎯 [MODAL DEBUG] Target element for events:', targetEl);
 
     // Full synthetic interaction sequence to maximize compatibility
     const eventOptions = { bubbles: true, cancelable: true };
     const sequence = ['pointerdown', 'mousedown', 'mouseup', 'click'];
-    console.log('🎯 [MODAL DEBUG] Dispatching event sequence:', sequence);
-    sequence.forEach(type => { 
-      try { 
-        console.log('🎯 [MODAL DEBUG] Dispatching:', type);
-        targetEl.dispatchEvent(new MouseEvent(type, eventOptions)); 
-      } catch (e) { 
-        console.warn('🎯 [MODAL DEBUG] Event dispatch failed:', type, e);
-      } 
-    });
+    sequence.forEach(type => { try { targetEl.dispatchEvent(new MouseEvent(type, eventOptions)); } catch (e) { /* ignore */ } });
 
     // Fallback: if a global modal open function exists, call it
     if (typeof window.openModal === 'function') {
       try {
-        console.log('🎯 [MODAL DEBUG] Calling global openModal function');
         window.openModal(modalId);
-      } catch (e) { 
-        console.warn('🎯 [MODAL DEBUG] Global openModal failed:', e);
-      }
+      } catch (e) { /* ignore */ }
     }
 
     // Attempt to lazy load assets for this modal after dispatch (modal may mount asynchronously)
-    console.log('🎯 [MODAL DEBUG] Calling lazyLoadModalAssets for:', modalId);
     this.lazyLoadModalAssets(modalId);
 
     // Clean temporary element
     if (created) {
       setTimeout(() => {
-        console.log('🎯 [MODAL DEBUG] Cleaning up temporary trigger element');
         if (triggerEl && triggerEl.parentNode) triggerEl.parentNode.removeChild(triggerEl);
       }, 1500);
     }
@@ -1781,143 +2018,228 @@ class Simple3DLoader {
   // On first user click for that station/modal, assets are populated.
 
   lazyLoadModalAssets(modalId, attempt = 0) {
-    console.log('🔄 [VIDEO DEBUG] Triggering video lazy load for modal:', modalId);
-    
-    if (!modalId) {
-      console.warn('⚠️ [VIDEO DEBUG] No modalId provided');
-      return;
-    }
-    
-    // Check if we already processed this modal
+    if (!modalId) return;
     this._lazyLoadedModals = this._lazyLoadedModals || new Set();
-    if (this._lazyLoadedModals.has(modalId)) {
-      console.log('🔄 [VIDEO DEBUG] Modal videos already activated for:', modalId);
-      return;
-    }
+    if (this._lazyLoadedModals.has(modalId)) return; // already done
 
-    // Find the modal container
     const selectors = [
       `[data-modal-id="${modalId}"]`,
-      `[data-modal="${modalId}"]`, 
-      `#${modalId}`,
-      `.modal_dialog[id*="${modalId}"]`,
-      `.modal_dialog:has([id="${modalId}"])`,
-      `.modal_dialog` // Fallback for any open modal
+      `[data-modal="${modalId}"]`,
+      `#${modalId}`
     ];
-    
     let modalEl = null;
     for (const sel of selectors) {
-      try {
-        const elements = document.querySelectorAll(sel);
-        if (elements.length === 1) {
-          modalEl = elements[0];
-          console.log('🔄 [VIDEO DEBUG] Found modal with selector:', sel);
-          break;
-        } else if (elements.length > 1) {
-          // Find visible modal
-          for (const el of elements) {
-            const rect = el.getBoundingClientRect();
-            if (rect.width > 0 && rect.height > 0) {
-              modalEl = el;
-              console.log('🔄 [VIDEO DEBUG] Found visible modal with selector:', sel);
-              break;
-            }
-          }
-          if (modalEl) break;
-        }
-      } catch (e) {
-        console.log('🔄 [VIDEO DEBUG] Selector failed:', sel, e.message);
-      }
+      modalEl = document.querySelector(sel);
+      if (modalEl) break;
     }
 
-    // Retry if modal not found (may still be opening)
+    // If modal not yet in DOM (maybe created lazily by framework), retry up to 10 times
     if (!modalEl) {
-      console.log(`🔄 [VIDEO DEBUG] Modal not found, attempt ${attempt}/5`);
-      if (attempt < 5) {
-        setTimeout(() => this.lazyLoadModalAssets(modalId, attempt + 1), 100);
-      } else {
-        console.warn('⚠️ [VIDEO DEBUG] Modal not found after 5 attempts:', modalId);
+      if (attempt < 10) {
+        setTimeout(() => this.lazyLoadModalAssets(modalId, attempt + 1), 120);
       }
       return;
     }
 
-    console.log('🔄 [VIDEO DEBUG] Activating Webflow lazy loading for modal:', modalEl);
+    // Images
+    const imgs = modalEl.querySelectorAll('img[data-src]');
+    imgs.forEach(img => {
+      if (!img.getAttribute('src')) {
+        img.setAttribute('src', img.getAttribute('data-src'));
+      }
+      const ds = img.getAttribute('data-srcset');
+      if (ds && !img.getAttribute('srcset')) img.setAttribute('srcset', ds);
+    });
 
-    // Activate Webflow's native lazy loading for videos
-    const videos = modalEl.querySelectorAll('video[data-src]');
-    console.log('🔄 [VIDEO DEBUG] Found videos with data-src:', videos.length);
-    
-    videos.forEach((video, index) => {
-      if (!video.getAttribute('src') && video.getAttribute('data-src')) {
-        const dataSrc = video.getAttribute('data-src');
-        console.log(`🎥 [VIDEO DEBUG] Activating video ${index + 1}:`, dataSrc);
-        video.setAttribute('src', dataSrc);
-        
-        // Trigger load if needed
-        if (video.load) {
-          video.load();
-        }
+    // Picture sources
+    const sources = modalEl.querySelectorAll('source[data-srcset]');
+    sources.forEach(src => {
+      if (!src.getAttribute('srcset')) src.setAttribute('srcset', src.getAttribute('data-srcset'));
+    });
+
+    // Background images
+    const bgEls = modalEl.querySelectorAll('[data-bg-src]');
+    bgEls.forEach(el => {
+      if (!el.dataset.bgLoaded) {
+        el.style.backgroundImage = `url('${el.getAttribute('data-bg-src')}')`;
+        el.dataset.bgLoaded = '1';
       }
     });
 
-    // Also handle images for completeness
-    const images = modalEl.querySelectorAll('img[data-src]');
-    images.forEach((img, index) => {
-      if (!img.getAttribute('src') && img.getAttribute('data-src')) {
-        const dataSrc = img.getAttribute('data-src');
-        console.log(`�️ [VIDEO DEBUG] Activating image ${index + 1}:`, dataSrc);
-        img.setAttribute('src', dataSrc);
+    // Videos
+    const videos = modalEl.querySelectorAll('video[data-src]');
+    videos.forEach(v => {
+      if (!v.getAttribute('src')) {
+        v.setAttribute('src', v.getAttribute('data-src'));
+        try { v.load(); } catch (e) { /* ignore */ }
+      }
+    });
+
+    // Any element with data-inline-html pointing to a URL to fetch (optional enhancement)
+    const inline = modalEl.querySelectorAll('[data-inline-html]');
+    inline.forEach(el => {
+      if (!el.dataset.inlineLoaded) {
+        const url = el.getAttribute('data-inline-html');
+        fetch(url).then(r => r.text()).then(html => { el.innerHTML = html; }).catch(()=>{});
+        el.dataset.inlineLoaded = '1';
       }
     });
 
     this._lazyLoadedModals.add(modalId);
-    console.log('✅ [VIDEO DEBUG] Modal lazy loading complete for:', modalId);
-  }
-
-  /**
-   * Helper method to get station key from modal ID
-   */
-  getStationKeyFromModalId(modalId) {
-    // Reverse lookup from modal ID to station key
-    const stationMapping = {
-      'station-1': 'station_1',
-      'station-2': 'station_2',
-      'station-3': 'station_3',
-      'station-4': 'station_4',
-      'station-5': 'station_5',
-      'station-6': 'station_6',
-      'station-7': 'station_7',
-      'station-8': 'station_8',
-      'station-9': 'station_9',
-      'station-10': 'station_10'
-    };
-
-    return stationMapping[modalId] || null;
   }
 }
 
 // =============================================================================
-// Optional Debug Panels Loader (on-demand)
+// DEVELOPMENT/DEBUG GLOBAL FUNCTIONS - Camera Position Panel
 // =============================================================================
-// Call from the console to enable debug UI without reloading:
-//   enable3DDebugPanels()
-// Or add ?debug3d to the URL to auto-enable
-window.enable3DDebugPanels = async function enable3DDebugPanels() {
-  try {
-    const mod = await import('./debug-panels.js');
-    if (mod && typeof mod.attachDebugPanels === 'function') {
-      if (!window.simple3DLoader) {
-        console.warn('simple3DLoader not initialized yet. Try again after it loads.');
-        return;
-      }
-      mod.attachDebugPanels(window.simple3DLoader);
-      window.simple3DLoader.debugPanelsEnabled = true;
-      console.log('🧩 3D Debug Panels enabled');
+// These global functions are attached to window for camera panel interaction.
+// PRODUCTION NOTE: Safe to remove these functions if camera panel is not needed:
+// - window.toggleCameraPanel
+// - window.copyCurrentPosition
+// Functions will not error if DOM elements don't exist.
+
+// Global functions for camera panel interaction
+window.toggleCameraPanel = function() {
+  const content = document.getElementById('camera-content');
+  const btn = document.getElementById('camera-btn');
+  
+  if (content && btn) {
+    const isHidden = content.classList.contains('hidden');
+    
+    if (isHidden) {
+      content.classList.remove('hidden');
+      btn.textContent = '−';
+    } else {
+      content.classList.add('hidden');
+      btn.textContent = '+';
     }
-  } catch (e) {
-    console.warn('Failed to dynamically load debug panels module:', e);
   }
 };
+
+window.copyCurrentPosition = async function() {
+  const loader = window.simple3DLoader;
+  if (!loader || !loader.camera || !loader.controls) return;
+  
+  const pos = loader.camera.position;
+  const target = loader.controls.target;
+  const jsCode = `// Camera position for Webflow\n`+
+`camera.position.set(${pos.x.toFixed(1)}, ${pos.y.toFixed(1)}, ${pos.z.toFixed(1)});\n`+
+`camera.lookAt(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)});\n`+
+`controls.target.set(${target.x.toFixed(1)}, ${target.y.toFixed(1)}, ${target.z.toFixed(1)});`;
+  
+  try {
+    await navigator.clipboard.writeText(jsCode);
+    console.log('📋 Camera position copied to clipboard!');
+    
+    // Show visual feedback
+    const btn = document.querySelector('.copy-btn');
+    if (btn) {
+      const originalText = btn.textContent;
+      btn.textContent = '✅ Copied!';
+      btn.style.background = '#059669';
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.background = '#374151';
+      }, 2000);
+    }
+  } catch (err) {
+    console.warn('Copy failed, code logged to console:', jsCode);
+    alert('Copy failed - check console for camera position code');
+  }
+};
+
+// (Phase 2 Cleanup) POI mapping global functions removed
+
+// Export current controls configuration to clipboard
+window.exportControlsConfig = function() {
+  const loader = window.simple3DLoader;
+  if (!loader || !loader.controls) {
+    console.warn('⚠️ No controls found');
+    return;
+  }
+
+  // Get current values from the UI or controls object
+  const minPolar = document.getElementById('minPolar')?.value || THREE.MathUtils.radToDeg(loader.controls.minPolarAngle);
+  const maxPolar = document.getElementById('maxPolar')?.value || THREE.MathUtils.radToDeg(loader.controls.maxPolarAngle);
+  const minDistance = document.getElementById('minDistance')?.value || loader.controls.minDistance;
+  const maxDistance = document.getElementById('maxDistance')?.value || loader.controls.maxDistance;
+  const enableZoom = document.getElementById('enableZoom')?.checked !== undefined ? document.getElementById('enableZoom').checked : loader.controls.enableZoom;
+  const enableRotate = document.getElementById('enableRotate')?.checked !== undefined ? document.getElementById('enableRotate').checked : loader.controls.enableRotate;
+  const enablePan = document.getElementById('enablePan')?.checked !== undefined ? document.getElementById('enablePan').checked : loader.controls.enablePan;
+  const dampingFactor = document.getElementById('dampingFactor')?.value || loader.controls.dampingFactor;
+
+  const controlsConfig = {
+    exportedAt: new Date().toISOString(),
+    controls: {
+      minPolarAngle: parseFloat(minPolar),
+      maxPolarAngle: parseFloat(maxPolar),
+      minDistance: parseFloat(minDistance),
+      maxDistance: parseFloat(maxDistance),
+      enableZoom: enableZoom,
+      enableRotate: enableRotate,
+      enablePan: enablePan,
+      dampingFactor: parseFloat(dampingFactor),
+      enableDamping: true
+    },
+    current3DState: {
+      cameraPosition: {
+        x: loader.camera.position.x,
+        y: loader.camera.position.y,
+        z: loader.camera.position.z
+      },
+      target: {
+        x: loader.controls.target.x,
+        y: loader.controls.target.y,
+        z: loader.controls.target.z
+      }
+    },
+    usage: "Apply these settings to OrbitControls in production"
+  };
+
+  const exportData = JSON.stringify(controlsConfig, null, 2);
+
+  try {
+    navigator.clipboard.writeText(exportData).then(() => {
+      console.log('📋 Controls configuration copied to clipboard!');
+      console.log('🎮 Controls Config:', controlsConfig);
+
+      // Show temporary notification
+      const notification = document.createElement('div');
+      notification.innerHTML = `
+        <div style="
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: rgba(76, 175, 80, 0.95);
+          color: white;
+          padding: 15px 25px;
+          border-radius: 8px;
+          font-family: 'Courier New', monospace;
+          font-size: 14px;
+          z-index: 20000;
+          text-align: center;
+          backdrop-filter: blur(10px);
+        ">
+          ✅ Controls Config Exported!<br>
+          <small>Configuration copied to clipboard</small>
+        </div>
+      `;
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 2000);
+
+    }).catch((err) => {
+      console.warn('Copy failed, controls data logged to console:', exportData);
+      alert('Copy failed - check console for controls configuration');
+    });
+  } catch (err) {
+    console.warn('Copy failed, controls data logged to console:', exportData);
+    alert('Copy failed - check console for controls configuration');
+  }
+};
+
+// Console helper commands
+// (Phase 2 Cleanup) POI mapping console helper commands removed
 
 // Auto-initialization
 if (document.readyState === 'loading') {
