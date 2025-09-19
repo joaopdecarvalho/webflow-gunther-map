@@ -1,67 +1,6 @@
 <!-- Script Router System - Environment-aware loading with fallback -->
 <script>
 (function() {
-  // Early Video Interception - Prevent modal videos from loading before 3D model
-  const interceptedVideos = new Map();
-  
-  function interceptVideo(video) {
-    if (video.src && !video.hasAttribute('data-lazy-src')) {
-      // Check if video is in a modal container - Updated to include .modal_dialog
-      const modalContainer = video.closest('[id^="station-"], [data-modal], [data-modal-id], .modal_dialog');
-      if (modalContainer) {
-        console.log('🚫 Early intercepting modal video:', video.src);
-        const originalSrc = video.src;
-        video.removeAttribute('src');
-        video.setAttribute('data-lazy-src', originalSrc);
-        interceptedVideos.set(video, originalSrc);
-        
-        // Add placeholder styling
-        video.style.backgroundColor = 'rgba(0,0,0,0.1)';
-        video.style.position = 'relative';
-        
-        // Store reference for the main loader
-        window.interceptedVideos = window.interceptedVideos || interceptedVideos;
-        
-        console.log('🚫 Video intercepted in modal container:', modalContainer.className || modalContainer.id);
-      }
-    }
-  }
-  
-  // Intercept existing videos
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('video[src]').forEach(interceptVideo);
-    });
-  } else {
-    document.querySelectorAll('video[src]').forEach(interceptVideo);
-  }
-  
-  // Watch for dynamically added videos
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      mutation.addedNodes.forEach(function(node) {
-        if (node.nodeType === 1) { // Element node
-          if (node.tagName === 'VIDEO') {
-            interceptVideo(node);
-          } else {
-            const videos = node.querySelectorAll && node.querySelectorAll('video[src]');
-            if (videos) videos.forEach(interceptVideo);
-          }
-        }
-      });
-    });
-  });
-  
-  observer.observe(document.documentElement, {
-    childList: true,
-    subtree: true
-  });
-  
-  // Stop observing after page load
-  window.addEventListener('load', function() {
-    observer.disconnect();
-  });
-  
   // Try localhost first, then fallback to Vercel
   const localUrl = 'http://localhost:8080/src/scripts/simple-3d-loader.js';
   const vercelUrl = 'https://webflow-gunther-map.vercel.app/src/scripts/simple-3d-loader.js';

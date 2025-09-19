@@ -205,10 +205,6 @@ class Simple3DLoader {
     this.delayTimer = null;
     this.userHasInteracted = false;
 
-    // Video lazy loading system
-    this.interceptedVideos = null; // Will be initialized in initVideoLazyLoading
-    this.videoMutationObserver = null;
-
   // Phase 3 (Removed): smart loading manager no longer used
   this.smartLoadingManager = null;
 
@@ -324,7 +320,8 @@ class Simple3DLoader {
     this.modelUrl = this.isDevelopment ? this.modelUrls.local : this.modelUrls.production;
 
     // Initialize video lazy loading system before anything else
-    this.initVideoLazyLoading();
+    // Video lazy loading system simplified - Webflow handles data-src natively
+    console.log('📹 Video lazy loading system ready (using Webflow native data-src)');
 
     // Phase 1: Initialize lazy loading or direct loading based on configuration
     const lazyConfig = this.config.lazyLoading;
@@ -349,1226 +346,7 @@ class Simple3DLoader {
   }
 
   // =====================================================================
-  // Video Lazy Loading System - Prevents modal videos from downloading before 3D model
-  // =====================================================================
-  initVideoLazyLoading() {
-    console.log('📹 Initializing video lazy loading system...');
-    
-    // Use pre-intercepted videos from embed script if available
-    this.interceptedVideos = window.interceptedVideos || new Map();
-    
-    // If no pre-intercepted videos, do manual interception
-    if (this.interceptedVideos.size === 0) {
-      this.interceptModalVideos();
-    } else {
-      console.log('📹 [VIDEO DEBUG] Using pre-intercepted videos:', this.interceptedVideos.size);
-      // Log the intercepted videos for debugging
-      this.interceptedVideos.forEach((originalSrc, video) => {
-        console.log('📹 [VIDEO DEBUG] Pre-intercepted video:', {
-          src: originalSrc,
-          video: video,
-          parentClass: video.parentElement?.className,
-          parentId: video.parentElement?.id
-        });
-      });
-    }
-    
-    // Set up mutation observer to catch any additional videos
-    this.setupVideoMutationObserver();
-    
-    console.log('✅ Video lazy loading system initialized');
-  }
-
-  interceptModalVideos() {
-    // Find videos in modal containers that have src attributes - Updated to include .modal_dialog
-    const modalContainers = document.querySelectorAll('[id^="station-"], [data-modal], [data-modal-id], .modal_dialog');
-    
-    console.log('📹 [VIDEO DEBUG] Found modal containers:', modalContainers.length);
-    modalContainers.forEach((container, index) => {
-      console.log(`📹 [VIDEO DEBUG] Modal container ${index + 1}:`, {
-        tagName: container.tagName,
-        id: container.id,
-        className: container.className,
-        'data-modal': container.getAttribute('data-modal'),
-        'data-modal-id': container.getAttribute('data-modal-id')
-      });
-    });
-    
-    modalContainers.forEach(container => {
-      const videos = container.querySelectorAll('video[src]');
-      console.log(`📹 [VIDEO DEBUG] Found ${videos.length} videos in container:`, container.className || container.id);
-      
-      videos.forEach(video => {
-        if (!video.hasAttribute('data-lazy-src')) {
-          console.log('🚫 Intercepting modal video:', video.src);
-          
-          // Store original src and remove it to prevent loading
-          const originalSrc = video.src;
-          video.removeAttribute('src');
-          video.setAttribute('data-lazy-src', originalSrc);
-          
-          // Store reference for later restoration
-          this.interceptedVideos.set(video, originalSrc);
-          
-          // Add a visual placeholder
-          this.addVideoPlaceholder(video);
-        }
-      });
-    });
-  }
-
-  setupVideoMutationObserver() {
-    // Watch for dynamically added videos
-    this.videoMutationObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            // Check if the added node is a video or contains videos
-            const videos = node.tagName === 'VIDEO' ? [node] : node.querySelectorAll?.('video[src]') || [];
-            
-            videos.forEach((video) => {
-              // Only intercept videos in modal containers - Updated to include .modal_dialog
-              const modalContainer = video.closest('[id^="station-"], [data-modal], [data-modal-id], .modal_dialog');
-              if (modalContainer && video.src && !video.hasAttribute('data-lazy-src')) {
-                console.log('🔄 Intercepting dynamically added modal video:', video.src);
-                
-                const originalSrc = video.src;
-                video.removeAttribute('src');
-                video.setAttribute('data-lazy-src', originalSrc);
-                this.interceptedVideos.set(video, originalSrc);
-                this.addVideoPlaceholder(video);
-              }
-            });
-          }
-        });
-      });
-    });
-
-    this.videoMutationObserver.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-  }
-
-  addVideoPlaceholder(video) {
-    // Add a subtle placeholder overlay
-    const placeholder = document.createElement('div');
-    placeholder.className = 'video-lazy-placeholder';
-    placeholder.style.cssText = `
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 14px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      pointer-events: none;
-      z-index: 1;
-    `;
-    placeholder.innerHTML = '📹';
-    
-    // Ensure parent has relative positioning
-    const parent = video.parentElement;
-    if (parent && getComputedStyle(parent).position === 'static') {
-      parent.style.position = 'relative';
-    }
-    
-    parent?.appendChild(placeholder);
-    
-    // Store placeholder reference for cleanup
-    video.setAttribute('data-placeholder-id', 'video-lazy-placeholder');
-  }
-
-  restoreVideoSrc(modalId) {
-    console.log('📹 [VIDEO DEBUG] Attempting to restore video sources for modal:', modalId);
-    
-    // Find modal container - Updated to include .modal_dialog and more flexible searching
-    const selectors = [
-      `[data-modal-id="${modalId}"]`,
-      `[data-modal="${modalId}"]`,
-      `#${modalId}`,
-      `.modal_dialog[id*="${modalId}"]`, // Modal dialog with ID containing modalId
-      `.modal_dialog:has([id="${modalId}"])`, // Modal dialog containing element with modalId
-      `.modal_dialog` // Fallback: any modal dialog (if there's only one open)
-    ];
-    
-    let modalEl = null;
-    console.log('📹 [VIDEO DEBUG] Searching for modal with selectors:', selectors);
-    
-    for (const sel of selectors) {
-      try {
-        const elements = document.querySelectorAll(sel);
-        console.log(`📹 [VIDEO DEBUG] Selector "${sel}" found ${elements.length} elements`);
-        
-        if (elements.length === 1) {
-          modalEl = elements[0];
-          console.log('📹 [VIDEO DEBUG] Found unique modal element with selector:', sel, modalEl);
-          break;
-        } else if (elements.length > 1) {
-          // Multiple matches - try to find the visible one
-          for (const el of elements) {
-            if (this._isElementVisible && this._isElementVisible(el)) {
-              modalEl = el;
-              console.log('📹 [VIDEO DEBUG] Found visible modal element with selector:', sel, modalEl);
-              break;
-            }
-          }
-          if (modalEl) break;
-        }
-      } catch (e) {
-        console.log('📹 [VIDEO DEBUG] Selector failed:', sel, e.message);
-      }
-    }
-    
-    if (!modalEl) {
-      console.warn('⚠️ [VIDEO DEBUG] Could not find modal element for video restoration:', modalId);
-      console.log('📹 [VIDEO DEBUG] Available elements with modal-related attributes:');
-      
-      // Check for various modal-related elements
-      const modalRelated = [
-        ...document.querySelectorAll('[id^="station-"]'),
-        ...document.querySelectorAll('[data-modal]'),
-        ...document.querySelectorAll('[data-modal-id]'),
-        ...document.querySelectorAll('.modal_dialog'),
-        ...document.querySelectorAll('[class*="modal"]'),
-        ...document.querySelectorAll('[id*="modal"]')
-      ];
-      
-      modalRelated.forEach(el => {
-        console.log('  📹 [VIDEO DEBUG] Modal element found:', {
-          tagName: el.tagName,
-          id: el.id,
-          className: el.className,
-          'data-modal': el.getAttribute('data-modal'),
-          'data-modal-id': el.getAttribute('data-modal-id'),
-          visible: this._isElementVisible ? this._isElementVisible(el) : 'unknown'
-        });
-      });
-      return;
-    }
-    
-    // Restore videos in this modal
-    const lazyVideos = modalEl.querySelectorAll('video[data-lazy-src]');
-    console.log('📹 [VIDEO DEBUG] Found lazy videos in modal:', lazyVideos.length);
-    
-    if (lazyVideos.length === 0) {
-      console.log('📹 [VIDEO DEBUG] No videos with data-lazy-src found. Checking for data-src videos...');
-      const dataSrcVideos = modalEl.querySelectorAll('video[data-src]');
-      console.log('📹 [VIDEO DEBUG] Found videos with data-src:', dataSrcVideos.length);
-      
-      dataSrcVideos.forEach((video, index) => {
-        const dataSrc = video.getAttribute('data-src');
-        console.log(`📹 [VIDEO DEBUG] Video ${index + 1}:`, {
-          element: video,
-          'data-src': dataSrc,
-          'current src': video.src,
-          attributes: Array.from(video.attributes).map(attr => `${attr.name}="${attr.value}"`).join(', ')
-        });
-        
-        if (dataSrc && !video.src) {
-          console.log('✅ [VIDEO DEBUG] Restoring video src from data-src:', dataSrc);
-          video.setAttribute('src', dataSrc);
-          video.removeAttribute('data-src');
-        }
-      });
-    }
-    
-    lazyVideos.forEach((video, index) => {
-      const lazySrc = video.getAttribute('data-lazy-src');
-      console.log(`📹 [VIDEO DEBUG] Processing lazy video ${index + 1}:`, {
-        element: video,
-        'data-lazy-src': lazySrc,
-        'current src': video.src
-      });
-      
-      if (lazySrc) {
-        console.log('✅ [VIDEO DEBUG] Restoring video src from data-lazy-src:', lazySrc);
-        video.setAttribute('src', lazySrc);
-        video.removeAttribute('data-lazy-src');
-        
-        // Remove placeholder
-        const placeholder = video.parentElement?.querySelector('.video-lazy-placeholder');
-        if (placeholder) {
-          console.log('📹 [VIDEO DEBUG] Removing video placeholder');
-          placeholder.remove();
-        }
-        
-        // Clean up our tracking
-        this.interceptedVideos.delete(video);
-        console.log('📹 [VIDEO DEBUG] Video restoration complete for:', lazySrc);
-      }
-    });
-    
-    // Additional debug: Check all videos in modal after restoration
-    const allVideos = modalEl.querySelectorAll('video');
-    console.log('📹 [VIDEO DEBUG] All videos in modal after restoration:', allVideos.length);
-    allVideos.forEach((video, index) => {
-      console.log(`📹 [VIDEO DEBUG] Video ${index + 1} final state:`, {
-        src: video.src || '(no src)',
-        'data-src': video.getAttribute('data-src') || '(no data-src)',
-        'data-lazy-src': video.getAttribute('data-lazy-src') || '(no data-lazy-src)',
-        readyState: video.readyState,
-        networkState: video.networkState
-      });
-    });
-  }
-
-  injectAntiFlashCSS() {
-    // Create and inject CSS to prevent any white flash
-    const style = document.createElement('style');
-    style.textContent = `
-      #webgl-container,
-      .webgl-container,
-      [data-webgl-container] {
-        background-color: #3c5e71 !important;
-        transition: none !important;
-      }
-    `;
-    document.head.appendChild(style);
-    console.log('🚫 Anti-flash CSS injected');
-  }
-
-  // Phase 1: Lazy Loading Initialization
-  initLazyLoading() {
-    try {
-      // Find the container element first
-      this.container = document.querySelector('#webgl-container') ||
-                       document.querySelector('.webgl-container') ||
-                       document.querySelector('[data-webgl-container]');
-
-      if (!this.container) {
-        console.error('WebGL container not found! Loading disabled.');
-        return;
-      }
-
-      console.log('🔄 Lazy loading initialized for:', this.container);
-      this.showLoadingPlaceholder();
-
-      // Set up triggers based on configuration
-      if (this.loadTriggers.viewport) {
-        this.setupViewportTrigger();
-      }
-
-      if (this.loadTriggers.userInteraction) {
-        this.setupInteractionTriggers();
-      }
-
-      if (this.loadTriggers.delay) {
-        this.setupDelayTrigger();
-      }
-
-      // If manual mode, just wait for explicit load call
-      if (this.loadTriggers.manual) {
-        console.log('📋 Manual loading mode - call loader.load() to start');
-      }
-
-    } catch (error) {
-      console.error('❌ Error initializing lazy loading:', error);
-      // Fallback to direct loading
-      this.init();
-    }
-  }
-
-  showLoadingPlaceholder() {
-    if (!this.container) return;
-
-    // Apply initial styling
-    this.applyInitialStyling();
-
-    // Create a minimal loading placeholder
-    const placeholder = document.createElement('div');
-    placeholder.className = 'lazy-loading-placeholder';
-    placeholder.innerHTML = `
-      <div style="
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        color: rgba(255, 255, 255, 0.8);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        z-index: 2;
-      ">
-        <div style="
-          width: 40px;
-          height: 40px;
-          border: 3px solid rgba(255, 255, 255, 0.3);
-          border-top: 3px solid #ffffff;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin: 0 auto 15px;
-        "></div>
-        <div style="font-size: 14px; font-weight: 500;">Loading 3D Experience</div>
-        <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">Interactive map preparing...</div>
-      </div>
-      <style>
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      </style>
-    `;
-
-    this.container.appendChild(placeholder);
-    console.log('📍 Loading placeholder displayed');
-  }
-
-  setupViewportTrigger() {
-    if (!this.container || !('IntersectionObserver' in window)) {
-      console.warn('⚠️ IntersectionObserver not supported, using fallback');
-      // Fallback: load immediately if intersection observer not supported
-      setTimeout(() => this.triggerLoad('viewport-fallback'), 100);
-      return;
-    }
-
-    const options = {
-      root: null,
-      rootMargin: '100px', // Start loading 100px before entering viewport
-      threshold: 0.1
-    };
-
-    this.intersectionObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting && this.loadingState === 'pending') {
-          console.log('👁️ Container entered viewport - triggering load');
-          this.triggerLoad('viewport');
-        }
-      });
-    }, options);
-
-    this.intersectionObserver.observe(this.container);
-    console.log('👁️ Viewport trigger setup complete');
-  }
-
-  setupInteractionTriggers() {
-    if (!this.container) return;
-
-    const triggerLoad = (type) => {
-      if (this.loadingState === 'pending' && !this.userHasInteracted) {
-        this.userHasInteracted = true;
-        console.log(`🖱️ User interaction detected (${type}) - triggering load`);
-        this.triggerLoad('interaction');
-      }
-    };
-
-    // Mouse events
-    this.container.addEventListener('click', () => triggerLoad('click'), { once: true });
-    this.container.addEventListener('mouseenter', () => triggerLoad('hover'), { once: true });
-
-    // Touch events
-    this.container.addEventListener('touchstart', () => triggerLoad('touch'), { once: true, passive: true });
-
-    // Keyboard events (for accessibility)
-    this.container.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        triggerLoad('keyboard');
-      }
-    }, { once: true });
-
-    console.log('🖱️ Interaction triggers setup complete');
-  }
-
-  setupDelayTrigger() {
-    const delay = this.config.lazyLoading?.delay || 2000; // Default 2 seconds
-
-    this.delayTimer = setTimeout(() => {
-      if (this.loadingState === 'pending') {
-        console.log(`⏰ Delay trigger activated (${delay}ms) - triggering load`);
-        this.triggerLoad('delay');
-      }
-    }, delay);
-
-    console.log(`⏰ Delay trigger setup complete (${delay}ms)`);
-  }
-
-  triggerLoad(trigger) {
-    if (this.loadingState !== 'pending') {
-      console.log(`⚠️ Load already triggered (state: ${this.loadingState})`);
-      return;
-    }
-
-    console.log(`🚀 Loading triggered by: ${trigger}`);
-    this.loadingState = 'loading';
-
-    // Clear any delay timer
-    if (this.delayTimer) {
-      clearTimeout(this.delayTimer);
-      this.delayTimer = null;
-    }
-
-    // Disconnect intersection observer
-    if (this.intersectionObserver) {
-      this.intersectionObserver.disconnect();
-      this.intersectionObserver = null;
-    }
-
-    // Update placeholder to show loading state
-    this.updateLoadingState('Loading 3D Model...');
-
-    // Start the actual loading process
-    this.init();
-  }
-
-  updateLoadingState(message) {
-    const placeholder = this.container?.querySelector('.lazy-loading-placeholder');
-    if (placeholder) {
-      const textElement = placeholder.querySelector('div:last-child');
-      if (textElement) {
-        textElement.textContent = message;
-      }
-    }
-  }
-
-  removeLazyLoadingPlaceholder() {
-    const placeholder = this.container?.querySelector('.lazy-loading-placeholder');
-    if (placeholder) {
-      placeholder.remove();
-      console.log('✅ Loading placeholder removed');
-    }
-  }
-
-  // Public method to manually trigger loading
-  load() {
-    this.triggerLoad('manual');
-  }
-
-  showErrorState(error) {
-    this.removeLazyLoadingPlaceholder();
-
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'lazy-loading-error';
-    errorDiv.innerHTML = `
-      <div style="
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        color: rgba(255, 255, 255, 0.9);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        z-index: 2;
-        max-width: 400px;
-        padding: 20px;
-      ">
-        <div style="
-          font-size: 48px;
-          margin-bottom: 15px;
-        ">⚠️</div>
-        <div style="font-size: 16px; font-weight: 500; margin-bottom: 10px;">Loading Failed</div>
-        <div style="font-size: 14px; opacity: 0.8; margin-bottom: 15px; line-height: 1.4;">
-          Unable to load the 3D experience. Please check your connection and try again.
-        </div>
-        <button onclick="location.reload()" style="
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          color: white;
-          padding: 10px 20px;
-          border-radius: 6px;
-          cursor: pointer;
-          font-size: 14px;
-          transition: background-color 0.2s;
-        " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'"
-           onmouseout="this.style.backgroundColor='rgba(255,255,255,0.1)'">
-          Retry
-        </button>
-      </div>
-    `;
-
-    if (this.container) {
-      this.container.appendChild(errorDiv);
-    }
-
-    console.log('❌ Error state displayed');
-  }
-
-  async init() {
-    try {
-      // Find the container element (if not already found in lazy loading)
-      if (!this.container) {
-        this.container = document.querySelector('#webgl-container') ||
-                         document.querySelector('.webgl-container') ||
-                         document.querySelector('[data-webgl-container]');
-      }
-
-      if (!this.container) {
-        console.error('WebGL container not found! Looking for #webgl-container');
-        this.loadingState = 'error';
-        return;
-      }
-
-      console.log('✅ Container found:', this.container);
-
-      // Apply initial styling to prevent gradient flash (if not already applied)
-      if (this.loadingState !== 'loading') {
-        this.applyInitialStyling();
-      }
-
-      // Optionally attach debug panels if requested (via URL/global flag)
-      await this.maybeAttachDebugPanels();
-
-      // Load Three.js from CDN
-      await this.loadThreeJS();
-      
-      // Setup Three.js scene
-      this.setupScene();
-      
-      // Load the GLB model
-      await this.loadModel();
-      
-      // Setup controls
-      this.setupControls();
-      
-      // Handle window resize and visibility changes
-      this.setupEventListeners();
-      
-      // Start render loop
-      this.animate();
-      
-      // Play welcome animation if enabled
-      if (this.config.animations.welcomeAnimation.enabled) {
-        this.playWelcomeAnimation();
-      }
-      
-      // Remove loading state after everything is initialized
-      this.finishLoading();
-
-      // Optionally create debug panels (disabled by default)
-      if (this.isDevelopment && this.debugPanelsEnabled) {
-        this.createCameraInfoPanel && this.createCameraInfoPanel();
-        this.createControlsPanel && this.createControlsPanel();
-      }
-
-      // Mark loading as complete
-      this.loadingState = 'loaded';
-
-      console.log('✅ 3D scene initialized successfully!');
-
-    } catch (error) {
-      console.error('❌ Error initializing 3D scene:', error);
-      this.loadingState = 'error';
-      this.showErrorState(error);
-    }
-  }
-
-  // Progressive loading alternative for better performance
-  async initProgressive() {
-    try {
-      console.log('🚀 Starting progressive 3D initialization...');
-
-      // Find the container element first
-      this.container = document.querySelector('#webgl-container') ||
-                       document.querySelector('.webgl-container') ||
-                       document.querySelector('[data-webgl-container]');
-
-      if (!this.container) {
-        console.error('WebGL container not found! Looking for #webgl-container');
-        return;
-      }
-
-      // Apply initial styling immediately
-      this.applyInitialStyling();
-
-      // Optionally attach debug panels if requested (via URL/global flag)
-      await this.maybeAttachDebugPanels();
-
-      // Phase 1: Load core components and show basic scene
-      console.log('📦 Phase 1: Loading core components...');
-      await this.loadCoreComponents();
-      this.showBasicScene();
-
-      // Phase 2: Load model with progress tracking
-      console.log('🏗️ Phase 2: Loading 3D model...');
-      await this.loadModelProgressive();
-
-      // Phase 3: Enhance scene with animations and controls
-      console.log('✨ Phase 3: Enhancing scene...');
-      this.enhanceScene();
-
-      console.log('🎉 Progressive 3D initialization complete!');
-
-    } catch (error) {
-      console.error('❌ Error in progressive initialization:', error);
-      this.initFallbackMode();
-    }
-  }
-
-  async loadCoreComponents() {
-    // Load Three.js with retry logic
-    await this.loadThreeJS();
-
-    // Setup basic scene without model
-    this.setupScene();
-    this.setupEventListeners();
-
-    console.log('✅ Core components loaded');
-  }
-
-  showBasicScene() {
-    // Start basic render loop
-    this.animate();
-
-    // Show a simple loading state in the scene
-    const loadingGeometry = new THREE.BoxGeometry(10, 10, 10);
-    const loadingMaterial = new THREE.MeshBasicMaterial({
-      color: 0x4a90e2,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.3
-    });
-    const loadingCube = new THREE.Mesh(loadingGeometry, loadingMaterial);
-    this.scene.add(loadingCube);
-
-    // Animate the loading cube
-    const animateLoadingCube = () => {
-      if (loadingCube.parent) { // Still in scene
-        loadingCube.rotation.x += 0.01;
-        loadingCube.rotation.y += 0.01;
-        requestAnimationFrame(animateLoadingCube);
-      }
-    };
-    animateLoadingCube();
-
-    this.loadingCube = loadingCube; // Store reference for cleanup
-    console.log('🎬 Basic scene visible with loading indicator');
-  }
-
-  async loadModelProgressive() {
-    try {
-      // Remove loading cube
-      if (this.loadingCube) {
-        this.scene.remove(this.loadingCube);
-        this.loadingCube.geometry.dispose();
-        this.loadingCube.material.dispose();
-        this.loadingCube = null;
-      }
-
-      // Load the actual model
-      await this.loadModel();
-
-      console.log('✅ Model loaded and added to scene');
-
-    } catch (error) {
-      console.error('❌ Model loading failed:', error);
-      // Keep the loading cube as fallback
-    }
-  }
-
-  enhanceScene() {
-    // Setup controls
-    this.setupControls();
-
-    // Finish loading sequence
-    this.finishLoading();
-
-    // Play welcome animation if enabled
-    if (this.config.animations.welcomeAnimation.enabled) {
-      this.playWelcomeAnimation();
-    }
-
-    console.log('✨ Scene enhancement complete');
-  }
-
-  // WebGL capability detection and performance adaptation
-  detectCapabilities() {
-    if (!this.renderer) {
-      console.warn('⚠️ Renderer not available for capability detection');
-      return null;
-    }
-
-    const gl = this.renderer.getContext();
-    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-
-    const capabilities = {
-      // Basic WebGL info
-      maxTextureSize: gl.getParameter(gl.MAX_TEXTURE_SIZE),
-      maxViewportDims: gl.getParameter(gl.MAX_VIEWPORT_DIMS),
-      maxVertexAttribs: gl.getParameter(gl.MAX_VERTEX_ATTRIBS),
-
-      // Extensions
-      supportsFloatTextures: !!gl.getExtension('OES_texture_float'),
-      supportsHalfFloatTextures: !!gl.getExtension('OES_texture_half_float'),
-      supportsAnisotropy: !!gl.getExtension('EXT_texture_filter_anisotropic'),
-      supportsInstancing: !!gl.getExtension('ANGLE_instanced_arrays'),
-      supportsDepthTexture: !!gl.getExtension('WEBGL_depth_texture'),
-
-      // GPU info (if available)
-      vendor: gl.getParameter(gl.VENDOR),
-      renderer: gl.getParameter(gl.RENDERER),
-      version: gl.getParameter(gl.VERSION),
-      shadingLanguageVersion: gl.getParameter(gl.SHADING_LANGUAGE_VERSION)
-    };
-
-    // Get unmasked renderer info for better GPU detection
-    if (debugInfo) {
-      capabilities.unmaskedVendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
-      capabilities.unmaskedRenderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-    }
-
-    console.log('🔍 WebGL Capabilities detected:', capabilities);
-    return capabilities;
-  }
-
-  // Adaptive quality based on device capabilities
-  adaptQualitySettings() {
-    const capabilities = this.detectCapabilities();
-    if (!capabilities) return;
-
-    // Default to current config
-    let qualityAdjustments = {
-      enableAntialiasing: this.config.performance.enableAntialiasing,
-      pixelRatio: this.config.performance.pixelRatio,
-      shadowMapSize: 2048
-    };
-
-    // Detect mobile devices
-    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    // Performance classification based on GPU
-    const gpuInfo = (capabilities.unmaskedRenderer || capabilities.renderer || '').toLowerCase();
-    let performanceTier = 'high';
-
-    if (isMobile || gpuInfo.includes('intel') || gpuInfo.includes('powervr') || gpuInfo.includes('adreno')) {
-      performanceTier = 'medium';
-    }
-
-    if (capabilities.maxTextureSize < 4096 || gpuInfo.includes('mali-400') || gpuInfo.includes('adreno 3')) {
-      performanceTier = 'low';
-    }
-
-    // Apply quality adjustments based on performance tier
-    switch (performanceTier) {
-      case 'low':
-        qualityAdjustments = {
-          enableAntialiasing: false,
-          pixelRatio: Math.min(0.75, window.devicePixelRatio),
-          shadowMapSize: 512
-        };
-        console.log('📱 Low-end device detected - applying performance optimizations');
-        break;
-
-      case 'medium':
-        qualityAdjustments = {
-          enableAntialiasing: true,
-          pixelRatio: Math.min(1.5, window.devicePixelRatio),
-          shadowMapSize: 1024
-        };
-        console.log('💻 Medium-performance device detected - balanced settings');
-        break;
-
-      case 'high':
-      default:
-        qualityAdjustments = {
-          enableAntialiasing: true,
-          pixelRatio: Math.min(2.0, window.devicePixelRatio),
-          shadowMapSize: 2048
-        };
-        console.log('🚀 High-performance device detected - maximum quality');
-        break;
-    }
-
-    // Apply the adjustments to renderer
-    if (this.renderer) {
-      this.renderer.setPixelRatio(qualityAdjustments.pixelRatio);
-
-      // Update shadow map size if shadows are enabled
-      if (this.renderer.shadowMap.enabled) {
-        this.renderer.shadowMap.autoUpdate = true;
-        // Note: Shadow map size would need to be set per light, not globally
-      }
-
-      console.log('⚙️ Quality settings adapted:', qualityAdjustments);
-    }
-
-    return qualityAdjustments;
-  }
-
-  playWelcomeAnimation() {
-    const animConfig = this.config.animations.welcomeAnimation;
-    console.log('🎬 Playing welcome animation with updated start/end positions (smooth expo.inOut easing)...');
-    
-    // Use configuration values for animation positions
-    const startPos = new THREE.Vector3(...animConfig.startPosition);
-    const startTarget = new THREE.Vector3(...animConfig.startTarget);
-    const endPos = new THREE.Vector3(...animConfig.endPosition);
-    const endTarget = new THREE.Vector3(...animConfig.endTarget);
-    
-    // Set initial camera position and target
-    this.camera.position.copy(startPos);
-    this.controls.target.copy(startTarget);
-    this.controls.update();
-    
-    // Animation parameters - using high precision timing
-    const startTime = performance.now();
-    const duration = animConfig.duration; // 1300ms
-    
-    const animateCamera = () => {
-      const elapsed = performance.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      
-      // Apply smooth exponential InOut easing (gentler curve than standard expo)
-      let easedProgress = progress;
-      if (animConfig.easing === 'easeInOut') {
-        if (progress === 0) {
-          easedProgress = 0;
-        } else if (progress === 1) {
-          easedProgress = 1;
-        } else if (progress < 0.5) {
-          // Gentler exponential ease in (reduced from 20 to 12 for smoother curve)
-          easedProgress = Math.pow(2, 12 * progress - 6) / 2;
-        } else {
-          // Gentler exponential ease out
-          easedProgress = (2 - Math.pow(2, -12 * progress + 6)) / 2;
-        }
-      }
-      
-      // Interpolate camera position and target
-      this.camera.position.lerpVectors(startPos, endPos, easedProgress);
-      this.controls.target.lerpVectors(startTarget, endTarget, easedProgress);
-      this.controls.update();
-      
-      if (progress < 1) {
-        requestAnimationFrame(animateCamera);
-      } else {
-        // Ensure final positions are exact
-        this.camera.position.copy(endPos);
-        this.controls.target.copy(endTarget);
-        this.controls.update();
-        console.log('✅ Welcome animation complete - new camera positions applied');
-      }
-    };
-    
-    requestAnimationFrame(animateCamera);
-  }
-
-  applyInitialStyling() {
-    console.log('🎨 Applying initial styling to prevent flash...');
-    
-    // Store original styles to restore later
-    this.originalContainerStyles = {
-      background: this.container.style.background,
-      opacity: this.container.style.opacity,
-      transition: this.container.style.transition
-    };
-    
-    // Apply loading styles to prevent gradient flash
-    this.container.style.background = '#3c5e71'; // Set target color immediately
-    this.container.style.opacity = '1'; // Keep visible but with correct background
-    this.container.style.transition = 'none'; // Remove transition during setup
-    
-    // Ensure container covers the full viewport
-    this.container.style.width = '100vw';
-    this.container.style.height = '100vh';
-    this.container.style.position = 'fixed';
-    this.container.style.top = '0';
-    this.container.style.left = '0';
-    this.container.style.zIndex = '1';
-    
-    console.log('✅ Initial styling applied - full viewport coverage with target background');
-  }
-
-  finishLoading() {
-    console.log('🎉 Finishing loading sequence...');
-
-    // Remove lazy loading placeholder if it exists
-    this.removeLazyLoadingPlaceholder();
-
-    // Set the final scene background now that everything is loaded
-    if (this.scene) {
-      this.scene.background = new THREE.Color(0x3c5e71); // Blue-gray background
-      console.log('🎨 Scene background set to final color');
-    }
-
-    // Update renderer clear color for proper rendering
-    if (this.renderer) {
-      this.renderer.setClearColor(0x3c5e71, 1); // Opaque background
-    }
-
-    // Container is already visible with correct background - just log completion
-    console.log('✅ 3D scene ready and visible');
-  }
-
-  fadeInModel() {
-    if (!this.model) {
-      console.warn('⚠️ No model to fade in');
-      return;
-    }
-
-    console.log('✨ Starting model fade-in animation...');
-
-    const duration = 2000; // 2 seconds fade-in
-    const startTime = performance.now();
-
-    const fadeAnimation = () => {
-      const elapsed = performance.now() - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      
-      // Smooth easing function (ease-out)
-      const easedProgress = 1 - Math.pow(1 - progress, 3);
-      
-      // Apply opacity to all meshes in the model
-      this.model.traverse((child) => {
-        if (child.isMesh && child.material && child.material.transparent) {
-          child.material.opacity = easedProgress;
-          child.material.needsUpdate = true;
-        }
-      });
-      
-      if (progress < 1) {
-        requestAnimationFrame(fadeAnimation);
-      } else {
-        console.log('✅ Model fade-in complete');
-      }
-    };
-    
-    // Start the fade-in animation
-    requestAnimationFrame(fadeAnimation);
-  }
-
-  async loadThreeJS() {
-    return this.loadThreeJSWithRetry(3);
-  }
-
-  async loadThreeJSWithRetry(maxRetries = 3) {
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        console.log(`📦 Loading Three.js (attempt ${attempt}/${maxRetries})...`);
-        await this.attemptThreeJSLoad();
-        console.log('✅ Three.js loaded successfully!');
-        return;
-      } catch (error) {
-        console.warn(`❌ Three.js loading attempt ${attempt} failed:`, error.message);
-
-        if (attempt === maxRetries) {
-          console.error('💥 All Three.js loading attempts failed, initializing fallback mode');
-          this.initFallbackMode();
-          return;
-        }
-
-        // Exponential backoff delay
-        const delayMs = 1000 * Math.pow(2, attempt - 1);
-        console.log(`⏳ Retrying in ${delayMs}ms...`);
-        await this.delay(delayMs);
-      }
-    }
-  }
-
-  async attemptThreeJSLoad() {
-    return new Promise((resolve, reject) => {
-      if (window.THREE) {
-        console.log('✅ Three.js already loaded');
-        resolve();
-        return;
-      }
-      
-      // Load Three.js core using ES modules approach
-      const threeScript = document.createElement('script');
-      threeScript.type = 'importmap';
-      threeScript.textContent = JSON.stringify({
-        "imports": {
-          "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
-          "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
-        }
-      });
-      document.head.appendChild(threeScript);
-
-      // Load the main script that imports Three.js
-      const mainScript = document.createElement('script');
-      mainScript.type = 'module';
-      mainScript.textContent = `
-        import * as THREE from 'three';
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        
-        // Make THREE available globally
-        window.THREE = THREE;
-        window.GLTFLoader = GLTFLoader;
-        window.OrbitControls = OrbitControls;
-        
-        console.log('✅ Three.js loaded successfully via ES modules');
-        
-        // Dispatch custom event to signal loading completion
-        window.dispatchEvent(new CustomEvent('threeJSLoaded'));
-      `;
-
-      // Listen for the custom event
-      window.addEventListener('threeJSLoaded', () => {
-        console.log('✅ Three.js modules ready');
-        resolve();
-      }, { once: true });
-
-      mainScript.onerror = () => {
-        console.warn('⚠️ ES modules approach failed, trying fallback...');
-        this.loadThreeJSFallback().then(resolve).catch(reject);
-      };
-
-      document.head.appendChild(mainScript);
-
-      // Timeout fallback
-      setTimeout(() => {
-        if (!window.THREE) {
-          reject(new Error('Three.js loading timeout'));
-        }
-      }, 10000);
-    });
-  }
-
-  // Utility method for delays
-  async delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  // Fallback mode when Three.js completely fails to load
-  initFallbackMode() {
-    console.log('🛟 Initializing fallback mode...');
-
-    // Create a simple fallback message
-    const fallbackDiv = document.createElement('div');
-    fallbackDiv.innerHTML = `
-      <div style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: linear-gradient(135deg, #3c5e71 0%, #2a4a5c 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        z-index: 1000;
-      ">
-        <div style="text-align: center; max-width: 400px; padding: 2rem;">
-          <div style="font-size: 4rem; margin-bottom: 1rem;">🏗️</div>
-          <h2 style="margin: 0 0 1rem 0; font-weight: 300;">3D Experience Loading</h2>
-          <p style="margin: 0; opacity: 0.8; line-height: 1.5;">
-            We're preparing an immersive 3D experience for you.
-            Please refresh the page or try again later.
-          </p>
-          <button onclick="location.reload()" style="
-            margin-top: 1.5rem;
-            padding: 0.75rem 2rem;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 1rem;
-          ">
-            Retry
-          </button>
-        </div>
-      </div>
-    `;
-
-    this.container.appendChild(fallbackDiv);
-    console.log('🛟 Fallback mode initialized with user-friendly interface');
-  }
-
-  async loadThreeJSFallback() {
-    return new Promise((resolve, reject) => {
-      console.log('🔄 Loading Three.js using fallback method...');
-      
-      // Try loading Three.js from different CDNs
-      const cdnUrls = [
-        'https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js',
-        'https://unpkg.com/three@0.158.0/build/three.min.js',
-        'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js'
-      ];
-
-      let currentCdnIndex = 0;
-
-      const tryNextCdn = () => {
-        if (currentCdnIndex >= cdnUrls.length) {
-          reject(new Error('All CDN sources failed to load Three.js'));
-          return;
-        }
-
-        const script = document.createElement('script');
-        script.src = cdnUrls[currentCdnIndex];
-        
-        script.onload = () => {
-          console.log(`✅ Three.js loaded from: ${cdnUrls[currentCdnIndex]}`);
-          
-          // Load additional modules manually
-          this.loadAdditionalModules().then(resolve).catch(reject);
-        };
-        
-        script.onerror = () => {
-          console.warn(`❌ Failed to load from: ${cdnUrls[currentCdnIndex]}`);
-          currentCdnIndex++;
-          tryNextCdn();
-        };
-        
-        document.head.appendChild(script);
-      };
-
-      tryNextCdn();
-    });
-  }
-
-  async loadAdditionalModules() {
-    return new Promise((resolve, reject) => {
-      if (!window.THREE) {
-        reject(new Error('Three.js not available for module loading'));
-        return;
-      }
-
-      console.log('📦 Loading additional Three.js modules...');
-
-      // Create a simple GLTFLoader and OrbitControls using basic Three.js
-      const moduleScript = document.createElement('script');
-      moduleScript.textContent = `
-        // Basic GLTFLoader implementation
-        window.GLTFLoader = function() {
-          this.load = function(url, onLoad, onProgress, onError) {
-            fetch(url)
-              .then(response => response.arrayBuffer())
-              .then(data => {
-                // This is a simplified loader - for production use proper GLTFLoader
-                console.log('⚠️ Using simplified model loader');
-                if (onError) onError(new Error('Simplified loader - model format not supported'));
-              })
-              .catch(error => {
-                console.error('Model loading error:', error);
-                if (onError) onError(error);
-              });
-          };
-        };
-
-        // Basic OrbitControls
-        window.OrbitControls = function(camera, domElement) {
-          console.log('⚠️ Using simplified orbit controls');
-          this.update = function() {};
-          this.enableDamping = false;
-          this.dampingFactor = 0.05;
-        };
-
-        console.log('✅ Simplified modules loaded');
-      `;
-
-      moduleScript.onload = () => {
-        console.log('✅ Additional modules ready');
-        resolve();
-      };
-
-      moduleScript.onerror = () => {
-        console.warn('⚠️ Module loading failed, continuing with basic Three.js');
-        resolve(); // Continue anyway
-      };
-
-      document.head.appendChild(moduleScript);
-      
-      // Resolve immediately since inline scripts execute synchronously
-      setTimeout(resolve, 100);
-    });
-  }
-
+  
   setupScene() {
     console.log('🎬 Setting up Three.js scene...');
     
@@ -1618,7 +396,41 @@ class Simple3DLoader {
   // Initialize new interaction system core (Phase 3 skeleton)
   this.initializeInteractionSystem();
 
+    // Setup button modal handlers for data-button triggered modals
+    this.setupButtonModalHandlers();
+
     console.log('✅ Scene setup complete');
+  }
+
+  setupButtonModalHandlers() {
+    console.log('🎯 [SETUP DEBUG] Setting up button modal handlers...');
+    
+    // Find button with data-button="projekt-info"
+    const projektInfoButton = document.querySelector('[data-button="projekt-info"]');
+    
+    if (projektInfoButton) {
+      console.log('🎯 [SETUP DEBUG] Found projekt-info button, adding click listener');
+      
+      projektInfoButton.addEventListener('click', () => {
+        console.log('🔘 [CLICK DEBUG] Projekt-info button clicked, triggering video lazy loading');
+        
+        // Small delay to allow modal to open before scanning for videos
+        setTimeout(() => {
+          this.lazyLoadModalAssets();
+        }, 100);
+      });
+    } else {
+      console.log('⚠️ [SETUP DEBUG] Projekt-info button not found');
+    }
+    
+    // Also check for any other data-button attributes
+    const allDataButtons = document.querySelectorAll('[data-button]');
+    console.log(`🎯 [SETUP DEBUG] Found ${allDataButtons.length} total data-button elements`);
+    
+    allDataButtons.forEach((button, index) => {
+      const buttonType = button.getAttribute('data-button');
+      console.log(`   Button ${index + 1}: data-button="${buttonType}"`);
+    });
   }
 
   setupLighting() {
@@ -2531,119 +1343,97 @@ class Simple3DLoader {
   // On first user click for that station/modal, assets are populated.
 
   lazyLoadModalAssets(modalId, attempt = 0) {
-    console.log('🔄 [ASSET DEBUG] lazyLoadModalAssets called:', { modalId, attempt });
+    console.log('🔄 [VIDEO DEBUG] Triggering video lazy load for modal:', modalId);
     
     if (!modalId) {
-      console.warn('⚠️ [ASSET DEBUG] No modalId provided');
+      console.warn('⚠️ [VIDEO DEBUG] No modalId provided');
       return;
     }
     
+    // Check if we already processed this modal
     this._lazyLoadedModals = this._lazyLoadedModals || new Set();
     if (this._lazyLoadedModals.has(modalId)) {
-      console.log('🔄 [ASSET DEBUG] Modal assets already loaded for:', modalId);
-      return; // already done
+      console.log('🔄 [VIDEO DEBUG] Modal videos already activated for:', modalId);
+      return;
     }
 
+    // Find the modal container
     const selectors = [
       `[data-modal-id="${modalId}"]`,
-      `[data-modal="${modalId}"]`,
+      `[data-modal="${modalId}"]`, 
       `#${modalId}`,
-      `.modal_dialog[id*="${modalId}"]`, // Modal dialog with ID containing modalId
-      `.modal_dialog:has([id="${modalId}"])`, // Modal dialog containing element with modalId
-      `.modal_dialog` // Fallback: any modal dialog (if there's only one open)
+      `.modal_dialog[id*="${modalId}"]`,
+      `.modal_dialog:has([id="${modalId}"])`,
+      `.modal_dialog` // Fallback for any open modal
     ];
-    
-    console.log('🔄 [ASSET DEBUG] Searching for modal with selectors:', selectors);
     
     let modalEl = null;
     for (const sel of selectors) {
       try {
         const elements = document.querySelectorAll(sel);
-        console.log(`🔄 [ASSET DEBUG] Selector "${sel}" found ${elements.length} elements`);
-        
         if (elements.length === 1) {
           modalEl = elements[0];
-          console.log('🔄 [ASSET DEBUG] Found unique modal element with selector:', sel);
+          console.log('🔄 [VIDEO DEBUG] Found modal with selector:', sel);
           break;
         } else if (elements.length > 1) {
-          // Multiple matches - try to find the visible one
+          // Find visible modal
           for (const el of elements) {
             const rect = el.getBoundingClientRect();
             if (rect.width > 0 && rect.height > 0) {
               modalEl = el;
-              console.log('🔄 [ASSET DEBUG] Found visible modal element with selector:', sel);
+              console.log('🔄 [VIDEO DEBUG] Found visible modal with selector:', sel);
               break;
             }
           }
           if (modalEl) break;
         }
       } catch (e) {
-        console.log('🔄 [ASSET DEBUG] Selector failed:', sel, e.message);
+        console.log('🔄 [VIDEO DEBUG] Selector failed:', sel, e.message);
       }
     }
 
-    // If modal not yet in DOM (maybe created lazily by framework), retry up to 10 times
+    // Retry if modal not found (may still be opening)
     if (!modalEl) {
-      console.log(`🔄 [ASSET DEBUG] Modal not found, attempt ${attempt}/10`);
-      if (attempt < 10) {
-        console.log('🔄 [ASSET DEBUG] Retrying in 120ms...');
-        setTimeout(() => this.lazyLoadModalAssets(modalId, attempt + 1), 120);
+      console.log(`🔄 [VIDEO DEBUG] Modal not found, attempt ${attempt}/5`);
+      if (attempt < 5) {
+        setTimeout(() => this.lazyLoadModalAssets(modalId, attempt + 1), 100);
       } else {
-        console.warn('⚠️ [ASSET DEBUG] Modal not found after 10 attempts:', modalId);
+        console.warn('⚠️ [VIDEO DEBUG] Modal not found after 5 attempts:', modalId);
       }
       return;
     }
 
-    console.log('🔄 [ASSET DEBUG] Starting asset loading for modal:', modalEl);
+    console.log('🔄 [VIDEO DEBUG] Activating Webflow lazy loading for modal:', modalEl);
 
-    // Minimal legacy support only (no heavy asset manager)
+    // Activate Webflow's native lazy loading for videos
+    const videos = modalEl.querySelectorAll('video[data-src]');
+    console.log('🔄 [VIDEO DEBUG] Found videos with data-src:', videos.length);
+    
+    videos.forEach((video, index) => {
+      if (!video.getAttribute('src') && video.getAttribute('data-src')) {
+        const dataSrc = video.getAttribute('data-src');
+        console.log(`🎥 [VIDEO DEBUG] Activating video ${index + 1}:`, dataSrc);
+        video.setAttribute('src', dataSrc);
+        
+        // Trigger load if needed
+        if (video.load) {
+          video.load();
+        }
+      }
+    });
 
-    // Restore intercepted videos for this modal (NEW)
-    console.log('🔄 [ASSET DEBUG] Calling restoreVideoSrc...');
-    this.restoreVideoSrc(modalId);
-
-    // Legacy support: Images with data-src (Webflow format)
-    const imgs = modalEl.querySelectorAll('img[data-src]');
-    console.log('🔄 [ASSET DEBUG] Found images with data-src:', imgs.length);
-    imgs.forEach((img, index) => {
-      if (!img.getAttribute('src')) {
+    // Also handle images for completeness
+    const images = modalEl.querySelectorAll('img[data-src]');
+    images.forEach((img, index) => {
+      if (!img.getAttribute('src') && img.getAttribute('data-src')) {
         const dataSrc = img.getAttribute('data-src');
-        console.log(`🔄 [ASSET DEBUG] Restoring image ${index + 1} src:`, dataSrc);
+        console.log(`�️ [VIDEO DEBUG] Activating image ${index + 1}:`, dataSrc);
         img.setAttribute('src', dataSrc);
       }
-      const ds = img.getAttribute('data-srcset');
-      if (ds && !img.getAttribute('srcset')) {
-        console.log(`🔄 [ASSET DEBUG] Restoring image ${index + 1} srcset:`, ds);
-        img.setAttribute('srcset', ds);
-      }
     });
-
-    // Legacy support: Picture sources with data-srcset
-    const sources = modalEl.querySelectorAll('source[data-srcset]');
-    console.log('🔄 [ASSET DEBUG] Found sources with data-srcset:', sources.length);
-    sources.forEach((src, index) => {
-      if (!src.getAttribute('srcset')) {
-        const dataSrcset = src.getAttribute('data-srcset');
-        console.log(`🔄 [ASSET DEBUG] Restoring source ${index + 1} srcset:`, dataSrcset);
-        src.setAttribute('srcset', dataSrcset);
-      }
-    });
-
-    // Legacy support: Videos with data-src (additional fallback)
-    const videos = modalEl.querySelectorAll('video[data-src]');
-    console.log('🔄 [ASSET DEBUG] Found videos with data-src:', videos.length);
-    videos.forEach((video, index) => {
-      if (!video.getAttribute('src')) {
-        const dataSrc = video.getAttribute('data-src');
-        console.log(`🔄 [ASSET DEBUG] Restoring video ${index + 1} src from data-src:`, dataSrc);
-        video.setAttribute('src', dataSrc);
-      }
-    });
-
-    // Backgrounds/videos/inline HTML handling removed per simplification
 
     this._lazyLoadedModals.add(modalId);
-    console.log('✅ [ASSET DEBUG] Modal assets loading complete for:', modalId);
+    console.log('✅ [VIDEO DEBUG] Modal lazy loading complete for:', modalId);
   }
 
   /**
