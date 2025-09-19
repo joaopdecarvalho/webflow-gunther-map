@@ -688,6 +688,369 @@ class Simple3DLoader {
     console.log('🚫 Anti-flash CSS injected');
   }
 
+  // Phase 1: Lazy Loading Initialization
+  initLazyLoading() {
+    try {
+      // Find the container element first
+      this.container = document.querySelector('#webgl-container') ||
+                       document.querySelector('.webgl-container') ||
+                       document.querySelector('[data-webgl-container]');
+
+      if (!this.container) {
+        console.error('WebGL container not found! Loading disabled.');
+        return;
+      }
+
+      console.log('🔄 Lazy loading initialized for:', this.container);
+      this.showLoadingPlaceholder();
+
+      // Set up triggers based on configuration
+      if (this.loadTriggers.viewport) {
+        this.setupViewportTrigger();
+      }
+
+      if (this.loadTriggers.userInteraction) {
+        this.setupInteractionTriggers();
+      }
+
+      if (this.loadTriggers.delay) {
+        this.setupDelayTrigger();
+      }
+
+      // If manual mode, just wait for explicit load call
+      if (this.loadTriggers.manual) {
+        console.log('📋 Manual loading mode - call loader.load() to start');
+      }
+
+    } catch (error) {
+      console.error('❌ Error initializing lazy loading:', error);
+      // Fallback to direct loading
+      this.init();
+    }
+  }
+
+  showLoadingPlaceholder() {
+    if (!this.container) return;
+
+    // Apply initial styling
+    this.applyInitialStyling();
+
+    // Create a minimal loading placeholder
+    const placeholder = document.createElement('div');
+    placeholder.className = 'lazy-loading-placeholder';
+    placeholder.innerHTML = `
+      <div style="
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: rgba(255, 255, 255, 0.8);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        z-index: 2;
+      ">
+        <div style="
+          width: 40px;
+          height: 40px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          border-top: 3px solid #ffffff;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 0 auto 15px;
+        "></div>
+        <div style="font-size: 14px; font-weight: 500;">Loading 3D Experience</div>
+        <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">Interactive map preparing...</div>
+      </div>
+      <style>
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+    `;
+
+    this.container.appendChild(placeholder);
+    console.log('📍 Loading placeholder displayed');
+  }
+
+  setupViewportTrigger() {
+    if (!this.container || !('IntersectionObserver' in window)) {
+      console.warn('⚠️ IntersectionObserver not supported, using fallback');
+      // Fallback: load immediately if intersection observer not supported
+      setTimeout(() => this.triggerLoad('viewport-fallback'), 100);
+      return;
+    }
+
+    const options = {
+      root: null,
+      rootMargin: '100px', // Start loading 100px before entering viewport
+      threshold: 0.1
+    };
+
+    this.intersectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && this.loadingState === 'pending') {
+          console.log('👁️ Container entered viewport - triggering load');
+          this.triggerLoad('viewport');
+        }
+      });
+    }, options);
+
+    this.intersectionObserver.observe(this.container);
+    console.log('👁️ Viewport trigger setup complete');
+  }
+
+  setupInteractionTriggers() {
+    if (!this.container) return;
+
+    const triggerLoad = (type) => {
+      if (this.loadingState === 'pending' && !this.userHasInteracted) {
+        this.userHasInteracted = true;
+        console.log(`🖱️ User interaction detected (${type}) - triggering load`);
+        this.triggerLoad('interaction');
+      }
+    };
+
+    // Mouse events
+    this.container.addEventListener('click', () => triggerLoad('click'), { once: true });
+    this.container.addEventListener('mouseenter', () => triggerLoad('hover'), { once: true });
+
+    // Touch events
+    this.container.addEventListener('touchstart', () => triggerLoad('touch'), { once: true, passive: true });
+
+    // Keyboard events (for accessibility)
+    this.container.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        triggerLoad('keyboard');
+      }
+    }, { once: true });
+
+    console.log('🖱️ Interaction triggers setup complete');
+  }
+
+  setupDelayTrigger() {
+    const delay = this.config.lazyLoading?.delay || 2000; // Default 2 seconds
+
+    this.delayTimer = setTimeout(() => {
+      if (this.loadingState === 'pending') {
+        console.log(`⏰ Delay trigger activated (${delay}ms) - triggering load`);
+        this.triggerLoad('delay');
+      }
+    }, delay);
+
+    console.log(`⏰ Delay trigger setup complete (${delay}ms)`);
+  }
+
+  triggerLoad(trigger) {
+    if (this.loadingState !== 'pending') {
+      console.log(`⚠️ Load already triggered (state: ${this.loadingState})`);
+      return;
+    }
+
+    console.log(`🚀 Loading triggered by: ${trigger}`);
+    this.loadingState = 'loading';
+
+    // Clear any delay timer
+    if (this.delayTimer) {
+      clearTimeout(this.delayTimer);
+      this.delayTimer = null;
+    }
+
+    // Disconnect intersection observer
+    if (this.intersectionObserver) {
+      this.intersectionObserver.disconnect();
+      this.intersectionObserver = null;
+    }
+
+    // Update placeholder to show loading state
+    this.updateLoadingState('Loading 3D Model...');
+
+    // Start the actual loading process
+    this.init();
+  }
+
+  updateLoadingState(message) {
+    const placeholder = this.container?.querySelector('.lazy-loading-placeholder');
+    if (placeholder) {
+      const textElement = placeholder.querySelector('div:last-child');
+      if (textElement) {
+        textElement.textContent = message;
+      }
+    }
+  }
+
+  removeLazyLoadingPlaceholder() {
+    const placeholder = this.container?.querySelector('.lazy-loading-placeholder');
+    if (placeholder) {
+      placeholder.remove();
+      console.log('✅ Loading placeholder removed');
+    }
+  }
+
+  // Public method to manually trigger loading
+  load() {
+    this.triggerLoad('manual');
+  }
+
+  showErrorState(error) {
+    this.removeLazyLoadingPlaceholder();
+
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'lazy-loading-error';
+    errorDiv.innerHTML = `
+      <div style="
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: rgba(255, 255, 255, 0.9);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        z-index: 2;
+        max-width: 400px;
+        padding: 20px;
+      ">
+        <div style="
+          font-size: 48px;
+          margin-bottom: 15px;
+        ">⚠️</div>
+        <div style="font-size: 16px; font-weight: 500; margin-bottom: 10px;">Loading Failed</div>
+        <div style="font-size: 14px; opacity: 0.8; margin-bottom: 15px; line-height: 1.4;">
+          Unable to load the 3D experience. Please check your connection and try again.
+        </div>
+        <button onclick="location.reload()" style="
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          color: white;
+          padding: 10px 20px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: background-color 0.2s;
+        " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'"
+           onmouseout="this.style.backgroundColor='rgba(255,255,255,0.1)'">
+          Retry
+        </button>
+      </div>
+    `;
+
+    if (this.container) {
+      this.container.appendChild(errorDiv);
+    }
+
+    console.log('❌ Error state displayed');
+  }
+
+  async init() {
+    try {
+      // Find the container element (if not already found in lazy loading)
+      if (!this.container) {
+        this.container = document.querySelector('#webgl-container') ||
+                         document.querySelector('.webgl-container') ||
+                         document.querySelector('[data-webgl-container]');
+      }
+
+      if (!this.container) {
+        console.error('WebGL container not found! Looking for #webgl-container');
+        this.loadingState = 'error';
+        return;
+      }
+
+      console.log('✅ Container found:', this.container);
+
+      // Apply initial styling to prevent gradient flash (if not already applied)
+      if (this.loadingState !== 'loading') {
+        this.applyInitialStyling();
+      }
+
+      // Optionally attach debug panels if requested (via URL/global flag)
+      await this.maybeAttachDebugPanels();
+
+      // Load Three.js from CDN
+      await this.loadThreeJS();
+      
+      // Setup Three.js scene
+      this.setupScene();
+      
+      // Load the GLB model
+      await this.loadModel();
+      
+      // Setup controls
+      this.setupControls();
+      
+      // Handle window resize and visibility changes
+      this.setupEventListeners();
+      
+      // Start render loop
+      this.animate();
+      
+      // Play welcome animation if enabled
+      if (this.config.animations.welcomeAnimation.enabled) {
+        this.playWelcomeAnimation();
+      }
+      
+      // Remove loading state after everything is initialized
+      this.finishLoading();
+
+      // Mark loading as complete
+      this.loadingState = 'loaded';
+
+      console.log('✅ 3D scene initialized successfully!');
+
+    } catch (error) {
+      console.error('❌ Error initializing 3D scene:', error);
+      this.loadingState = 'error';
+      this.showErrorState(error);
+    }
+  }
+
+  applyInitialStyling() {
+    console.log('🎨 Applying initial styling to prevent flash...');
+    
+    // Store original styles to restore later
+    this.originalContainerStyles = {
+      background: this.container.style.background,
+      opacity: this.container.style.opacity,
+      transition: this.container.style.transition
+    };
+    
+    // Apply loading styles to prevent gradient flash
+    this.container.style.background = '#3c5e71'; // Set target color immediately
+    this.container.style.opacity = '1'; // Keep visible but with correct background
+    this.container.style.transition = 'none'; // Remove transition during setup
+    
+    // Ensure container covers the full viewport
+    this.container.style.width = '100vw';
+    this.container.style.height = '100vh';
+    this.container.style.position = 'fixed';
+    this.container.style.top = '0';
+    this.container.style.left = '0';
+    this.container.style.zIndex = '1';
+    
+    console.log('✅ Initial styling applied - full viewport coverage with target background');
+  }
+
+  finishLoading() {
+    console.log('🎉 Finishing loading sequence...');
+
+    // Remove lazy loading placeholder if it exists
+    this.removeLazyLoadingPlaceholder();
+
+    // Set the final scene background now that everything is loaded
+    if (this.scene) {
+      this.scene.background = new THREE.Color(0x3c5e71); // Blue-gray background
+      console.log('🎨 Scene background set to final color');
+    }
+
+    // Update renderer clear color for proper rendering
+    if (this.renderer) {
+      this.renderer.setClearColor(0x3c5e71, 1); // Opaque background
+    }
+
+    // Container is already visible with correct background - just log completion
+    console.log('✅ 3D scene ready and visible');
+  }
+
   // Conditionally load and attach debug panels module
   async maybeAttachDebugPanels() {
     try {
