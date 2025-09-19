@@ -112,8 +112,8 @@ class Simple3DLoader {
     
     // Model URL - environment-aware with fallback
     this.modelUrls = {
-      local: 'http://localhost:8080/Goetheviertel_250919_with_flags_webp80-positioned.glb',
-      production: 'https://webflow-gunther-map.vercel.app/Goetheviertel_250919_with_flags_webp80-positioned.glb'
+      local: 'http://localhost:8080/Goetheviertel_250919_with_flags_webp80.glb',
+      production: 'https://webflow-gunther-map.vercel.app/Goetheviertel_250919_with_flags_webp80.glb'
     };
     this.modelUrl = this.isDevelopment ? this.modelUrls.local : this.modelUrls.production;
     
@@ -121,10 +121,12 @@ class Simple3DLoader {
   }
 
   detectDevelopmentMode() {
-    // Check for localhost, development domains, or debug flags
+    // Check for localhost, development domains, Webflow domains, or debug flags
     return location.hostname === 'localhost' ||
            location.hostname === '127.0.0.1' ||
            location.hostname.includes('dev') ||
+           location.hostname.includes('webflow.io') || // Enable on Webflow staging/preview
+           location.hostname.includes('webflow.com') || // Enable on Webflow editor
            location.search.includes('debug=true') ||
            location.hostname.includes('5173'); // Vite dev server
   }
@@ -186,6 +188,12 @@ class Simple3DLoader {
       
       // Remove loading state after everything is initialized
       this.finishLoading();
+      
+      // Create camera info panel in development mode
+      if (this.isDevelopment) {
+        this.createCameraInfoPanel();
+        this.createControlsPanel();
+      }
       
       console.log('✅ 3D scene initialized successfully!');
 
@@ -1109,7 +1117,77 @@ class Simple3DLoader {
   // =============================================================================
   // These functions support the camera position panel for development/debugging.
   // Safe to remove for production if camera panel HTML is not included.
-  // Panel is currently HIDDEN in staging via CSS but functions remain active.
+  // Panel is now VISIBLE in development mode and automatically created.
+  
+  createCameraInfoPanel() {
+    // Check if panel already exists
+    if (document.getElementById('camera-debug-panel')) {
+      console.log('📊 Camera panel already exists');
+      return;
+    }
+
+    console.log('📊 Creating camera info panel for development...');
+
+    // Create panel HTML
+    const panel = document.createElement('div');
+    panel.id = 'camera-debug-panel';
+    panel.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        z-index: 10000;
+        min-width: 250px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      ">
+        <div style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          padding-bottom: 8px;
+        ">
+          <strong style="color: #4CAF50;">📷 Camera Debug</strong>
+          <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+          ">×</button>
+        </div>
+        <div><strong>Position:</strong> <span id="camera-position">-</span></div>
+        <div><strong>Target:</strong> <span id="camera-target">-</span></div>
+        <div><strong>Distance:</strong> <span id="camera-distance">-</span></div>
+        <div><strong>Rotation:</strong> <span id="camera-rotation">-</span></div>
+        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+          <button onclick="window.copyCurrentPosition && window.copyCurrentPosition()" style="
+            background: #2196F3;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            width: 100%;
+          ">📋 Copy Position</button>
+        </div>
+      </div>
+    `;
+
+    // Add to body
+    document.body.appendChild(panel);
+    console.log('✅ Camera info panel created and visible');
+  }
   
   updateCameraInfo() {
     if (!this.camera || !this.controls) return;
@@ -1141,6 +1219,218 @@ class Simple3DLoader {
     if (rotationElement) {
       rotationElement.textContent = `${rotX.toFixed(1)}°, ${rotY.toFixed(1)}°`;
     }
+  }
+
+  createControlsPanel() {
+    // Check if panel already exists
+    if (document.getElementById('controls-debug-panel')) {
+      console.log('🎮 Controls panel already exists');
+      return;
+    }
+
+    console.log('🎮 Creating controls debug panel...');
+
+    // Create panel HTML
+    const panel = document.createElement('div');
+    panel.id = 'controls-debug-panel';
+    panel.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        z-index: 10000;
+        min-width: 280px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      ">
+        <div style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          padding-bottom: 8px;
+        ">
+          <strong style="color: #FF9800;">🎮 Controls Debug</strong>
+          <button onclick="this.parentElement.parentElement.parentElement.remove()" style="
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+          ">×</button>
+        </div>
+        
+        <!-- Rotation Limits -->
+        <div style="margin-bottom: 8px;">
+          <div style="color: #FFC107; margin-bottom: 4px;"><strong>Rotation Limits:</strong></div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+            <label style="width: 45%;">Min Polar (°):</label>
+            <input type="range" id="minPolar" min="0" max="90" step="1" value="18" style="width: 40%;">
+            <span id="minPolarValue" style="width: 10%; text-align: right;">18</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <label style="width: 45%;">Max Polar (°):</label>
+            <input type="range" id="maxPolar" min="45" max="180" step="1" value="81" style="width: 40%;">
+            <span id="maxPolarValue" style="width: 10%; text-align: right;">81</span>
+          </div>
+        </div>
+
+        <!-- Distance Limits -->
+        <div style="margin-bottom: 8px;">
+          <div style="color: #4CAF50; margin-bottom: 4px;"><strong>Distance Limits:</strong></div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+            <label style="width: 45%;">Min Distance:</label>
+            <input type="range" id="minDistance" min="10" max="100" step="5" value="50" style="width: 40%;">
+            <span id="minDistanceValue" style="width: 10%; text-align: right;">50</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <label style="width: 45%;">Max Distance:</label>
+            <input type="range" id="maxDistance" min="50" max="200" step="5" value="90" style="width: 40%;">
+            <span id="maxDistanceValue" style="width: 10%; text-align: right;">90</span>
+          </div>
+        </div>
+
+        <!-- Control Toggles -->
+        <div style="margin-bottom: 8px;">
+          <div style="color: #2196F3; margin-bottom: 4px;"><strong>Control Options:</strong></div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+            <label>Enable Zoom:</label>
+            <input type="checkbox" id="enableZoom" checked style="margin-left: auto;">
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+            <label>Enable Rotate:</label>
+            <input type="checkbox" id="enableRotate" checked style="margin-left: auto;">
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <label>Enable Pan:</label>
+            <input type="checkbox" id="enablePan" checked style="margin-left: auto;">
+          </div>
+        </div>
+
+        <!-- Damping -->
+        <div style="margin-bottom: 8px;">
+          <div style="color: #9C27B0; margin-bottom: 4px;"><strong>Damping:</strong></div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <label style="width: 45%;">Damping Factor:</label>
+            <input type="range" id="dampingFactor" min="0.01" max="0.2" step="0.01" value="0.05" style="width: 40%;">
+            <span id="dampingFactorValue" style="width: 10%; text-align: right;">0.05</span>
+          </div>
+        </div>
+
+        <!-- Export Button -->
+        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+          <button onclick="window.exportControlsConfig && window.exportControlsConfig()" style="
+            background: #4CAF50;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            width: 100%;
+          ">📋 Export Controls Config</button>
+        </div>
+      </div>
+    `;
+
+    // Add to body
+    document.body.appendChild(panel);
+
+    // Setup event listeners for real-time updates
+    this.setupControlsListeners();
+
+    console.log('✅ Controls debug panel created');
+  }
+
+  setupControlsListeners() {
+    // Polar angle controls
+    const minPolarSlider = document.getElementById('minPolar');
+    const maxPolarSlider = document.getElementById('maxPolar');
+    const minPolarValue = document.getElementById('minPolarValue');
+    const maxPolarValue = document.getElementById('maxPolarValue');
+
+    minPolarSlider.addEventListener('input', (e) => {
+      const value = parseFloat(e.target.value);
+      minPolarValue.textContent = value;
+      if (this.controls) {
+        this.controls.minPolarAngle = THREE.MathUtils.degToRad(value);
+      }
+    });
+
+    maxPolarSlider.addEventListener('input', (e) => {
+      const value = parseFloat(e.target.value);
+      maxPolarValue.textContent = value;
+      if (this.controls) {
+        this.controls.maxPolarAngle = THREE.MathUtils.degToRad(value);
+      }
+    });
+
+    // Distance controls
+    const minDistanceSlider = document.getElementById('minDistance');
+    const maxDistanceSlider = document.getElementById('maxDistance');
+    const minDistanceValue = document.getElementById('minDistanceValue');
+    const maxDistanceValue = document.getElementById('maxDistanceValue');
+
+    minDistanceSlider.addEventListener('input', (e) => {
+      const value = parseFloat(e.target.value);
+      minDistanceValue.textContent = value;
+      if (this.controls) {
+        this.controls.minDistance = value;
+      }
+    });
+
+    maxDistanceSlider.addEventListener('input', (e) => {
+      const value = parseFloat(e.target.value);
+      maxDistanceValue.textContent = value;
+      if (this.controls) {
+        this.controls.maxDistance = value;
+      }
+    });
+
+    // Control toggles
+    const enableZoom = document.getElementById('enableZoom');
+    const enableRotate = document.getElementById('enableRotate');
+    const enablePan = document.getElementById('enablePan');
+
+    enableZoom.addEventListener('change', (e) => {
+      if (this.controls) {
+        this.controls.enableZoom = e.target.checked;
+      }
+    });
+
+    enableRotate.addEventListener('change', (e) => {
+      if (this.controls) {
+        this.controls.enableRotate = e.target.checked;
+      }
+    });
+
+    enablePan.addEventListener('change', (e) => {
+      if (this.controls) {
+        this.controls.enablePan = e.target.checked;
+      }
+    });
+
+    // Damping factor
+    const dampingFactorSlider = document.getElementById('dampingFactor');
+    const dampingFactorValue = document.getElementById('dampingFactorValue');
+
+    dampingFactorSlider.addEventListener('input', (e) => {
+      const value = parseFloat(e.target.value);
+      dampingFactorValue.textContent = value;
+      if (this.controls) {
+        this.controls.dampingFactor = value;
+      }
+    });
+
+    console.log('✅ Controls panel event listeners setup');
   }
 
   // Public method to get model stats
@@ -1780,6 +2070,94 @@ window.exportPOIs = async function() {
   } catch (err) {
     console.warn('Copy failed, POI data logged to console:', exportData);
     alert('Copy failed - check console for POI configuration');
+  }
+};
+
+// Export current controls configuration to clipboard
+window.exportControlsConfig = function() {
+  const loader = window.simple3DLoader;
+  if (!loader || !loader.controls) {
+    console.warn('⚠️ No controls found');
+    return;
+  }
+
+  // Get current values from the UI or controls object
+  const minPolar = document.getElementById('minPolar')?.value || THREE.MathUtils.radToDeg(loader.controls.minPolarAngle);
+  const maxPolar = document.getElementById('maxPolar')?.value || THREE.MathUtils.radToDeg(loader.controls.maxPolarAngle);
+  const minDistance = document.getElementById('minDistance')?.value || loader.controls.minDistance;
+  const maxDistance = document.getElementById('maxDistance')?.value || loader.controls.maxDistance;
+  const enableZoom = document.getElementById('enableZoom')?.checked !== undefined ? document.getElementById('enableZoom').checked : loader.controls.enableZoom;
+  const enableRotate = document.getElementById('enableRotate')?.checked !== undefined ? document.getElementById('enableRotate').checked : loader.controls.enableRotate;
+  const enablePan = document.getElementById('enablePan')?.checked !== undefined ? document.getElementById('enablePan').checked : loader.controls.enablePan;
+  const dampingFactor = document.getElementById('dampingFactor')?.value || loader.controls.dampingFactor;
+
+  const controlsConfig = {
+    exportedAt: new Date().toISOString(),
+    controls: {
+      minPolarAngle: parseFloat(minPolar),
+      maxPolarAngle: parseFloat(maxPolar),
+      minDistance: parseFloat(minDistance),
+      maxDistance: parseFloat(maxDistance),
+      enableZoom: enableZoom,
+      enableRotate: enableRotate,
+      enablePan: enablePan,
+      dampingFactor: parseFloat(dampingFactor),
+      enableDamping: true
+    },
+    current3DState: {
+      cameraPosition: {
+        x: loader.camera.position.x,
+        y: loader.camera.position.y,
+        z: loader.camera.position.z
+      },
+      target: {
+        x: loader.controls.target.x,
+        y: loader.controls.target.y,
+        z: loader.controls.target.z
+      }
+    },
+    usage: "Apply these settings to OrbitControls in production"
+  };
+
+  const exportData = JSON.stringify(controlsConfig, null, 2);
+
+  try {
+    navigator.clipboard.writeText(exportData).then(() => {
+      console.log('📋 Controls configuration copied to clipboard!');
+      console.log('🎮 Controls Config:', controlsConfig);
+
+      // Show temporary notification
+      const notification = document.createElement('div');
+      notification.innerHTML = `
+        <div style="
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: rgba(76, 175, 80, 0.95);
+          color: white;
+          padding: 15px 25px;
+          border-radius: 8px;
+          font-family: 'Courier New', monospace;
+          font-size: 14px;
+          z-index: 20000;
+          text-align: center;
+          backdrop-filter: blur(10px);
+        ">
+          ✅ Controls Config Exported!<br>
+          <small>Configuration copied to clipboard</small>
+        </div>
+      `;
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 2000);
+
+    }).catch((err) => {
+      console.warn('Copy failed, controls data logged to console:', exportData);
+      alert('Copy failed - check console for controls configuration');
+    });
+  } catch (err) {
+    console.warn('Copy failed, controls data logged to console:', exportData);
+    alert('Copy failed - check console for controls configuration');
   }
 };
 
