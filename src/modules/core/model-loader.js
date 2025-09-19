@@ -92,9 +92,15 @@ export function attachModelLoader(loader) {
 
     // Initialize flag arrays for billboard functionality
     this.flags = [];
+    console.log('🔍 Starting flag detection process...');
 
     // Prepare meshes (shadow + fade-in start) and collect flags
     this.model.traverse((child) => {
+      // Log all objects with names for debugging
+      if (child.name) {
+        console.log('🔍 Found named object:', child.name, 'type:', child.type);
+      }
+      
       if (child.isMesh) {
         child.castShadow = true;
         child.receiveShadow = true;
@@ -109,11 +115,12 @@ export function attachModelLoader(loader) {
         child.name.toLowerCase().includes('banner')
       )) {
         this.flags.push(child);
-        console.log('🚩 Found flag object:', child.name);
+        console.log('🚩 Found flag object:', child.name, 'position:', child.position, 'rotation:', child.rotation);
       }
     });
 
-    console.log(`🏴 Detected ${this.flags.length} flag objects for billboard behavior`);
+    console.log(`🏴 Billboard system: Detected ${this.flags.length} flag objects`);
+    console.log('🏴 Flags array:', this.flags.map(f => ({ name: f.name, uuid: f.uuid })));
 
     this.scene.add(this.model);
     this.centerModel();

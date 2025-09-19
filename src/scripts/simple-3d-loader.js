@@ -422,6 +422,12 @@ class Simple3DLoader {
       await this.loadModel();
 
       console.log('✅ Model loaded and added to scene');
+      
+      // Debug: Check flags array after model loading
+      console.log('🏴 Post-loadModel flags debug:');
+      console.log('🏴 this.flags:', this.flags);
+      console.log('🏴 flags.length:', this.flags ? this.flags.length : 'undefined');
+      console.log('🏴 this.model:', this.model);
 
     } catch (error) {
       console.error('❌ Model loading failed:', error);
@@ -649,6 +655,19 @@ class Simple3DLoader {
     // Set loading state to loaded
     this.loadingState = 'loaded';
     
+    // Log flag accessibility for debugging
+    console.log('🏴 Billboard Debug - finishLoading() flags check:');
+    console.log('🏴 this.flags:', this.flags);
+    console.log('🏴 flags.length:', this.flags ? this.flags.length : 'undefined');
+    if (this.flags && this.flags.length > 0) {
+      console.log('🏴 Flag details:', this.flags.map(f => ({ 
+        name: f.name, 
+        type: f.type, 
+        hasPosition: !!f.position,
+        hasRotation: !!f.rotation
+      })));
+    }
+    
     // Set the final scene background now that everything is loaded
     if (this.scene) {
       this.scene.background = new THREE.Color(0x3c5e71); // Blue-gray background
@@ -678,15 +697,47 @@ class Simple3DLoader {
   }
 
   updateFlagBillboards() {
+    // Add one-time initialization logging
+    if (!this._flagBillboardLoggedOnce) {
+      console.log('🏴 Billboard system called for first time');
+      console.log('🏴 this.flags:', this.flags);
+      console.log('🏴 this.camera:', this.camera);
+      console.log('🏴 flags.length:', this.flags ? this.flags.length : 'undefined');
+      this._flagBillboardLoggedOnce = true;
+    }
+
     // Only proceed if we have flags, camera, and they're available
     if (!this.flags || !this.camera || this.flags.length === 0) {
+      // Log why we're returning early (only first few times to avoid spam)
+      if (!this._earlyReturnCount) this._earlyReturnCount = 0;
+      if (this._earlyReturnCount < 5) {
+        console.log('🏴 Billboard early return:', {
+          hasFlags: !!this.flags,
+          hasCamera: !!this.camera,
+          flagCount: this.flags ? this.flags.length : 0
+        });
+        this._earlyReturnCount++;
+      }
       return;
+    }
+
+    // Log detailed update info (throttled to avoid spam)
+    if (!this._lastBillboardLog) this._lastBillboardLog = 0;
+    const now = performance.now();
+    const shouldLog = (now - this._lastBillboardLog) > 2000; // Every 2 seconds
+
+    if (shouldLog) {
+      console.log(`🏴 Updating ${this.flags.length} flags to face camera`);
+      this._lastBillboardLog = now;
     }
 
     // Update each flag to face the camera (Y-axis rotation only)
     for (let i = 0; i < this.flags.length; i++) {
       const flag = this.flags[i];
-      if (!flag || !flag.position) continue;
+      if (!flag || !flag.position) {
+        if (shouldLog) console.log(`🏴 Flag ${i} invalid:`, flag);
+        continue;
+      }
 
       // Calculate direction from flag to camera (ignore Y difference for Y-axis only rotation)
       const flagPosition = flag.position;
@@ -698,6 +749,16 @@ class Simple3DLoader {
       
       // Calculate Y-axis rotation to face camera
       const targetRotationY = Math.atan2(deltaX, deltaZ);
+      
+      if (shouldLog) {
+        console.log(`🏴 Flag "${flag.name}":`, {
+          flagPos: { x: flagPosition.x, y: flagPosition.y, z: flagPosition.z },
+          cameraPos: { x: cameraPosition.x, y: cameraPosition.y, z: cameraPosition.z },
+          delta: { x: deltaX, z: deltaZ },
+          oldRotationY: flag.rotation.y,
+          newRotationY: targetRotationY
+        });
+      }
       
       // Apply rotation (only Y-axis to keep flags upright)
       flag.rotation.y = targetRotationY;
