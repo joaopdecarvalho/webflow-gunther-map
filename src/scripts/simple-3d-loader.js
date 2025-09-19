@@ -23,6 +23,9 @@ class Simple3DLoader {
   constructor() {
     // Inject CSS immediately to prevent any flash
     this.injectAntiFlashCSS();
+    
+    // Store global reference for module access
+    window.simple3DLoaderInstance = this;
 
     this.scene = null;
     this.camera = null;

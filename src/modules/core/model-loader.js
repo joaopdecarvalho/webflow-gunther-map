@@ -122,6 +122,12 @@ export function attachModelLoader(loader) {
     console.log(`🏴 Billboard system: Detected ${this.flags.length} flag objects`);
     console.log('🏴 Flags array:', this.flags.map(f => ({ name: f.name, uuid: f.uuid })));
 
+    // IMPORTANT: Store flags reference in main class for billboard access
+    if (window.simple3DLoaderInstance) {
+      window.simple3DLoaderInstance.flags = this.flags;
+      console.log('🏴 Flags array copied to main instance');
+    }
+
     this.scene.add(this.model);
     this.centerModel();
 
