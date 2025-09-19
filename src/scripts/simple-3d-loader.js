@@ -205,6 +205,10 @@ class Simple3DLoader {
     this.delayTimer = null;
     this.userHasInteracted = false;
 
+    // Video lazy loading system
+    this.interceptedVideos = null; // Will be initialized in initVideoLazyLoading
+    this.videoMutationObserver = null;
+
   // Phase 3 (Removed): smart loading manager no longer used
   this.smartLoadingManager = null;
 
@@ -319,6 +323,9 @@ class Simple3DLoader {
     };
     this.modelUrl = this.isDevelopment ? this.modelUrls.local : this.modelUrls.production;
 
+    // Initialize video lazy loading system before anything else
+    this.initVideoLazyLoading();
+
     // Phase 1: Initialize lazy loading or direct loading based on configuration
     const lazyConfig = this.config.lazyLoading;
     if (this.lazyLoadingEnabled && lazyConfig.enabled) {
@@ -339,6 +346,164 @@ class Simple3DLoader {
            location.hostname.includes('webflow.com') || // Enable on Webflow editor
            location.search.includes('debug=true') ||
            location.hostname.includes('5173'); // Vite dev server
+  }
+
+  // =====================================================================
+  // Video Lazy Loading System - Prevents modal videos from downloading before 3D model
+  // =====================================================================
+  initVideoLazyLoading() {
+    console.log('📹 Initializing video lazy loading system...');
+    
+    // Use pre-intercepted videos from embed script if available
+    this.interceptedVideos = window.interceptedVideos || new Map();
+    
+    // If no pre-intercepted videos, do manual interception
+    if (this.interceptedVideos.size === 0) {
+      this.interceptModalVideos();
+    } else {
+      console.log('📹 Using pre-intercepted videos:', this.interceptedVideos.size);
+    }
+    
+    // Set up mutation observer to catch any additional videos
+    this.setupVideoMutationObserver();
+    
+    console.log('✅ Video lazy loading system initialized');
+  }
+
+  interceptModalVideos() {
+    // Find videos in modal containers that have src attributes
+    const modalContainers = document.querySelectorAll('[id^="station-"], [data-modal], [data-modal-id]');
+    
+    modalContainers.forEach(container => {
+      const videos = container.querySelectorAll('video[src]');
+      
+      videos.forEach(video => {
+        if (!video.hasAttribute('data-lazy-src')) {
+          console.log('🚫 Intercepting modal video:', video.src);
+          
+          // Store original src and remove it to prevent loading
+          const originalSrc = video.src;
+          video.removeAttribute('src');
+          video.setAttribute('data-lazy-src', originalSrc);
+          
+          // Store reference for later restoration
+          this.interceptedVideos.set(video, originalSrc);
+          
+          // Add a visual placeholder
+          this.addVideoPlaceholder(video);
+        }
+      });
+    });
+  }
+
+  setupVideoMutationObserver() {
+    // Watch for dynamically added videos
+    this.videoMutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            // Check if the added node is a video or contains videos
+            const videos = node.tagName === 'VIDEO' ? [node] : node.querySelectorAll?.('video[src]') || [];
+            
+            videos.forEach((video) => {
+              // Only intercept videos in modal containers
+              const modalContainer = video.closest('[id^="station-"], [data-modal], [data-modal-id]');
+              if (modalContainer && video.src && !video.hasAttribute('data-lazy-src')) {
+                console.log('🔄 Intercepting dynamically added modal video:', video.src);
+                
+                const originalSrc = video.src;
+                video.removeAttribute('src');
+                video.setAttribute('data-lazy-src', originalSrc);
+                this.interceptedVideos.set(video, originalSrc);
+                this.addVideoPlaceholder(video);
+              }
+            });
+          }
+        });
+      });
+    });
+
+    this.videoMutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  addVideoPlaceholder(video) {
+    // Add a subtle placeholder overlay
+    const placeholder = document.createElement('div');
+    placeholder.className = 'video-lazy-placeholder';
+    placeholder.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      pointer-events: none;
+      z-index: 1;
+    `;
+    placeholder.innerHTML = '📹';
+    
+    // Ensure parent has relative positioning
+    const parent = video.parentElement;
+    if (parent && getComputedStyle(parent).position === 'static') {
+      parent.style.position = 'relative';
+    }
+    
+    parent?.appendChild(placeholder);
+    
+    // Store placeholder reference for cleanup
+    video.setAttribute('data-placeholder-id', 'video-lazy-placeholder');
+  }
+
+  restoreVideoSrc(modalId) {
+    console.log('📹 Restoring video sources for modal:', modalId);
+    
+    // Find modal container
+    const selectors = [
+      `[data-modal-id="${modalId}"]`,
+      `[data-modal="${modalId}"]`,
+      `#${modalId}`
+    ];
+    
+    let modalEl = null;
+    for (const sel of selectors) {
+      modalEl = document.querySelector(sel);
+      if (modalEl) break;
+    }
+    
+    if (!modalEl) {
+      console.warn('⚠️ Could not find modal element for video restoration:', modalId);
+      return;
+    }
+    
+    // Restore videos in this modal
+    const lazyVideos = modalEl.querySelectorAll('video[data-lazy-src]');
+    
+    lazyVideos.forEach(video => {
+      const lazySrc = video.getAttribute('data-lazy-src');
+      if (lazySrc) {
+        console.log('✅ Restoring video src:', lazySrc);
+        video.setAttribute('src', lazySrc);
+        video.removeAttribute('data-lazy-src');
+        
+        // Remove placeholder
+        const placeholder = video.parentElement?.querySelector('.video-lazy-placeholder');
+        if (placeholder) {
+          placeholder.remove();
+        }
+        
+        // Clean up our tracking
+        this.interceptedVideos.delete(video);
+      }
+    });
   }
 
   injectAntiFlashCSS() {
@@ -1712,6 +1877,17 @@ class Simple3DLoader {
       this.delayTimer = null;
     }
 
+    // Clean up video lazy loading resources
+    if (this.videoMutationObserver) {
+      this.videoMutationObserver.disconnect();
+      this.videoMutationObserver = null;
+    }
+
+    if (this.interceptedVideos) {
+      this.interceptedVideos.clear();
+      this.interceptedVideos = null;
+    }
+
     // Remove any lazy loading UI elements
     this.removeLazyLoadingPlaceholder();
     const errorElement = this.container?.querySelector('.lazy-loading-error');
@@ -2206,6 +2382,9 @@ class Simple3DLoader {
 
     // Minimal legacy support only (no heavy asset manager)
 
+    // Restore intercepted videos for this modal (NEW)
+    this.restoreVideoSrc(modalId);
+
     // Legacy support: Images with data-src (Webflow format)
     const imgs = modalEl.querySelectorAll('img[data-src]');
     imgs.forEach(img => {
@@ -2222,9 +2401,18 @@ class Simple3DLoader {
       if (!src.getAttribute('srcset')) src.setAttribute('srcset', src.getAttribute('data-srcset'));
     });
 
+    // Legacy support: Videos with data-src (additional fallback)
+    const videos = modalEl.querySelectorAll('video[data-src]');
+    videos.forEach(video => {
+      if (!video.getAttribute('src')) {
+        video.setAttribute('src', video.getAttribute('data-src'));
+      }
+    });
+
     // Backgrounds/videos/inline HTML handling removed per simplification
 
     this._lazyLoadedModals.add(modalId);
+    console.log('📹 Modal assets loaded for:', modalId);
   }
 
   /**
