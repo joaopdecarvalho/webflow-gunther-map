@@ -1,6 +1,7 @@
 // Debug Panels module for Simple3DLoader
 // Loaded on-demand to keep production bundle lean
 
+// Export as ES6 module AND expose globally for compatibility
 export function attachDebugPanels(loader) {
   try {
     if (!loader) {
@@ -521,3 +522,7 @@ export async function enableDebugPanelsImmediate() {
     attachDebugPanels(window.simple3DLoader);
   }
 }
+
+// Also expose globally for compatibility with script injection loading
+window.attachDebugPanels = attachDebugPanels;
+window.enableDebugPanelsImmediate = enableDebugPanelsImmediate;
