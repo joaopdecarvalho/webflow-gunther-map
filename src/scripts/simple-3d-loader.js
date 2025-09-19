@@ -464,7 +464,7 @@ class Simple3DLoader {
   }
 
   restoreVideoSrc(modalId) {
-    console.log('📹 Restoring video sources for modal:', modalId);
+    console.log('📹 [VIDEO DEBUG] Attempting to restore video sources for modal:', modalId);
     
     // Find modal container
     const selectors = [
@@ -474,35 +474,92 @@ class Simple3DLoader {
     ];
     
     let modalEl = null;
+    console.log('📹 [VIDEO DEBUG] Searching for modal with selectors:', selectors);
+    
     for (const sel of selectors) {
       modalEl = document.querySelector(sel);
-      if (modalEl) break;
+      if (modalEl) {
+        console.log('📹 [VIDEO DEBUG] Found modal element with selector:', sel, modalEl);
+        break;
+      }
     }
     
     if (!modalEl) {
-      console.warn('⚠️ Could not find modal element for video restoration:', modalId);
+      console.warn('⚠️ [VIDEO DEBUG] Could not find modal element for video restoration:', modalId);
+      console.log('📹 [VIDEO DEBUG] Available elements with modal-related attributes:');
+      document.querySelectorAll('[id^="station-"], [data-modal], [data-modal-id]').forEach(el => {
+        console.log('  -', el.tagName, {
+          id: el.id,
+          'data-modal': el.getAttribute('data-modal'),
+          'data-modal-id': el.getAttribute('data-modal-id')
+        });
+      });
       return;
     }
     
     // Restore videos in this modal
     const lazyVideos = modalEl.querySelectorAll('video[data-lazy-src]');
+    console.log('📹 [VIDEO DEBUG] Found lazy videos in modal:', lazyVideos.length);
     
-    lazyVideos.forEach(video => {
+    if (lazyVideos.length === 0) {
+      console.log('📹 [VIDEO DEBUG] No videos with data-lazy-src found. Checking for data-src videos...');
+      const dataSrcVideos = modalEl.querySelectorAll('video[data-src]');
+      console.log('📹 [VIDEO DEBUG] Found videos with data-src:', dataSrcVideos.length);
+      
+      dataSrcVideos.forEach((video, index) => {
+        const dataSrc = video.getAttribute('data-src');
+        console.log(`📹 [VIDEO DEBUG] Video ${index + 1}:`, {
+          element: video,
+          'data-src': dataSrc,
+          'current src': video.src,
+          attributes: Array.from(video.attributes).map(attr => `${attr.name}="${attr.value}"`).join(', ')
+        });
+        
+        if (dataSrc && !video.src) {
+          console.log('✅ [VIDEO DEBUG] Restoring video src from data-src:', dataSrc);
+          video.setAttribute('src', dataSrc);
+          video.removeAttribute('data-src');
+        }
+      });
+    }
+    
+    lazyVideos.forEach((video, index) => {
       const lazySrc = video.getAttribute('data-lazy-src');
+      console.log(`📹 [VIDEO DEBUG] Processing lazy video ${index + 1}:`, {
+        element: video,
+        'data-lazy-src': lazySrc,
+        'current src': video.src
+      });
+      
       if (lazySrc) {
-        console.log('✅ Restoring video src:', lazySrc);
+        console.log('✅ [VIDEO DEBUG] Restoring video src from data-lazy-src:', lazySrc);
         video.setAttribute('src', lazySrc);
         video.removeAttribute('data-lazy-src');
         
         // Remove placeholder
         const placeholder = video.parentElement?.querySelector('.video-lazy-placeholder');
         if (placeholder) {
+          console.log('📹 [VIDEO DEBUG] Removing video placeholder');
           placeholder.remove();
         }
         
         // Clean up our tracking
         this.interceptedVideos.delete(video);
+        console.log('📹 [VIDEO DEBUG] Video restoration complete for:', lazySrc);
       }
+    });
+    
+    // Additional debug: Check all videos in modal after restoration
+    const allVideos = modalEl.querySelectorAll('video');
+    console.log('📹 [VIDEO DEBUG] All videos in modal after restoration:', allVideos.length);
+    allVideos.forEach((video, index) => {
+      console.log(`📹 [VIDEO DEBUG] Video ${index + 1} final state:`, {
+        src: video.src || '(no src)',
+        'data-src': video.getAttribute('data-src') || '(no data-src)',
+        'data-lazy-src': video.getAttribute('data-lazy-src') || '(no data-lazy-src)',
+        readyState: video.readyState,
+        networkState: video.networkState
+      });
     });
   }
 
@@ -2105,14 +2162,18 @@ class Simple3DLoader {
 
   // Discover interactive station objects within the loaded model
   setupInteractiveObjects() {
+    console.log('🎯 [SETUP DEBUG] setupInteractiveObjects called');
+    
     if (!this.model) {
-      console.warn('⚠️ Cannot setup interactive objects before model loads');
+      console.warn('⚠️ [SETUP DEBUG] Cannot setup interactive objects before model loads');
       return;
     }
     if (!this.stationMapping) {
-      console.warn('⚠️ Station mapping not defined');
+      console.warn('⚠️ [SETUP DEBUG] Station mapping not defined');
       return;
     }
+
+    console.log('🎯 [SETUP DEBUG] Station mapping:', this.stationMapping);
 
     this.interactiveObjects = [];
     this._interactiveMetaMap = new Map();
@@ -2120,13 +2181,23 @@ class Simple3DLoader {
     const stationKeys = Object.keys(this.stationMapping);
     let foundCount = 0;
 
+    console.log('🎯 [SETUP DEBUG] Looking for station keys:', stationKeys);
+
     const foundKeys = new Set();
 
     this.model.traverse((child) => {
       if (!child.isMesh || !child.name) return;
+      
+      // Log all mesh names for debugging
+      if (child.isMesh && child.name) {
+        console.log('🎯 [SETUP DEBUG] Found mesh:', child.name);
+      }
+      
       for (const key of stationKeys) {
         // Allow partial / case-insensitive match (e.g., 'Station01', 'station01_mesh')
         if (child.name.toLowerCase().includes(key.toLowerCase())) {
+          console.log('🎯 [SETUP DEBUG] Found matching station mesh:', { childName: child.name, stationKey: key });
+          
           // Clone material to prevent shared-material side effects when highlighting
             if (child.material && !child.material._isClonedForInteraction) {
               child.material = child.material.clone();
@@ -2202,23 +2273,48 @@ class Simple3DLoader {
 
   // Handle click / touch interaction
   onClick(event) {
-    if (!this.raycaster || !this.mouse || !this.camera) return;
+    console.log('🖱️ [CLICK DEBUG] onClick triggered', { event: event.type, hasRaycaster: !!this.raycaster, hasMouse: !!this.mouse, hasCamera: !!this.camera });
+    
+    if (!this.raycaster || !this.mouse || !this.camera) {
+      console.warn('⚠️ [CLICK DEBUG] Missing required components for click detection');
+      return;
+    }
+    
     this.updateNormalizedPointer(event);
+    console.log('🖱️ [CLICK DEBUG] Mouse coordinates:', { x: this.mouse.x, y: this.mouse.y });
 
     if (!this.interactiveObjects || this.interactiveObjects.length === 0) {
+      console.log('🖱️ [CLICK DEBUG] No interactive objects available');
+      console.log('🖱️ [CLICK DEBUG] Interactive system initialized:', this.interactionSystemInitialized);
+      console.log('🖱️ [CLICK DEBUG] Station mapping:', this.stationMapping);
       return;
     }
 
+    console.log('🖱️ [CLICK DEBUG] Interactive objects available:', this.interactiveObjects.length);
+
     this.raycaster.setFromCamera(this.mouse, this.camera);
     const candidates = this.interactiveObjects.map(m => m.object);
+    console.log('🖱️ [CLICK DEBUG] Raycasting against candidates:', candidates.length);
+    
     const intersections = this.raycaster.intersectObjects(candidates, true);
-    if (intersections.length === 0) return;
+    console.log('🖱️ [CLICK DEBUG] Intersections found:', intersections.length);
+    
+    if (intersections.length === 0) {
+      console.log('🖱️ [CLICK DEBUG] No intersections with interactive objects');
+      return;
+    }
 
     const hit = intersections[0].object;
+    console.log('🖱️ [CLICK DEBUG] Hit object:', { name: hit.name, uuid: hit.uuid });
+    
     const meta = this._interactiveMetaMap && this._interactiveMetaMap.get(hit.uuid);
+    console.log('🖱️ [CLICK DEBUG] Meta data for hit:', meta);
+    
     if (meta) {
-      console.log(`🖱️ Station clicked: ${meta.stationKey} -> modal '${meta.modalId}'`);
+      console.log(`🖱️ [CLICK DEBUG] Station clicked: ${meta.stationKey} -> modal '${meta.modalId}'`);
       this.triggerModal(meta.modalId, meta.stationKey);
+    } else {
+      console.warn('⚠️ [CLICK DEBUG] No metadata found for hit object');
     }
   }
 
@@ -2276,8 +2372,10 @@ class Simple3DLoader {
 
   // Trigger modal by creating (if needed) a temporary hidden element
   triggerModal(modalId, stationKey = '') {
+    console.log('🎯 [MODAL DEBUG] triggerModal called with:', { modalId, stationKey });
+    
     if (!modalId) {
-      console.warn('⚠️ triggerModal called without modalId');
+      console.warn('⚠️ [MODAL DEBUG] triggerModal called without modalId');
       return;
     }
 
@@ -2285,19 +2383,26 @@ class Simple3DLoader {
     const now = performance.now();
     this._lastModalTriggerMap = this._lastModalTriggerMap || new Map();
     const lastTime = this._lastModalTriggerMap.get(modalId) || 0;
-    if (now - lastTime < 400) return; // debounce duplicate rapid triggers
+    if (now - lastTime < 400) {
+      console.log('🎯 [MODAL DEBUG] Debouncing duplicate trigger for:', modalId);
+      return; // debounce duplicate rapid triggers
+    }
     this._lastModalTriggerMap.set(modalId, now);
 
     // Find existing triggers (could be multiple)
     const matches = Array.from(document.querySelectorAll(`[data-modal-trigger="${modalId}"]`));
+    console.log('🎯 [MODAL DEBUG] Found modal triggers:', matches.length, matches);
+    
     let triggerEl = null;
     if (matches.length > 0) {
       // Prefer visible element with anchor/button child
       triggerEl = matches.find(el => this._isElementVisible(el)) || matches[0];
+      console.log('🎯 [MODAL DEBUG] Selected trigger element:', triggerEl);
     }
 
     let created = false;
     if (!triggerEl) {
+      console.log('🎯 [MODAL DEBUG] Creating temporary trigger element for:', modalId);
       // Create a temporary structural element closer to example markup (li > a)
       const temp = document.createElement('li');
       temp.dataset.modalTrigger = modalId;
@@ -2314,25 +2419,39 @@ class Simple3DLoader {
 
     // Determine best dispatch target (anchor/button inside or the element itself)
     let targetEl = triggerEl.matches('a,button') ? triggerEl : triggerEl.querySelector('a,button') || triggerEl;
+    console.log('🎯 [MODAL DEBUG] Target element for events:', targetEl);
 
     // Full synthetic interaction sequence to maximize compatibility
     const eventOptions = { bubbles: true, cancelable: true };
     const sequence = ['pointerdown', 'mousedown', 'mouseup', 'click'];
-    sequence.forEach(type => { try { targetEl.dispatchEvent(new MouseEvent(type, eventOptions)); } catch (e) { /* ignore */ } });
+    console.log('🎯 [MODAL DEBUG] Dispatching event sequence:', sequence);
+    sequence.forEach(type => { 
+      try { 
+        console.log('🎯 [MODAL DEBUG] Dispatching:', type);
+        targetEl.dispatchEvent(new MouseEvent(type, eventOptions)); 
+      } catch (e) { 
+        console.warn('🎯 [MODAL DEBUG] Event dispatch failed:', type, e);
+      } 
+    });
 
     // Fallback: if a global modal open function exists, call it
     if (typeof window.openModal === 'function') {
       try {
+        console.log('🎯 [MODAL DEBUG] Calling global openModal function');
         window.openModal(modalId);
-      } catch (e) { /* ignore */ }
+      } catch (e) { 
+        console.warn('🎯 [MODAL DEBUG] Global openModal failed:', e);
+      }
     }
 
     // Attempt to lazy load assets for this modal after dispatch (modal may mount asynchronously)
+    console.log('🎯 [MODAL DEBUG] Calling lazyLoadModalAssets for:', modalId);
     this.lazyLoadModalAssets(modalId);
 
     // Clean temporary element
     if (created) {
       setTimeout(() => {
+        console.log('🎯 [MODAL DEBUG] Cleaning up temporary trigger element');
         if (triggerEl && triggerEl.parentNode) triggerEl.parentNode.removeChild(triggerEl);
       }, 1500);
     }
@@ -2357,62 +2476,98 @@ class Simple3DLoader {
   // On first user click for that station/modal, assets are populated.
 
   lazyLoadModalAssets(modalId, attempt = 0) {
-    if (!modalId) return;
+    console.log('🔄 [ASSET DEBUG] lazyLoadModalAssets called:', { modalId, attempt });
+    
+    if (!modalId) {
+      console.warn('⚠️ [ASSET DEBUG] No modalId provided');
+      return;
+    }
+    
     this._lazyLoadedModals = this._lazyLoadedModals || new Set();
-    if (this._lazyLoadedModals.has(modalId)) return; // already done
+    if (this._lazyLoadedModals.has(modalId)) {
+      console.log('🔄 [ASSET DEBUG] Modal assets already loaded for:', modalId);
+      return; // already done
+    }
 
     const selectors = [
       `[data-modal-id="${modalId}"]`,
       `[data-modal="${modalId}"]`,
       `#${modalId}`
     ];
+    
+    console.log('🔄 [ASSET DEBUG] Searching for modal with selectors:', selectors);
+    
     let modalEl = null;
     for (const sel of selectors) {
       modalEl = document.querySelector(sel);
-      if (modalEl) break;
+      if (modalEl) {
+        console.log('🔄 [ASSET DEBUG] Found modal element with selector:', sel);
+        break;
+      }
     }
 
     // If modal not yet in DOM (maybe created lazily by framework), retry up to 10 times
     if (!modalEl) {
+      console.log(`🔄 [ASSET DEBUG] Modal not found, attempt ${attempt}/10`);
       if (attempt < 10) {
+        console.log('🔄 [ASSET DEBUG] Retrying in 120ms...');
         setTimeout(() => this.lazyLoadModalAssets(modalId, attempt + 1), 120);
+      } else {
+        console.warn('⚠️ [ASSET DEBUG] Modal not found after 10 attempts:', modalId);
       }
       return;
     }
 
+    console.log('🔄 [ASSET DEBUG] Starting asset loading for modal:', modalEl);
+
     // Minimal legacy support only (no heavy asset manager)
 
     // Restore intercepted videos for this modal (NEW)
+    console.log('🔄 [ASSET DEBUG] Calling restoreVideoSrc...');
     this.restoreVideoSrc(modalId);
 
     // Legacy support: Images with data-src (Webflow format)
     const imgs = modalEl.querySelectorAll('img[data-src]');
-    imgs.forEach(img => {
+    console.log('🔄 [ASSET DEBUG] Found images with data-src:', imgs.length);
+    imgs.forEach((img, index) => {
       if (!img.getAttribute('src')) {
-        img.setAttribute('src', img.getAttribute('data-src'));
+        const dataSrc = img.getAttribute('data-src');
+        console.log(`🔄 [ASSET DEBUG] Restoring image ${index + 1} src:`, dataSrc);
+        img.setAttribute('src', dataSrc);
       }
       const ds = img.getAttribute('data-srcset');
-      if (ds && !img.getAttribute('srcset')) img.setAttribute('srcset', ds);
+      if (ds && !img.getAttribute('srcset')) {
+        console.log(`🔄 [ASSET DEBUG] Restoring image ${index + 1} srcset:`, ds);
+        img.setAttribute('srcset', ds);
+      }
     });
 
     // Legacy support: Picture sources with data-srcset
     const sources = modalEl.querySelectorAll('source[data-srcset]');
-    sources.forEach(src => {
-      if (!src.getAttribute('srcset')) src.setAttribute('srcset', src.getAttribute('data-srcset'));
+    console.log('🔄 [ASSET DEBUG] Found sources with data-srcset:', sources.length);
+    sources.forEach((src, index) => {
+      if (!src.getAttribute('srcset')) {
+        const dataSrcset = src.getAttribute('data-srcset');
+        console.log(`🔄 [ASSET DEBUG] Restoring source ${index + 1} srcset:`, dataSrcset);
+        src.setAttribute('srcset', dataSrcset);
+      }
     });
 
     // Legacy support: Videos with data-src (additional fallback)
     const videos = modalEl.querySelectorAll('video[data-src]');
-    videos.forEach(video => {
+    console.log('🔄 [ASSET DEBUG] Found videos with data-src:', videos.length);
+    videos.forEach((video, index) => {
       if (!video.getAttribute('src')) {
-        video.setAttribute('src', video.getAttribute('data-src'));
+        const dataSrc = video.getAttribute('data-src');
+        console.log(`🔄 [ASSET DEBUG] Restoring video ${index + 1} src from data-src:`, dataSrc);
+        video.setAttribute('src', dataSrc);
       }
     });
 
     // Backgrounds/videos/inline HTML handling removed per simplification
 
     this._lazyLoadedModals.add(modalId);
-    console.log('📹 Modal assets loaded for:', modalId);
+    console.log('✅ [ASSET DEBUG] Modal assets loading complete for:', modalId);
   }
 
   /**
