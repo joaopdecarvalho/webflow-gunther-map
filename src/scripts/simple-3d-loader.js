@@ -677,6 +677,33 @@ class Simple3DLoader {
     }
   }
 
+  updateFlagBillboards() {
+    // Only proceed if we have flags, camera, and they're available
+    if (!this.flags || !this.camera || this.flags.length === 0) {
+      return;
+    }
+
+    // Update each flag to face the camera (Y-axis rotation only)
+    for (let i = 0; i < this.flags.length; i++) {
+      const flag = this.flags[i];
+      if (!flag || !flag.position) continue;
+
+      // Calculate direction from flag to camera (ignore Y difference for Y-axis only rotation)
+      const flagPosition = flag.position;
+      const cameraPosition = this.camera.position;
+      
+      // Project to XZ plane for Y-axis rotation only
+      const deltaX = cameraPosition.x - flagPosition.x;
+      const deltaZ = cameraPosition.z - flagPosition.z;
+      
+      // Calculate Y-axis rotation to face camera
+      const targetRotationY = Math.atan2(deltaX, deltaZ);
+      
+      // Apply rotation (only Y-axis to keep flags upright)
+      flag.rotation.y = targetRotationY;
+    }
+  }
+
   fadeInModel() {
     if (!this.model) {
       console.warn('⚠️ No model to fade in');
@@ -1389,6 +1416,9 @@ class Simple3DLoader {
     } else if (this.updateBasicControls) {
       this.updateBasicControls();
     }
+
+    // Update flag billboards to face camera
+    this.updateFlagBillboards();
 
     // Throttled debug updates (development only) - only if debug panels are enabled
     if (this.isDevelopment && this.debugPanelsEnabled && (now - this.lastDebugUpdate) > 100) {

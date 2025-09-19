@@ -90,7 +90,10 @@ export function attachModelLoader(loader) {
   loader.processLoadedModel = function processLoadedModel(gltf, resolve) {
     this.model = gltf.scene;
 
-    // Prepare meshes (shadow + fade-in start)
+    // Initialize flag arrays for billboard functionality
+    this.flags = [];
+
+    // Prepare meshes (shadow + fade-in start) and collect flags
     this.model.traverse((child) => {
       if (child.isMesh) {
         child.castShadow = true;
@@ -98,7 +101,19 @@ export function attachModelLoader(loader) {
         child.material.transparent = true;
         child.material.opacity = 0;
       }
+      
+      // Detect flag objects by name patterns
+      if (child.name && (
+        child.name.toLowerCase().includes('flag') ||
+        child.name.toLowerCase().includes('flagge') ||
+        child.name.toLowerCase().includes('banner')
+      )) {
+        this.flags.push(child);
+        console.log('🚩 Found flag object:', child.name);
+      }
     });
+
+    console.log(`🏴 Detected ${this.flags.length} flag objects for billboard behavior`);
 
     this.scene.add(this.model);
     this.centerModel();
