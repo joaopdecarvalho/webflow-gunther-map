@@ -15,6 +15,1467 @@
  * 4. Panel functions are safe to leave - they won't break if DOM elements don't exist
  */
 
+/**
+ * Phase 2 Lazy Loading: Video Resource Manager
+ * Prevents redundant background-video loading by managing shared video resources
+ */
+class VideoResourceManager {
+  constructor() {
+    this.loadedVideos = new Map(); // url -> video element
+    this.loadingPromises = new Map(); // url -> Promise
+    this.videoPlaceholders = new Map(); // placeholder element -> original src
+    this.isInitialized = false;
+  }
+
+  /**
+   * Initialize the video resource manager
+   * Intercepts video elements and converts them to lazy loading
+   */
+  initialize() {
+    if (this.isInitialized) return;
+
+    console.log('🎥 Initializing Video Resource Manager...');
+    this.interceptVideoElements();
+    this.setupMutationObserver();
+    this.isInitialized = true;
+    console.log('✅ Video Resource Manager initialized');
+  }
+
+  /**
+   * Setup mutation observer to catch dynamically added videos
+   */
+  setupMutationObserver() {
+    this.mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            // Check if the added node is a video or contains videos
+            const videos = node.tagName === 'VIDEO' ? [node] : node.querySelectorAll?.('video[src]') || [];
+
+            videos.forEach((video) => {
+              if (video.src && !video.hasAttribute('data-lazy-src')) {
+                console.log('🔄 Intercepting dynamically added video:', video.src);
+                const originalSrc = video.src;
+                video.removeAttribute('src');
+                video.setAttribute('data-lazy-src', originalSrc);
+
+                const placeholder = this.createVideoPlaceholder();
+                video.appendChild(placeholder);
+                this.videoPlaceholders.set(video, originalSrc);
+              }
+            });
+          }
+        });
+      });
+    });
+
+    this.mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    console.log('👁️ Mutation observer setup for dynamic videos');
+  }
+
+  /**
+   * Intercept all video elements and convert them to lazy loading
+   */
+  interceptVideoElements() {
+    const videos = document.querySelectorAll('video[src]');
+    console.log(`🔍 Found ${videos.length} video elements to intercept`);
+
+    videos.forEach((video, index) => {
+      const originalSrc = video.src;
+
+      // Convert to lazy loading
+      video.removeAttribute('src');
+      video.setAttribute('data-lazy-src', originalSrc);
+
+      // Create loading placeholder
+      const placeholder = this.createVideoPlaceholder();
+      video.appendChild(placeholder);
+
+      // Store mapping
+      this.videoPlaceholders.set(video, originalSrc);
+
+      console.log(`📹 Video ${index + 1} converted to lazy loading: ${originalSrc}`);
+    });
+  }
+
+  /**
+   * Create a loading placeholder for video elements
+   */
+  createVideoPlaceholder() {
+    const placeholder = document.createElement('div');
+    placeholder.className = 'video-loading-placeholder';
+    placeholder.style.cssText = `
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      z-index: 1;
+    `;
+    placeholder.innerHTML = '📹 Loading video...';
+    return placeholder;
+  }
+
+  /**
+   * Load a video resource on demand
+   * @param {string} url - Video URL to load
+   * @returns {Promise<HTMLVideoElement>} - Loaded video element
+   */
+  async loadVideo(url) {
+    // Return cached video if already loaded
+    if (this.loadedVideos.has(url)) {
+      console.log(`✅ Using cached video: ${url}`);
+      return this.loadedVideos.get(url);
+    }
+
+    // Return existing loading promise if already loading
+    if (this.loadingPromises.has(url)) {
+      console.log(`⏳ Video already loading, waiting: ${url}`);
+      return this.loadingPromises.get(url);
+    }
+
+    // Create new loading promise
+    const loadingPromise = this.loadVideoResource(url);
+    this.loadingPromises.set(url, loadingPromise);
+
+    try {
+      const video = await loadingPromise;
+      this.loadedVideos.set(url, video);
+      this.loadingPromises.delete(url);
+      return video;
+    } catch (error) {
+      this.loadingPromises.delete(url);
+      throw error;
+    }
+  }
+
+  /**
+   * Load the actual video resource
+   * @param {string} url - Video URL to load
+   * @returns {Promise<HTMLVideoElement>} - Loaded video element
+   */
+  loadVideoResource(url) {
+    return new Promise((resolve, reject) => {
+      console.log(`🚀 Loading video resource: ${url}`);
+
+      const video = document.createElement('video');
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.preload = 'auto';
+
+      video.onloadeddata = () => {
+        console.log(`✅ Video loaded successfully: ${url}`);
+        resolve(video);
+      };
+
+      video.onerror = (error) => {
+        console.error(`❌ Video loading failed: ${url}`, error);
+        reject(error);
+      };
+
+      // Start loading
+      video.src = url;
+    });
+  }
+
+  /**
+   * Apply loaded video to target element
+   * @param {HTMLVideoElement} targetVideo - Target video element
+   * @param {string} url - Video URL to load
+   */
+  async applyVideoToElement(targetVideo, url) {
+    try {
+      const loadedVideo = await this.loadVideo(url);
+
+      // Copy attributes from loaded video
+      targetVideo.src = loadedVideo.src;
+      targetVideo.autoplay = loadedVideo.autoplay;
+      targetVideo.loop = loadedVideo.loop;
+      targetVideo.muted = loadedVideo.muted;
+
+      // Remove placeholder
+      const placeholder = targetVideo.querySelector('.video-loading-placeholder');
+      if (placeholder) {
+        placeholder.remove();
+      }
+
+      console.log(`✅ Video applied to element: ${url}`);
+    } catch (error) {
+      console.error(`❌ Failed to apply video to element: ${url}`, error);
+
+      // Show error in placeholder
+      const placeholder = targetVideo.querySelector('.video-loading-placeholder');
+      if (placeholder) {
+        placeholder.innerHTML = '❌ Video failed to load';
+        placeholder.style.color = '#ff6b6b';
+      }
+    }
+  }
+
+  /**
+   * Load video for a specific modal when it's opened
+   * @param {HTMLElement} modalElement - Modal element containing video
+   */
+  async loadModalVideo(modalElement) {
+    const videos = modalElement.querySelectorAll('video[data-lazy-src]');
+
+    for (const video of videos) {
+      const url = video.getAttribute('data-lazy-src');
+      if (url) {
+        await this.applyVideoToElement(video, url);
+      }
+    }
+  }
+
+  /**
+   * Dispose of all loaded videos and clean up resources
+   */
+  dispose() {
+    console.log('🧹 Disposing Video Resource Manager...');
+
+    this.loadedVideos.forEach((video, url) => {
+      video.src = '';
+      video.load(); // Reset video element
+    });
+
+    this.loadedVideos.clear();
+    this.loadingPromises.clear();
+    this.videoPlaceholders.clear();
+
+    // Clean up mutation observer
+    if (this.mutationObserver) {
+      this.mutationObserver.disconnect();
+      this.mutationObserver = null;
+    }
+
+    this.isInitialized = false;
+
+    console.log('✅ Video Resource Manager disposed');
+  }
+}
+
+// =====================================================================
+// GLOBAL VIDEO MANAGER - Initialize immediately to prevent eager loading
+// =====================================================================
+
+// Create and initialize video manager immediately when script loads
+const globalVideoManager = new VideoResourceManager();
+
+// Initialize video interception as soon as possible
+if (document.readyState === 'loading') {
+  // DOM is still loading, wait for DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', () => {
+    globalVideoManager.initialize();
+  });
+} else {
+  // DOM is already loaded, initialize immediately
+  globalVideoManager.initialize();
+}
+
+// =============================================================================
+// PHASE 2B: ASSET RESOURCE MANAGER - Image and Modal Asset Optimization
+// =============================================================================
+
+/**
+ * Manages lazy loading for images, background images, and other modal assets
+ * Similar pattern to VideoResourceManager but handles various asset types
+ */
+class AssetResourceManager {
+  constructor() {
+    this.loadedAssets = new Map(); // url -> element or data
+    this.loadingPromises = new Map(); // url -> Promise
+    this.assetPlaceholders = new Map(); // placeholder element -> original data
+    this.isInitialized = false;
+    this.observer = null;
+  }
+
+  /**
+   * Initialize the asset manager - intercept existing assets and set up mutation observer
+   */
+  initialize() {
+    if (this.isInitialized) return;
+
+    console.log('🖼️ Initializing Asset Resource Manager...');
+
+    // Intercept existing assets
+    this.interceptImageElements();
+    this.interceptBackgroundImages();
+    this.interceptSourceElements();
+
+    // Set up mutation observer for dynamic content
+    this.setupMutationObserver();
+
+    this.isInitialized = true;
+    console.log('✅ Asset Resource Manager initialized');
+  }
+
+  /**
+   * Intercept all img elements and convert them to lazy loading
+   */
+  interceptImageElements() {
+    const images = document.querySelectorAll('img[src]');
+    console.log(`🔍 Found ${images.length} image elements to intercept`);
+
+    images.forEach((img, index) => {
+      // Skip if already processed or if it's a very small image (likely icons)
+      if (img.hasAttribute('data-lazy-src') || this.isIconImage(img)) {
+        return;
+      }
+
+      const originalSrc = img.src;
+
+      // Convert to lazy loading
+      img.removeAttribute('src');
+      img.setAttribute('data-lazy-src', originalSrc);
+
+      // Handle srcset if present
+      if (img.srcset) {
+        img.setAttribute('data-lazy-srcset', img.srcset);
+        img.removeAttribute('srcset');
+      }
+
+      // Add loading placeholder
+      this.addImagePlaceholder(img);
+
+      console.log(`🖼️ Image ${index + 1} converted to lazy loading: ${originalSrc}`);
+    });
+  }
+
+  /**
+   * Intercept elements with background images
+   */
+  interceptBackgroundImages() {
+    const elements = document.querySelectorAll('*');
+    let count = 0;
+
+    elements.forEach(el => {
+      const style = window.getComputedStyle(el);
+      const bgImage = style.backgroundImage;
+
+      if (bgImage && bgImage !== 'none' && bgImage.includes('url(')) {
+        const urlMatch = bgImage.match(/url\(["']?([^"'\)]+)["']?\)/);
+        if (urlMatch && urlMatch[1] && !el.hasAttribute('data-lazy-bg')) {
+          const url = urlMatch[1];
+
+          // Skip if it's a data URL or very small image
+          if (url.startsWith('data:') || this.isIconUrl(url)) {
+            return;
+          }
+
+          // Store original background and clear it
+          el.setAttribute('data-lazy-bg', url);
+          el.style.backgroundImage = 'none';
+
+          // Add loading placeholder for background
+          this.addBackgroundPlaceholder(el);
+
+          count++;
+          console.log(`🎨 Background image ${count} converted to lazy loading: ${url}`);
+        }
+      }
+    });
+
+    console.log(`🔍 Found ${count} background images to intercept`);
+  }
+
+  /**
+   * Intercept source elements in picture tags
+   */
+  interceptSourceElements() {
+    const sources = document.querySelectorAll('source[srcset]');
+    console.log(`🔍 Found ${sources.length} source elements to intercept`);
+
+    sources.forEach((source, index) => {
+      if (source.hasAttribute('data-lazy-srcset')) return;
+
+      const originalSrcset = source.srcset;
+      source.removeAttribute('srcset');
+      source.setAttribute('data-lazy-srcset', originalSrcset);
+
+      console.log(`📱 Source ${index + 1} converted to lazy loading: ${originalSrcset}`);
+    });
+  }
+
+  /**
+   * Check if an image is likely an icon (small size or common icon patterns)
+   */
+  isIconImage(img) {
+    // Check dimensions
+    if (img.width <= 32 && img.height <= 32) return true;
+
+    // Check common icon patterns in src or class
+    const src = img.src.toLowerCase();
+    const className = img.className.toLowerCase();
+
+    return src.includes('icon') || src.includes('logo') ||
+           className.includes('icon') || className.includes('logo') ||
+           src.includes('.svg');
+  }
+
+  /**
+   * Check if a URL is likely an icon
+   */
+  isIconUrl(url) {
+    const urlLower = url.toLowerCase();
+    return urlLower.includes('icon') || urlLower.includes('logo') ||
+           urlLower.includes('.svg') || urlLower.includes('badge');
+  }
+
+  /**
+   * Add loading placeholder for images
+   */
+  addImagePlaceholder(img) {
+    // Create placeholder div
+    const placeholder = document.createElement('div');
+    placeholder.className = 'image-loading-placeholder';
+    placeholder.style.cssText = `
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 12px;
+      min-height: 100px;
+      position: relative;
+    `;
+    placeholder.innerHTML = '🖼️ Loading...';
+
+    // Store reference
+    this.assetPlaceholders.set(placeholder, {
+      type: 'image',
+      element: img,
+      originalSrc: img.getAttribute('data-lazy-src')
+    });
+  }
+
+  /**
+   * Add loading placeholder for background images
+   */
+  addBackgroundPlaceholder(element) {
+    // Add a subtle loading indicator
+    const originalBackground = element.style.background;
+    element.style.background = '#f5f5f5';
+    element.setAttribute('data-original-background', originalBackground);
+
+    // Store reference
+    this.assetPlaceholders.set(element, {
+      type: 'background',
+      element: element,
+      originalUrl: element.getAttribute('data-lazy-bg')
+    });
+  }
+
+  /**
+   * Load assets for a specific modal when it's opened
+   */
+  async loadModalAssets(modalElement) {
+    if (!modalElement) return;
+
+    console.log('🚀 Loading modal assets...');
+
+    // Load images
+    const images = modalElement.querySelectorAll('img[data-lazy-src]');
+    for (const img of images) {
+      await this.loadImage(img);
+    }
+
+    // Load background images
+    const bgElements = modalElement.querySelectorAll('[data-lazy-bg]');
+    for (const el of bgElements) {
+      await this.loadBackgroundImage(el);
+    }
+
+    // Load source elements
+    const sources = modalElement.querySelectorAll('source[data-lazy-srcset]');
+    for (const source of sources) {
+      this.loadSource(source);
+    }
+
+    console.log('✅ Modal assets loaded');
+  }
+
+  /**
+   * Load a specific image
+   */
+  async loadImage(img) {
+    const src = img.getAttribute('data-lazy-src');
+    if (!src || img.src) return;
+
+    try {
+      // Check cache first
+      if (this.loadedAssets.has(src)) {
+        img.src = src;
+        const srcset = img.getAttribute('data-lazy-srcset');
+        if (srcset) img.srcset = srcset;
+        return;
+      }
+
+      // Load image
+      const loadPromise = new Promise((resolve, reject) => {
+        const testImg = new Image();
+        testImg.onload = () => {
+          this.loadedAssets.set(src, testImg);
+          img.src = src;
+          const srcset = img.getAttribute('data-lazy-srcset');
+          if (srcset) img.srcset = srcset;
+          resolve(testImg);
+        };
+        testImg.onerror = reject;
+        testImg.src = src;
+      });
+
+      this.loadingPromises.set(src, loadPromise);
+      await loadPromise;
+
+    } catch (error) {
+      console.warn(`⚠️ Failed to load image: ${src}`, error);
+    }
+  }
+
+  /**
+   * Load a background image
+   */
+  async loadBackgroundImage(element) {
+    const url = element.getAttribute('data-lazy-bg');
+    if (!url || element.dataset.bgLoaded) return;
+
+    try {
+      // Check cache first
+      if (this.loadedAssets.has(url)) {
+        element.style.backgroundImage = `url('${url}')`;
+        element.dataset.bgLoaded = '1';
+        return;
+      }
+
+      // Load background image
+      const loadPromise = new Promise((resolve, reject) => {
+        const testImg = new Image();
+        testImg.onload = () => {
+          this.loadedAssets.set(url, testImg);
+          element.style.backgroundImage = `url('${url}')`;
+          element.dataset.bgLoaded = '1';
+          resolve(testImg);
+        };
+        testImg.onerror = reject;
+        testImg.src = url;
+      });
+
+      this.loadingPromises.set(url, loadPromise);
+      await loadPromise;
+
+    } catch (error) {
+      console.warn(`⚠️ Failed to load background image: ${url}`, error);
+    }
+  }
+
+  /**
+   * Load a source element
+   */
+  loadSource(source) {
+    const srcset = source.getAttribute('data-lazy-srcset');
+    if (!srcset || source.srcset) return;
+
+    source.srcset = srcset;
+  }
+
+  /**
+   * Set up mutation observer for dynamic content
+   */
+  setupMutationObserver() {
+    this.observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            // Check for new images
+            const newImages = node.querySelectorAll ? node.querySelectorAll('img[src]') : [];
+            newImages.forEach(img => {
+              if (!img.hasAttribute('data-lazy-src') && !this.isIconImage(img)) {
+                const originalSrc = img.src;
+                img.removeAttribute('src');
+                img.setAttribute('data-lazy-src', originalSrc);
+                this.addImagePlaceholder(img);
+              }
+            });
+
+            // Check for new background images
+            if (node.style && node.style.backgroundImage && node.style.backgroundImage !== 'none') {
+              const bgImage = node.style.backgroundImage;
+              const urlMatch = bgImage.match(/url\(["']?([^"'\)]+)["']?\)/);
+              if (urlMatch && urlMatch[1] && !node.hasAttribute('data-lazy-bg')) {
+                const url = urlMatch[1];
+                if (!url.startsWith('data:') && !this.isIconUrl(url)) {
+                  node.setAttribute('data-lazy-bg', url);
+                  node.style.backgroundImage = 'none';
+                  this.addBackgroundPlaceholder(node);
+                }
+              }
+            }
+          }
+        });
+      });
+    });
+
+    this.observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    console.log('👁️ Mutation observer setup for dynamic assets');
+  }
+
+  /**
+   * Dispose of the asset manager
+   */
+  dispose() {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
+
+    this.loadedAssets.clear();
+    this.loadingPromises.clear();
+    this.assetPlaceholders.clear();
+    this.isInitialized = false;
+  }
+}
+
+// Global asset manager instance
+const globalAssetManager = new AssetResourceManager();
+
+// Initialize asset manager when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    globalAssetManager.initialize();
+  });
+} else {
+  globalAssetManager.initialize();
+}
+
+// =============================================================================
+// PHASE 3: SMART LOADING MANAGER - HTML-Level Optimization & Advanced Strategies
+// =============================================================================
+
+/**
+ * Advanced loading manager that addresses HTML parsing limitations
+ * and provides intelligent asset management with multiple optimization strategies
+ */
+class SmartLoadingManager {
+  constructor() {
+    this.optimizationStrategies = new Map();
+    this.loadingQueue = [];
+    this.prioritizedAssets = new Map();
+    this.connectionInfo = null;
+    this.deviceCapabilities = null;
+    this.isInitialized = false;
+
+    // Performance monitoring
+    this.loadingMetrics = {
+      totalAssets: 0,
+      loadedAssets: 0,
+      failedAssets: 0,
+      startTime: null,
+      endTime: null
+    };
+  }
+
+  /**
+   * Initialize the smart loading manager with comprehensive optimization
+   */
+  async initialize() {
+    if (this.isInitialized) return;
+
+    console.log('🧠 Initializing Smart Loading Manager...');
+
+    // Phase 3.1: Detect environment and capabilities
+    await this.detectEnvironment();
+
+    // Phase 3.2: Initialize optimization strategies
+    this.initializeStrategies();
+
+    // Phase 3.3: Setup HTML-level optimization attempts
+    this.setupHTMLOptimization();
+
+    // Phase 3.4: Setup predictive loading
+    this.setupPredictiveLoading();
+
+    // Phase 3.5: Setup performance monitoring
+    this.setupPerformanceMonitoring();
+
+    // Phase 3.6: Build station asset mapping
+    await this.buildStationAssetMapping();
+
+    this.isInitialized = true;
+    console.log('✅ Smart Loading Manager initialized with advanced strategies');
+  }
+
+  /**
+   * Detect connection quality, device capabilities, and user preferences
+   */
+  async detectEnvironment() {
+    console.log('🔍 Detecting environment and capabilities...');
+
+    // Network connection detection
+    if ('connection' in navigator) {
+      this.connectionInfo = {
+        effectiveType: navigator.connection.effectiveType,
+        downlink: navigator.connection.downlink,
+        saveData: navigator.connection.saveData
+      };
+      console.log(`📶 Connection detected: ${this.connectionInfo.effectiveType} (${this.connectionInfo.downlink}Mbps)`);
+    }
+
+    // Device capabilities
+    this.deviceCapabilities = {
+      memory: navigator.deviceMemory || 4,
+      hardwareConcurrency: navigator.hardwareConcurrency || 4,
+      isLowEndDevice: this.detectLowEndDevice(),
+      prefersReducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    };
+
+    console.log(`💻 Device capabilities: ${this.deviceCapabilities.memory}GB RAM, ${this.deviceCapabilities.hardwareConcurrency} cores`);
+  }
+
+  /**
+   * Detect if device is low-end for optimization purposes
+   */
+  detectLowEndDevice() {
+    const memory = navigator.deviceMemory || 4;
+    const cores = navigator.hardwareConcurrency || 4;
+    return memory <= 2 || cores <= 2;
+  }
+
+  /**
+   * Initialize different optimization strategies based on environment
+   */
+  initializeStrategies() {
+    console.log('⚙️ Initializing optimization strategies...');
+
+    // Strategy 1: Connection-aware loading
+    this.optimizationStrategies.set('connection-aware', {
+      enabled: true,
+      priority: this.getConnectionPriority(),
+      maxConcurrent: this.getMaxConcurrentLoads()
+    });
+
+    // Strategy 2: Device-capability-based loading
+    this.optimizationStrategies.set('device-aware', {
+      enabled: true,
+      qualityLevel: this.getOptimalQualityLevel(),
+      enableProgressiveLoading: !this.deviceCapabilities.isLowEndDevice
+    });
+
+    // Strategy 3: User preference loading
+    this.optimizationStrategies.set('preference-aware', {
+      enabled: true,
+      respectSaveData: this.connectionInfo?.saveData || false,
+      respectReducedMotion: this.deviceCapabilities.prefersReducedMotion
+    });
+
+    console.log('📋 Optimization strategies configured:', Array.from(this.optimizationStrategies.keys()));
+  }
+
+  /**
+   * Setup HTML-level optimization attempts to address parsing limitations
+   */
+  setupHTMLOptimization() {
+    console.log('🔧 Setting up HTML-level optimization...');
+
+    // Strategy: Early DOM manipulation before browser parsing
+    this.attemptEarlyDOMOptimization();
+
+    // Strategy: CSS-based loading prevention
+    this.injectLoadingPreventionCSS();
+
+    // Strategy: Setup for future template-level optimization
+    this.setupTemplateOptimizationHooks();
+  }
+
+  /**
+   * Attempt to modify DOM before browser completes parsing
+   */
+  attemptEarlyDOMOptimization() {
+    // Create a MutationObserver that fires as early as possible
+    const earlyObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            // Immediately intercept video elements as they're added
+            if (node.tagName === 'VIDEO' && node.src) {
+              this.emergencyVideoIntercept(node);
+            }
+
+            // Also check for nested video elements
+            const nestedVideos = node.querySelectorAll ? node.querySelectorAll('video[src]') : [];
+            nestedVideos.forEach(video => this.emergencyVideoIntercept(video));
+          }
+        });
+      });
+    });
+
+    // Start observing immediately, even during document loading
+    earlyObserver.observe(document.documentElement || document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    console.log('🚨 Emergency DOM optimization observer active');
+  }
+
+  /**
+   * Emergency video interception for HTML parsing race condition
+   */
+  emergencyVideoIntercept(video) {
+    if (video.hasAttribute('data-emergency-intercepted')) return;
+
+    const originalSrc = video.src;
+    video.removeAttribute('src');
+    video.setAttribute('data-lazy-src', originalSrc);
+    video.setAttribute('data-emergency-intercepted', 'true');
+
+    console.log(`🚨 Emergency video intercept: ${originalSrc}`);
+  }
+
+  /**
+   * Inject CSS that can help prevent resource loading
+   */
+  injectLoadingPreventionCSS() {
+    const style = document.createElement('style');
+    style.textContent = `
+      /* Phase 3: Advanced loading prevention */
+      video[data-lazy-src] {
+        background: rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      img[data-lazy-src] {
+        background: rgba(0, 0, 0, 0.05);
+        min-height: 100px;
+      }
+
+      /* Prevent loading of hidden modal content */
+      [style*="display: none"] video,
+      [style*="display:none"] video {
+        visibility: hidden !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    console.log('🎨 Loading prevention CSS injected');
+  }
+
+  /**
+   * Setup hooks for future template-level optimization
+   */
+  setupTemplateOptimizationHooks() {
+    // Create a global function that can be called from Webflow
+    window.webflowOptimizationConfig = {
+      version: '3.0.0',
+      smartLoadingEnabled: true,
+      strategies: Array.from(this.optimizationStrategies.keys()),
+
+      // Function for Webflow to register optimizable content
+      registerOptimizableContent: (selector, options = {}) => {
+        console.log(`📝 Template optimization registered: ${selector}`, options);
+        // Store for future optimization
+        this.prioritizedAssets.set(selector, options);
+      }
+    };
+
+    console.log('🔗 Template optimization hooks established');
+  }
+
+  /**
+   * Setup predictive loading based on user behavior
+   */
+  setupPredictiveLoading() {
+    console.log('🔮 Setting up predictive loading...');
+
+    // Track hover events for preloading
+    let hoverTimeouts = new Map();
+
+    document.addEventListener('mouseenter', (e) => {
+      // Look for station triggers or modal triggers
+      const trigger = e.target.closest('[data-modal-trigger], .station-object, canvas');
+      if (trigger) {
+        const timeout = setTimeout(() => {
+          this.predictivePreload(trigger);
+        }, 500); // 500ms hover delay
+
+        hoverTimeouts.set(trigger, timeout);
+      }
+    }, true);
+
+    document.addEventListener('mouseleave', (e) => {
+      const trigger = e.target.closest('[data-modal-trigger], .station-object, canvas');
+      if (trigger && hoverTimeouts.has(trigger)) {
+        clearTimeout(hoverTimeouts.get(trigger));
+        hoverTimeouts.delete(trigger);
+      }
+    }, true);
+
+    console.log('👁️ Predictive loading listeners active');
+  }
+
+  /**
+   * Predictive preloading based on user intent
+   */
+  predictivePreload(trigger) {
+    console.log('🔮 Predictive preloading triggered', trigger);
+
+    // Try to determine what modal this might open
+    const modalId = trigger.dataset.modalTrigger;
+    if (modalId) {
+      // Preload modal assets in background
+      this.preloadModalAssets(modalId);
+    }
+  }
+
+  /**
+   * Preload modal assets in background
+   */
+  async preloadModalAssets(modalId) {
+    console.log(`⏳ Background preloading assets for modal: ${modalId}`);
+
+    const modalEl = document.querySelector(`[data-modal-id="${modalId}"], [data-modal="${modalId}"], #${modalId}`);
+    if (modalEl) {
+      // Preload images
+      const images = modalEl.querySelectorAll('img[data-lazy-src]');
+      images.forEach(img => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = img.getAttribute('data-lazy-src');
+        document.head.appendChild(link);
+      });
+
+      // Preload videos
+      const videos = modalEl.querySelectorAll('video[data-lazy-src]');
+      videos.forEach(video => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = video.getAttribute('data-lazy-src');
+        document.head.appendChild(link);
+      });
+
+      console.log(`✅ Prefetch links added for modal: ${modalId}`);
+    }
+  }
+
+  /**
+   * Setup performance monitoring
+   */
+  setupPerformanceMonitoring() {
+    // Monitor loading performance
+    this.loadingMetrics.startTime = performance.now();
+
+    // Setup observer for loading completion
+    const observer = new PerformanceObserver((list) => {
+      list.getEntries().forEach((entry) => {
+        if (entry.initiatorType === 'img' || entry.initiatorType === 'video') {
+          this.trackAssetLoad(entry);
+        }
+      });
+    });
+
+    observer.observe({ entryTypes: ['resource'] });
+    console.log('📊 Performance monitoring active');
+  }
+
+  /**
+   * Track individual asset loading performance
+   */
+  trackAssetLoad(entry) {
+    this.loadingMetrics.totalAssets++;
+
+    if (entry.transferSize > 0) {
+      this.loadingMetrics.loadedAssets++;
+    } else {
+      this.loadingMetrics.failedAssets++;
+    }
+
+    // Log significant assets
+    if (entry.transferSize > 100000) { // > 100KB
+      console.log(`📈 Large asset loaded: ${entry.name} (${Math.round(entry.transferSize / 1024)}KB in ${Math.round(entry.duration)}ms)`);
+    }
+  }
+
+  /**
+   * Get connection-based priority level
+   */
+  getConnectionPriority() {
+    if (!this.connectionInfo) return 'medium';
+
+    switch (this.connectionInfo.effectiveType) {
+      case 'slow-2g':
+      case '2g': return 'low';
+      case '3g': return 'medium';
+      case '4g': return 'high';
+      default: return 'medium';
+    }
+  }
+
+  /**
+   * Get maximum concurrent loads based on connection
+   */
+  getMaxConcurrentLoads() {
+    const priority = this.getConnectionPriority();
+    switch (priority) {
+      case 'low': return 2;
+      case 'medium': return 4;
+      case 'high': return 6;
+      default: return 4;
+    }
+  }
+
+  /**
+   * Get optimal quality level based on device and connection
+   */
+  getOptimalQualityLevel() {
+    const connectionPriority = this.getConnectionPriority();
+    const isLowEnd = this.deviceCapabilities?.isLowEndDevice;
+
+    if (isLowEnd || connectionPriority === 'low') return 'low';
+    if (connectionPriority === 'medium') return 'medium';
+    return 'high';
+  }
+
+  /**
+   * Get performance report
+   */
+  getPerformanceReport() {
+    return {
+      ...this.loadingMetrics,
+      strategies: Object.fromEntries(this.optimizationStrategies),
+      environment: {
+        connection: this.connectionInfo,
+        device: this.deviceCapabilities
+      }
+    };
+  }
+
+  /**
+   * Advanced Asset Categorization: Create mapping system stationId → [assetUrls]
+   */
+  async buildStationAssetMapping() {
+    console.log('🗺️ Building station asset mapping...');
+
+    const stationAssetMap = new Map();
+
+    // Get station mapping from the 3D loader if available
+    const stationMapping = {
+      'station_1': 'station-1',
+      'station_2': 'station-2',
+      'station_3': 'station-3',
+      'station_4': 'station-4',
+      'station_5': 'station-5',
+      'station_6': 'station-6',
+      'station_7': 'station-7',
+      'station_8': 'station-8',
+      'station_9': 'station-9',
+      'station_10': 'station-10'
+    };
+
+    // Scan each station's modal for assets
+    for (const [stationKey, modalId] of Object.entries(stationMapping)) {
+      const stationAssets = await this.scanStationAssets(stationKey, modalId);
+      stationAssetMap.set(stationKey, stationAssets);
+    }
+
+    console.log(`📊 Station asset mapping complete: ${stationAssetMap.size} stations mapped`);
+    this.stationAssetMap = stationAssetMap;
+    return stationAssetMap;
+  }
+
+  /**
+   * Scan assets for a specific station modal
+   */
+  async scanStationAssets(stationKey, modalId) {
+    const modalSelectors = [
+      `[data-modal-id="${modalId}"]`,
+      `[data-modal="${modalId}"]`,
+      `#${modalId}`
+    ];
+
+    let modalEl = null;
+    for (const selector of modalSelectors) {
+      modalEl = document.querySelector(selector);
+      if (modalEl) break;
+    }
+
+    if (!modalEl) {
+      console.log(`⚠️ Modal not found for station ${stationKey} (${modalId})`);
+      return { critical: [], secondary: [], background: [] };
+    }
+
+    const assets = {
+      critical: [],
+      secondary: [],
+      background: []
+    };
+
+    // Scan images
+    const images = modalEl.querySelectorAll('img');
+    images.forEach(img => {
+      const src = img.src || img.getAttribute('data-lazy-src');
+      if (src) {
+        const asset = {
+          type: 'image',
+          url: src,
+          element: img.tagName.toLowerCase(),
+          size: this.estimateAssetSize(src, img),
+          isVisible: this.isElementVisible(img),
+          alt: img.alt || ''
+        };
+
+        // Categorize based on visibility and size
+        if (asset.isVisible && asset.size < 50000) { // < 50KB visible
+          assets.critical.push(asset);
+        } else if (asset.size < 200000) { // < 200KB
+          assets.secondary.push(asset);
+        } else {
+          assets.background.push(asset);
+        }
+      }
+    });
+
+    // Scan videos
+    const videos = modalEl.querySelectorAll('video');
+    videos.forEach(video => {
+      const src = video.src || video.getAttribute('data-lazy-src');
+      if (src) {
+        const asset = {
+          type: 'video',
+          url: src,
+          element: 'video',
+          size: this.estimateAssetSize(src, video),
+          isVisible: this.isElementVisible(video),
+          autoplay: video.autoplay
+        };
+
+        // Videos are typically larger, categorize accordingly
+        if (asset.autoplay && asset.isVisible) {
+          assets.critical.push(asset);
+        } else {
+          assets.background.push(asset);
+        }
+      }
+    });
+
+    // Scan background images
+    const elementsWithBg = modalEl.querySelectorAll('*');
+    elementsWithBg.forEach(el => {
+      const style = window.getComputedStyle(el);
+      const bgImage = style.backgroundImage;
+
+      if (bgImage && bgImage !== 'none' && bgImage.includes('url(')) {
+        const urlMatch = bgImage.match(/url\(["']?([^"'\)]+)["']?\)/);
+        if (urlMatch && urlMatch[1]) {
+          const url = urlMatch[1];
+          if (!url.startsWith('data:') && !this.isIconUrl(url)) {
+            const asset = {
+              type: 'background',
+              url: url,
+              element: el.tagName.toLowerCase(),
+              size: this.estimateAssetSize(url, el),
+              isVisible: this.isElementVisible(el)
+            };
+
+            // Background images are usually decorative
+            assets.background.push(asset);
+          }
+        }
+      }
+    });
+
+    // Scan source elements
+    const sources = modalEl.querySelectorAll('source');
+    sources.forEach(source => {
+      const srcset = source.srcset || source.getAttribute('data-lazy-srcset');
+      if (srcset) {
+        const asset = {
+          type: 'source',
+          url: srcset,
+          element: 'source',
+          size: this.estimateAssetSize(srcset, source),
+          media: source.media || '',
+          isVisible: this.isElementVisible(source)
+        };
+
+        assets.secondary.push(asset);
+      }
+    });
+
+    console.log(`📋 Station ${stationKey}: ${assets.critical.length} critical, ${assets.secondary.length} secondary, ${assets.background.length} background assets`);
+    return assets;
+  }
+
+  /**
+   * Estimate asset size based on URL and element
+   */
+  estimateAssetSize(url, element) {
+    // Basic size estimation based on URL patterns and element properties
+    if (url.includes('webp')) return 50000; // WebP typically smaller
+    if (url.includes('jpg') || url.includes('jpeg')) return 100000;
+    if (url.includes('png')) return 150000;
+    if (url.includes('gif')) return 80000;
+    if (url.includes('svg')) return 10000;
+    if (url.includes('video') || url.includes('mp4')) return 2000000; // 2MB for videos
+
+    // Element-based estimation
+    if (element.width && element.height) {
+      const pixels = element.width * element.height;
+      return Math.max(pixels / 10, 20000); // Rough estimation
+    }
+
+    return 100000; // Default estimation
+  }
+
+  /**
+   * Check if element is visible in the viewport
+   */
+  isElementVisible(element) {
+    if (!element.offsetParent) return false; // Hidden element
+
+    const style = window.getComputedStyle(element);
+    if (style.display === 'none' || style.visibility === 'hidden') return false;
+
+    const rect = element.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
+  }
+
+  /**
+   * Generate loading priorities for a station
+   */
+  generateLoadingPriorities(stationKey) {
+    const assets = this.stationAssetMap?.get(stationKey);
+    if (!assets) return [];
+
+    const priorities = [];
+
+    // Priority 1: Critical assets (visible, small, important)
+    assets.critical.forEach((asset, index) => {
+      priorities.push({
+        priority: 1,
+        order: index,
+        asset: asset,
+        delay: 0,
+        concurrent: true
+      });
+    });
+
+    // Priority 2: Secondary assets (medium importance)
+    assets.secondary.forEach((asset, index) => {
+      priorities.push({
+        priority: 2,
+        order: index,
+        asset: asset,
+        delay: 100, // 100ms delay after critical
+        concurrent: this.getMaxConcurrentLoads() > 3
+      });
+    });
+
+    // Priority 3: Background assets (decorative, large)
+    assets.background.forEach((asset, index) => {
+      priorities.push({
+        priority: 3,
+        order: index,
+        asset: asset,
+        delay: 500, // 500ms delay
+        concurrent: false // Load one at a time
+      });
+    });
+
+    return priorities.sort((a, b) => {
+      if (a.priority !== b.priority) return a.priority - b.priority;
+      return a.order - b.order;
+    });
+  }
+
+  /**
+   * Load assets for a station with prioritization
+   */
+  async loadStationAssetsWithPriority(stationKey) {
+    console.log(`🎯 Loading assets for station ${stationKey} with prioritization...`);
+
+    const priorities = this.generateLoadingPriorities(stationKey);
+    const loadingPromises = [];
+
+    for (const item of priorities) {
+      const loadPromise = new Promise(resolve => {
+        setTimeout(async () => {
+          try {
+            await this.loadPrioritizedAsset(item.asset);
+            console.log(`✅ Loaded ${item.asset.type}: ${item.asset.url} (Priority ${item.priority})`);
+          } catch (error) {
+            console.warn(`⚠️ Failed to load ${item.asset.type}: ${item.asset.url}`, error);
+          }
+          resolve();
+        }, item.delay);
+      });
+
+      if (item.concurrent) {
+        loadingPromises.push(loadPromise);
+      } else {
+        await loadPromise; // Wait for non-concurrent items
+      }
+    }
+
+    // Wait for all concurrent loads to complete
+    await Promise.all(loadingPromises);
+    console.log(`🎉 All assets loaded for station ${stationKey}`);
+  }
+
+  /**
+   * Load a single prioritized asset
+   */
+  async loadPrioritizedAsset(asset) {
+    switch (asset.type) {
+      case 'image':
+        return this.loadImageAsset(asset);
+      case 'video':
+        return this.loadVideoAsset(asset);
+      case 'background':
+        return this.loadBackgroundAsset(asset);
+      case 'source':
+        return this.loadSourceAsset(asset);
+      default:
+        console.warn(`Unknown asset type: ${asset.type}`);
+    }
+  }
+
+  /**
+   * Load image asset
+   */
+  async loadImageAsset(asset) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        this.loadedAssets.set(asset.url, img);
+        resolve(img);
+      };
+      img.onerror = reject;
+      img.src = asset.url;
+    });
+  }
+
+  /**
+   * Load video asset
+   */
+  async loadVideoAsset(asset) {
+    // Use existing video manager if available
+    if (globalVideoManager) {
+      return globalVideoManager.loadVideo(asset.url);
+    }
+
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video');
+      video.onloadeddata = () => {
+        this.loadedAssets.set(asset.url, video);
+        resolve(video);
+      };
+      video.onerror = reject;
+      video.src = asset.url;
+    });
+  }
+
+  /**
+   * Load background asset
+   */
+  async loadBackgroundAsset(asset) {
+    return this.loadImageAsset(asset); // Background images are loaded like regular images
+  }
+
+  /**
+   * Load source asset
+   */
+  async loadSourceAsset(asset) {
+    // Source elements don't need separate loading, they're handled by their parent picture element
+    return Promise.resolve();
+  }
+
+  /**
+   * Get asset categorization report
+   */
+  getAssetCategorizationReport() {
+    const report = {
+      totalStations: this.stationAssetMap?.size || 0,
+      totalAssets: 0,
+      categorization: {
+        critical: 0,
+        secondary: 0,
+        background: 0
+      },
+      stationBreakdown: {}
+    };
+
+    if (this.stationAssetMap) {
+      this.stationAssetMap.forEach((assets, stationKey) => {
+        report.totalAssets += assets.critical.length + assets.secondary.length + assets.background.length;
+        report.categorization.critical += assets.critical.length;
+        report.categorization.secondary += assets.secondary.length;
+        report.categorization.background += assets.background.length;
+
+        report.stationBreakdown[stationKey] = {
+          critical: assets.critical.length,
+          secondary: assets.secondary.length,
+          background: assets.background.length,
+          total: assets.critical.length + assets.secondary.length + assets.background.length
+        };
+      });
+    }
+
+    return report;
+  }
+
+  /**
+   * Dispose of the smart loading manager
+   */
+  dispose() {
+    this.optimizationStrategies.clear();
+    this.prioritizedAssets.clear();
+    this.loadingQueue = [];
+    this.stationAssetMap?.clear();
+    this.isInitialized = false;
+  }
+}
+
+// Global smart loading manager instance
+const globalSmartLoadingManager = new SmartLoadingManager();
+
+// Initialize smart loading manager immediately
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    globalSmartLoadingManager.initialize();
+  });
+} else {
+  globalSmartLoadingManager.initialize();
+}
+
+// Global functions for debugging and accessing asset categorization
+window.getAssetCategorizationReport = () => {
+  return globalSmartLoadingManager.getAssetCategorizationReport();
+};
+
+window.loadStationWithPriority = (stationKey) => {
+  return globalSmartLoadingManager.loadStationAssetsWithPriority(stationKey);
+};
+
+window.getStationAssetMap = () => {
+  return globalSmartLoadingManager.stationAssetMap;
+};
+
 class Simple3DLoader {
   constructor() {
     // Inject CSS immediately to prevent any flash
@@ -33,6 +1494,31 @@ class Simple3DLoader {
     this.isDevelopment = this.detectDevelopmentMode();
     this.lastDebugUpdate = 0;
     this.pauseRendering = false;
+
+    // Phase 1: Lazy Loading Implementation
+    this.lazyLoadingEnabled = true;
+    this.intersectionObserver = null;
+    this.loadingState = 'pending'; // pending, loading, loaded, error
+    this.loadTriggers = {
+      viewport: true,      // Load when container comes into viewport
+      userInteraction: true, // Load on first click/touch
+      delay: false,        // Load after a delay
+      manual: false        // Load only when explicitly called
+    };
+    this.delayTimer = null;
+    this.userHasInteracted = false;
+
+    // Phase 2: Video Resource Management - Use global instance
+    this.videoManager = globalVideoManager;
+    // Phase 2B: Asset Resource Management - Use global instance
+    this.assetManager = globalAssetManager;
+    // Phase 3: Smart Loading Management - Use global instance
+    this.smartLoadingManager = globalSmartLoadingManager;
+
+  // Master toggle for on-screen debug panels (camera, controls, stations)
+  // Kept in codebase but disabled by default per current requirement.
+  // Set to true (e.g., via console: loader.debugPanelsEnabled = true) and refresh to re-enable.
+  this.debugPanelsEnabled = false;
 
     // (Phase 2 Cleanup) Legacy POI mapping system removed
 
@@ -122,6 +1608,15 @@ class Simple3DLoader {
         "respectMotionPreference": true,
         "keyboardControls": true,
         "ariaLabels": true
+      },
+      "lazyLoading": {
+        "enabled": true,
+        "triggers": {
+          "viewport": true,
+          "userInteraction": true,
+          "delay": false
+        },
+        "delay": 2000
       }
     };
     
@@ -131,8 +1626,16 @@ class Simple3DLoader {
       production: 'https://webflow-gunther-map.vercel.app/Goetheviertel_250919_with_flags_webp80.glb'
     };
     this.modelUrl = this.isDevelopment ? this.modelUrls.local : this.modelUrls.production;
-    
-    this.init();
+
+    // Phase 1: Initialize lazy loading or direct loading based on configuration
+    const lazyConfig = this.config.lazyLoading;
+    if (this.lazyLoadingEnabled && lazyConfig.enabled) {
+      // Override load triggers with configuration
+      this.loadTriggers = { ...this.loadTriggers, ...lazyConfig.triggers };
+      this.initLazyLoading();
+    } else {
+      this.init();
+    }
   }
 
   detectDevelopmentMode() {
@@ -161,22 +1664,280 @@ class Simple3DLoader {
     console.log('🚫 Anti-flash CSS injected');
   }
 
-  async init() {
+  // Phase 1: Lazy Loading Initialization
+  initLazyLoading() {
     try {
-      // Find the container element
-      this.container = document.querySelector('#webgl-container') || 
+      // Find the container element first
+      this.container = document.querySelector('#webgl-container') ||
                        document.querySelector('.webgl-container') ||
                        document.querySelector('[data-webgl-container]');
-      
+
+      if (!this.container) {
+        console.error('WebGL container not found! Loading disabled.');
+        return;
+      }
+
+      console.log('🔄 Lazy loading initialized for:', this.container);
+      this.showLoadingPlaceholder();
+
+      // Set up triggers based on configuration
+      if (this.loadTriggers.viewport) {
+        this.setupViewportTrigger();
+      }
+
+      if (this.loadTriggers.userInteraction) {
+        this.setupInteractionTriggers();
+      }
+
+      if (this.loadTriggers.delay) {
+        this.setupDelayTrigger();
+      }
+
+      // If manual mode, just wait for explicit load call
+      if (this.loadTriggers.manual) {
+        console.log('📋 Manual loading mode - call loader.load() to start');
+      }
+
+    } catch (error) {
+      console.error('❌ Error initializing lazy loading:', error);
+      // Fallback to direct loading
+      this.init();
+    }
+  }
+
+  showLoadingPlaceholder() {
+    if (!this.container) return;
+
+    // Apply initial styling
+    this.applyInitialStyling();
+
+    // Create a minimal loading placeholder
+    const placeholder = document.createElement('div');
+    placeholder.className = 'lazy-loading-placeholder';
+    placeholder.innerHTML = `
+      <div style="
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: rgba(255, 255, 255, 0.8);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        z-index: 2;
+      ">
+        <div style="
+          width: 40px;
+          height: 40px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          border-top: 3px solid #ffffff;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 0 auto 15px;
+        "></div>
+        <div style="font-size: 14px; font-weight: 500;">Loading 3D Experience</div>
+        <div style="font-size: 12px; opacity: 0.7; margin-top: 5px;">Interactive map preparing...</div>
+      </div>
+      <style>
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+    `;
+
+    this.container.appendChild(placeholder);
+    console.log('📍 Loading placeholder displayed');
+  }
+
+  setupViewportTrigger() {
+    if (!this.container || !('IntersectionObserver' in window)) {
+      console.warn('⚠️ IntersectionObserver not supported, using fallback');
+      // Fallback: load immediately if intersection observer not supported
+      setTimeout(() => this.triggerLoad('viewport-fallback'), 100);
+      return;
+    }
+
+    const options = {
+      root: null,
+      rootMargin: '100px', // Start loading 100px before entering viewport
+      threshold: 0.1
+    };
+
+    this.intersectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && this.loadingState === 'pending') {
+          console.log('👁️ Container entered viewport - triggering load');
+          this.triggerLoad('viewport');
+        }
+      });
+    }, options);
+
+    this.intersectionObserver.observe(this.container);
+    console.log('👁️ Viewport trigger setup complete');
+  }
+
+  setupInteractionTriggers() {
+    if (!this.container) return;
+
+    const triggerLoad = (type) => {
+      if (this.loadingState === 'pending' && !this.userHasInteracted) {
+        this.userHasInteracted = true;
+        console.log(`🖱️ User interaction detected (${type}) - triggering load`);
+        this.triggerLoad('interaction');
+      }
+    };
+
+    // Mouse events
+    this.container.addEventListener('click', () => triggerLoad('click'), { once: true });
+    this.container.addEventListener('mouseenter', () => triggerLoad('hover'), { once: true });
+
+    // Touch events
+    this.container.addEventListener('touchstart', () => triggerLoad('touch'), { once: true, passive: true });
+
+    // Keyboard events (for accessibility)
+    this.container.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        triggerLoad('keyboard');
+      }
+    }, { once: true });
+
+    console.log('🖱️ Interaction triggers setup complete');
+  }
+
+  setupDelayTrigger() {
+    const delay = this.config.lazyLoading?.delay || 2000; // Default 2 seconds
+
+    this.delayTimer = setTimeout(() => {
+      if (this.loadingState === 'pending') {
+        console.log(`⏰ Delay trigger activated (${delay}ms) - triggering load`);
+        this.triggerLoad('delay');
+      }
+    }, delay);
+
+    console.log(`⏰ Delay trigger setup complete (${delay}ms)`);
+  }
+
+  triggerLoad(trigger) {
+    if (this.loadingState !== 'pending') {
+      console.log(`⚠️ Load already triggered (state: ${this.loadingState})`);
+      return;
+    }
+
+    console.log(`🚀 Loading triggered by: ${trigger}`);
+    this.loadingState = 'loading';
+
+    // Clear any delay timer
+    if (this.delayTimer) {
+      clearTimeout(this.delayTimer);
+      this.delayTimer = null;
+    }
+
+    // Disconnect intersection observer
+    if (this.intersectionObserver) {
+      this.intersectionObserver.disconnect();
+      this.intersectionObserver = null;
+    }
+
+    // Update placeholder to show loading state
+    this.updateLoadingState('Loading 3D Model...');
+
+    // Start the actual loading process
+    this.init();
+  }
+
+  updateLoadingState(message) {
+    const placeholder = this.container?.querySelector('.lazy-loading-placeholder');
+    if (placeholder) {
+      const textElement = placeholder.querySelector('div:last-child');
+      if (textElement) {
+        textElement.textContent = message;
+      }
+    }
+  }
+
+  removeLazyLoadingPlaceholder() {
+    const placeholder = this.container?.querySelector('.lazy-loading-placeholder');
+    if (placeholder) {
+      placeholder.remove();
+      console.log('✅ Loading placeholder removed');
+    }
+  }
+
+  // Public method to manually trigger loading
+  load() {
+    this.triggerLoad('manual');
+  }
+
+  showErrorState(error) {
+    this.removeLazyLoadingPlaceholder();
+
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'lazy-loading-error';
+    errorDiv.innerHTML = `
+      <div style="
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: rgba(255, 255, 255, 0.9);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        z-index: 2;
+        max-width: 400px;
+        padding: 20px;
+      ">
+        <div style="
+          font-size: 48px;
+          margin-bottom: 15px;
+        ">⚠️</div>
+        <div style="font-size: 16px; font-weight: 500; margin-bottom: 10px;">Loading Failed</div>
+        <div style="font-size: 14px; opacity: 0.8; margin-bottom: 15px; line-height: 1.4;">
+          Unable to load the 3D experience. Please check your connection and try again.
+        </div>
+        <button onclick="location.reload()" style="
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          color: white;
+          padding: 10px 20px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: background-color 0.2s;
+        " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.2)'"
+           onmouseout="this.style.backgroundColor='rgba(255,255,255,0.1)'">
+          Retry
+        </button>
+      </div>
+    `;
+
+    if (this.container) {
+      this.container.appendChild(errorDiv);
+    }
+
+    console.log('❌ Error state displayed');
+  }
+
+  async init() {
+    try {
+      // Find the container element (if not already found in lazy loading)
+      if (!this.container) {
+        this.container = document.querySelector('#webgl-container') ||
+                         document.querySelector('.webgl-container') ||
+                         document.querySelector('[data-webgl-container]');
+      }
+
       if (!this.container) {
         console.error('WebGL container not found! Looking for #webgl-container');
+        this.loadingState = 'error';
         return;
       }
 
       console.log('✅ Container found:', this.container);
 
-      // Apply initial styling to prevent gradient flash
-      this.applyInitialStyling();
+      // Apply initial styling to prevent gradient flash (if not already applied)
+      if (this.loadingState !== 'loading') {
+        this.applyInitialStyling();
+      }
 
       // Load Three.js from CDN
       await this.loadThreeJS();
@@ -203,17 +1964,22 @@ class Simple3DLoader {
       
       // Remove loading state after everything is initialized
       this.finishLoading();
-      
-      // Create camera info panel in development mode
-      if (this.isDevelopment) {
+
+      // Optionally create debug panels (disabled by default)
+      if (this.isDevelopment && this.debugPanelsEnabled) {
         this.createCameraInfoPanel();
         this.createControlsPanel();
       }
-      
+
+      // Mark loading as complete
+      this.loadingState = 'loaded';
+
       console.log('✅ 3D scene initialized successfully!');
 
     } catch (error) {
       console.error('❌ Error initializing 3D scene:', error);
+      this.loadingState = 'error';
+      this.showErrorState(error);
     }
   }
 
@@ -532,18 +2298,21 @@ class Simple3DLoader {
 
   finishLoading() {
     console.log('🎉 Finishing loading sequence...');
-    
+
+    // Remove lazy loading placeholder if it exists
+    this.removeLazyLoadingPlaceholder();
+
     // Set the final scene background now that everything is loaded
     if (this.scene) {
       this.scene.background = new THREE.Color(0x3c5e71); // Blue-gray background
       console.log('🎨 Scene background set to final color');
     }
-    
+
     // Update renderer clear color for proper rendering
     if (this.renderer) {
       this.renderer.setClearColor(0x3c5e71, 1); // Opaque background
     }
-    
+
     // Container is already visible with correct background - just log completion
     console.log('✅ 3D scene ready and visible');
   }
@@ -951,6 +2720,9 @@ class Simple3DLoader {
         (progress) => {
           const percent = (progress.loaded / progress.total * 100).toFixed(0);
           console.log(`📊 Loading progress: ${percent}%`);
+
+          // Update loading placeholder with progress
+          this.updateLoadingState(`Loading 3D Model... ${percent}%`);
         },
         (error) => {
           console.error('❌ Error loading model:', error);
@@ -1131,8 +2903,8 @@ class Simple3DLoader {
       this.updateBasicControls();
     }
 
-    // Throttled debug updates (development only)
-    if (this.isDevelopment && (now - this.lastDebugUpdate) > 100) {
+    // Throttled debug updates (development only and only if panels enabled)
+    if (this.isDevelopment && this.debugPanelsEnabled && (now - this.lastDebugUpdate) > 100) {
       this.updateCameraInfo();
       this.lastDebugUpdate = now;
     }
@@ -1517,6 +3289,31 @@ class Simple3DLoader {
     // Pause rendering immediately
     this.pauseRendering = true;
 
+    // Clean up lazy loading resources
+    if (this.intersectionObserver) {
+      this.intersectionObserver.disconnect();
+      this.intersectionObserver = null;
+    }
+
+    if (this.delayTimer) {
+      clearTimeout(this.delayTimer);
+      this.delayTimer = null;
+    }
+
+    // Remove any lazy loading UI elements
+    this.removeLazyLoadingPlaceholder();
+    const errorElement = this.container?.querySelector('.lazy-loading-error');
+
+    // Phase 2: Video Resource Manager cleanup (global instance, don't dispose)
+    this.videoManager = null;
+    // Phase 2B: Asset Resource Manager cleanup (global instance, don't dispose)
+    this.assetManager = null;
+    // Phase 3: Smart Loading Manager cleanup (global instance, don't dispose)
+    this.smartLoadingManager = null;
+    if (errorElement) {
+      errorElement.remove();
+    }
+
   // (Phase 1 Cleanup) Flag system disposal removed
 
     // (Phase 2 Cleanup) POI mapping disposal removed
@@ -1790,8 +3587,10 @@ class Simple3DLoader {
     } else {
       console.log('✅ All station mapping keys found in model');
     }
-    // Development overlay
-    this.createInteractionDebugOverlay && this.createInteractionDebugOverlay(foundKeys, missing);
+    // Development overlay (stations debug) - only if debug panels enabled
+    if (this.debugPanelsEnabled) {
+      this.createInteractionDebugOverlay && this.createInteractionDebugOverlay(foundKeys, missing);
+    }
   }
 
   // Handle pointer movement for hover detection
@@ -1899,7 +3698,7 @@ class Simple3DLoader {
 
   // Development helper overlay & diagnostics
   createInteractionDebugOverlay(foundKeys, missingKeys) {
-    if (!this.isDevelopment) return;
+    if (!this.isDevelopment || !this.debugPanelsEnabled) return;
     if (document.getElementById('interaction-debug-overlay')) return;
     const overlay = document.createElement('div');
     overlay.id = 'interaction-debug-overlay';
@@ -2041,7 +3840,17 @@ class Simple3DLoader {
       return;
     }
 
-    // Images
+    // Phase 2B + Advanced Categorization: Use prioritized loading system if available
+    const stationKey = this.getStationKeyFromModalId(modalId);
+    if (stationKey && this.smartLoadingManager?.stationAssetMap?.has(stationKey)) {
+      console.log(`🎯 Using prioritized loading for station: ${stationKey}`);
+      this.smartLoadingManager.loadStationAssetsWithPriority(stationKey);
+    } else {
+      // Fallback to standard asset manager
+      globalAssetManager.loadModalAssets(modalEl);
+    }
+
+    // Legacy support: Images with data-src (Webflow format)
     const imgs = modalEl.querySelectorAll('img[data-src]');
     imgs.forEach(img => {
       if (!img.getAttribute('src')) {
@@ -2051,13 +3860,13 @@ class Simple3DLoader {
       if (ds && !img.getAttribute('srcset')) img.setAttribute('srcset', ds);
     });
 
-    // Picture sources
+    // Legacy support: Picture sources with data-srcset
     const sources = modalEl.querySelectorAll('source[data-srcset]');
     sources.forEach(src => {
       if (!src.getAttribute('srcset')) src.setAttribute('srcset', src.getAttribute('data-srcset'));
     });
 
-    // Background images
+    // Legacy support: Background images with data-bg-src
     const bgEls = modalEl.querySelectorAll('[data-bg-src]');
     bgEls.forEach(el => {
       if (!el.dataset.bgLoaded) {
@@ -2066,14 +3875,8 @@ class Simple3DLoader {
       }
     });
 
-    // Videos
-    const videos = modalEl.querySelectorAll('video[data-src]');
-    videos.forEach(v => {
-      if (!v.getAttribute('src')) {
-        v.setAttribute('src', v.getAttribute('data-src'));
-        try { v.load(); } catch (e) { /* ignore */ }
-      }
-    });
+    // Videos - Phase 2: Use VideoResourceManager for optimized loading
+    this.videoManager.loadModalVideo(modalEl);
 
     // Any element with data-inline-html pointing to a URL to fetch (optional enhancement)
     const inline = modalEl.querySelectorAll('[data-inline-html]');
@@ -2086,6 +3889,27 @@ class Simple3DLoader {
     });
 
     this._lazyLoadedModals.add(modalId);
+  }
+
+  /**
+   * Helper method to get station key from modal ID
+   */
+  getStationKeyFromModalId(modalId) {
+    // Reverse lookup from modal ID to station key
+    const stationMapping = {
+      'station-1': 'station_1',
+      'station-2': 'station_2',
+      'station-3': 'station_3',
+      'station-4': 'station_4',
+      'station-5': 'station_5',
+      'station-6': 'station_6',
+      'station-7': 'station_7',
+      'station-8': 'station_8',
+      'station-9': 'station_9',
+      'station-10': 'station_10'
+    };
+
+    return stationMapping[modalId] || null;
   }
 }
 

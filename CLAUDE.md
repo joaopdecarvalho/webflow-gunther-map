@@ -71,6 +71,7 @@ loadScript(localUrl, vercelUrl);
 * **Performance monitoring:** Built‑in FPS tracking, triangle counting, and optimization
 * **Accessibility features:** Motion preference detection, keyboard controls, ARIA labels
 * **Security:** Input validation, CSP compliance, and graceful error handling
+* **Phase 1 Lazy Loading:** Intelligent loading triggers (viewport intersection, user interaction) with loading states and error handling
 
 ```javascript
 // Model URLs pattern - Vercel for production, local for dev
@@ -118,8 +119,53 @@ Production scripts load dynamic configurations (local in dev / Vercel in prod):
   "camera": { "position": [0, 0, 100], "target": [0, 0, 0], "distance": 100, "fov": 75 },
   "lighting": { "ambient": {"color": "#ffffff", "intensity": 0.4} },
   "performance": { "qualityLevel": "high", "targetFPS": 60 },
-  "accessibility": { "respectMotionPreference": true, "keyboardControls": true }
+  "accessibility": { "respectMotionPreference": true, "keyboardControls": true },
+  "lazyLoading": {
+    "enabled": true,
+    "triggers": {
+      "viewport": true,
+      "userInteraction": true,
+      "delay": false
+    },
+    "delay": 2000
+  }
 }
+```
+
+## Phase 1 Lazy Loading Implementation
+
+**Intelligent Loading System**: The 3D loader now supports multiple loading triggers to optimize performance and user experience:
+
+### Loading Triggers
+
+* **Viewport Intersection**: Uses IntersectionObserver to detect when the 3D container enters the viewport
+* **User Interaction**: Responds to clicks, hover, touch, and keyboard interactions
+* **Delay Timer**: Optional delay-based loading after a specified time
+* **Manual Trigger**: Programmatic loading via `loader.load()` method
+
+### Loading States & UI
+
+* **Pending**: Shows animated loading placeholder with spinner
+* **Loading**: Updates progress during model download with percentage
+* **Loaded**: Removes placeholder and shows final 3D scene
+* **Error**: Displays user-friendly error state with retry button
+
+### Configuration
+
+```javascript
+// Enable/disable lazy loading
+this.lazyLoadingEnabled = true;
+
+// Configure triggers
+this.loadTriggers = {
+  viewport: true,      // Load when container enters viewport
+  userInteraction: true, // Load on first user interaction
+  delay: false,        // Load after delay (requires delay config)
+  manual: false        // Manual loading only
+};
+
+// Manual trigger example
+window.simple3DLoader.load();
 ```
 
 # Claude Development Notes
