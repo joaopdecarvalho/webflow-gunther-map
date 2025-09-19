@@ -662,6 +662,19 @@ class Simple3DLoader {
     
     // Container is already visible with correct background - just log completion
     console.log('✅ 3D scene ready and visible');
+    
+    // Initialize lazy video loading now that 3D scene is ready
+    this.initializeLazyVideo();
+  }
+  
+  initializeLazyVideo() {
+    const introVideo = document.querySelector('.intro-video');
+    if (introVideo && introVideo.dataset.src) {
+      console.log('🎬 Initializing lazy video loading...');
+      introVideo.src = introVideo.dataset.src;
+      introVideo.removeAttribute('data-src');
+      console.log('✅ Video src attribute updated');
+    }
   }
 
   fadeInModel() {
