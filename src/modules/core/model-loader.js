@@ -12,8 +12,14 @@ export function attachModelLoader(loader) {
   // Extracted from monolithic simple-3d-loader.js (loadModel & centerModel methods)
   loader.loadModel = function loadModel() {
     return new Promise((resolve, reject) => {
-      const modelUrl = this.modelUrl;
-      console.log('📁 (module) Loading GLB model:', modelUrl);
+      // Get primary and fallback URLs based on environment
+      const primaryUrl = this.modelUrl;
+      const fallbackUrl = this.getFallbackModelUrl ? this.getFallbackModelUrl() : this.getAlternativeModelUrl();
+      
+      console.log('📁 (module) Loading GLB model:', primaryUrl);
+      if (fallbackUrl) {
+        console.log('🔄 (module) Fallback URL available:', fallbackUrl);
+      }
 
       if (!window.GLTFLoader) {
         console.error('❌ GLTFLoader not available');
@@ -21,54 +27,121 @@ export function attachModelLoader(loader) {
         return;
       }
 
-      const gltfLoader = new window.GLTFLoader();
+      // Attempt to load model with fallback
+      this.attemptModelLoad(primaryUrl, fallbackUrl, resolve, reject);
+    });
+  };
 
-      gltfLoader.load(
-        modelUrl,
-        (gltf) => {
-          console.log('✅ (module) Model loaded successfully');
-          this.model = gltf.scene;
+  // Helper method to attempt model loading with fallback
+  loader.attemptModelLoad = function attemptModelLoad(primaryUrl, fallbackUrl, resolve, reject) {
+    const gltfLoader = new window.GLTFLoader();
 
-          // Prepare meshes (shadow + fade-in start)
-            this.model.traverse((child) => {
-              if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-                child.material.transparent = true;
-                child.material.opacity = 0;
-              }
-            });
-
-          this.scene.add(this.model);
-          this.centerModel();
-
-          // Auto interactive object setup if interaction system already initialized
-          try {
-            if (this.interactionSystemInitialized && typeof this.setupInteractiveObjects === 'function') {
-              this.setupInteractiveObjects();
-            }
-          } catch (e) {
-            console.warn('⚠️ (module) setupInteractiveObjects failed:', e.message);
-          }
-
-          // Use existing fadeInModel if present
-          if (typeof this.fadeInModel === 'function') {
-            this.fadeInModel();
-          }
-          resolve();
-        },
-        (progress) => {
-          if (progress && progress.total) {
-            const percent = (progress.loaded / progress.total * 100).toFixed(0);
-            console.log(`📊 (module) Loading progress: ${percent}%`);
-          }
-        },
-        (error) => {
-          console.error('❌ (module) Error loading model:', error);
+    gltfLoader.load(
+      primaryUrl,
+      (gltf) => {
+        console.log('✅ (module) Model loaded successfully from primary URL');
+        this.processLoadedModel(gltf, resolve);
+      },
+      (progress) => {
+        if (progress && progress.total) {
+          const percent = (progress.loaded / progress.total * 100).toFixed(0);
+          console.log(`📊 (module) Loading progress: ${percent}%`);
+        }
+      },
+      (error) => {
+        console.warn('⚠️ (module) Primary URL failed:', primaryUrl, error.message);
+        
+        // Try fallback URL if available
+        if (fallbackUrl && fallbackUrl !== primaryUrl) {
+          console.log('🔄 (module) Attempting fallback URL:', fallbackUrl);
+          this.loadModelFromFallback(fallbackUrl, resolve, reject);
+        } else {
+          console.error('❌ (module) No fallback available, rejecting');
           reject(error);
         }
-      );
+      }
+    );
+  };
+
+  // Helper method to load from fallback URL
+  loader.loadModelFromFallback = function loadModelFromFallback(fallbackUrl, resolve, reject) {
+    const gltfLoader = new window.GLTFLoader();
+
+    gltfLoader.load(
+      fallbackUrl,
+      (gltf) => {
+        console.log('✅ (module) Model loaded successfully from fallback URL');
+        this.processLoadedModel(gltf, resolve);
+      },
+      (progress) => {
+        if (progress && progress.total) {
+          const percent = (progress.loaded / progress.total * 100).toFixed(0);
+          console.log(`📊 (module) Fallback loading progress: ${percent}%`);
+        }
+      },
+      (error) => {
+        console.error('❌ (module) Fallback URL also failed:', fallbackUrl, error);
+        reject(error);
+      }
+    );
+  };
+
+  // Helper method to process successfully loaded model
+  loader.processLoadedModel = function processLoadedModel(gltf, resolve) {
+    this.model = gltf.scene;
+
+    // Prepare meshes (shadow + fade-in start)
+    this.model.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+        child.material.transparent = true;
+        child.material.opacity = 0;
+      }
     });
+
+    this.scene.add(this.model);
+    this.centerModel();
+
+    // Auto interactive object setup if interaction system already initialized
+    try {
+      if (this.interactionSystemInitialized && typeof this.setupInteractiveObjects === 'function') {
+        this.setupInteractiveObjects();
+      }
+    } catch (e) {
+      console.warn('⚠️ (module) setupInteractiveObjects failed:', e.message);
+    }
+
+    // Use existing fadeInModel if present
+    if (typeof this.fadeInModel === 'function') {
+      this.fadeInModel();
+    }
+    resolve();
+  };
+
+  // Helper method to get alternative model URL (fallback logic)
+  loader.getAlternativeModelUrl = function getAlternativeModelUrl() {
+    // If we have modelUrls object with local/production, use the opposite
+    if (this.modelUrls) {
+      if (this.isDevelopment) {
+        return this.modelUrls.production; // Fallback to Vercel in development
+      } else {
+        return this.modelUrls.local; // Fallback to localhost in production (rarely used)
+      }
+    }
+    
+    // Fallback pattern based on current URL
+    const currentUrl = this.modelUrl;
+    if (currentUrl && currentUrl.includes('localhost')) {
+      // Switch localhost to Vercel
+      return currentUrl.replace('http://localhost:8080', 'https://webflow-gunther-map.vercel.app');
+    } else if (currentUrl && currentUrl.includes('vercel.app')) {
+      // Switch Vercel to localhost (unlikely but for completeness)
+      return currentUrl.replace('https://webflow-gunther-map.vercel.app', 'http://localhost:8080');
+    }
+    
+    // No fallback available
+    return null;
   };
 
   loader.centerModel = function centerModel() {
