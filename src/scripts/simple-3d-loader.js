@@ -112,8 +112,8 @@ class Simple3DLoader {
     
     // Model URL - environment-aware with fallback
     this.modelUrls = {
-      local: 'http://localhost:8080/Goetheviertel_250919_withflags_webp25.glb',
-      production: 'https://webflow-gunther-map.vercel.app/Goetheviertel_250919_withflags_webp25.glb'
+      local: 'http://localhost:8080/Goetheviertel_250919_with_flags_webp80.glb',
+      production: 'https://webflow-gunther-map.vercel.app/Goetheviertel_250919_with_flags_webp80.glb'
     };
     this.modelUrl = this.isDevelopment ? this.modelUrls.local : this.modelUrls.production;
     
