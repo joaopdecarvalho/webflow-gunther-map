@@ -27,40 +27,40 @@ class Simple3DLoader {
     this.model = null;
     this.controls = null;
 
-    // =============================================================================
-    // PRODUCTION - FLAG POI SYSTEM
-    // =============================================================================
-    this.flags = [];
-    this.flagCoordinates = [
-      { id: 1, position: { x: -10.02, y: -7.89, z: 15.98 }, flagFile: "Fahne1.svg" },
-      { id: 2, position: { x: 0.87, y: -7.04, z: 5.25 }, flagFile: "Fahne2.svg" },
-      { id: 3, position: { x: 3.83, y: -7.24, z: -0.31 }, flagFile: "Fahne3.svg" },
-      { id: 4, position: { x: -2.08, y: -7.06, z: -2.12 }, flagFile: "Fahne4.svg" },
-      { id: 5, position: { x: 0.96, y: -7.21, z: -3.3 }, flagFile: "Fahne5.svg" },
-      { id: 6, position: { x: 3.44, y: -7.14, z: -5.94 }, flagFile: "Fahne6.svg" },
-      { id: 7, position: { x: 13.31, y: -7.22, z: 3.47 }, flagFile: "Fahne7.svg" },
-      { id: 8, position: { x: 14.92, y: -7.61, z: -0.03 }, flagFile: "Fahne8.svg" },
-      { id: 9, position: { x: 14.49, y: -7.24, z: -4.19 }, flagFile: "Fahne9.svg" },
-      { id: 10, position: { x: 18.04, y: -7.28, z: -12.59 }, flagFile: "Fahne10.svg" }
-    ];
+    // (Phase 1 Cleanup) Removed legacy flag POI system (flags & flagCoordinates)
 
     // Performance and development flags
     this.isDevelopment = this.detectDevelopmentMode();
     this.lastDebugUpdate = 0;
     this.pauseRendering = false;
 
-    // =============================================================================
-    // DEVELOPMENT ONLY - POI MAPPING SYSTEM
-    // =============================================================================
-    // PRODUCTION NOTE: Remove this entire section for production deployment
-    if (this.isDevelopment) {
-      this.poiMappingMode = false;
-      this.tempPOIs = [];
-      this.poiMarkers = [];
-      this.raycaster = null;
-      this.mouse = null; // Will be initialized after Three.js loads
-      console.log('🎯 POI Mapping System initialized (DEV ONLY)');
-    }
+    // (Phase 2 Cleanup) Legacy POI mapping system removed
+
+    // =====================================================================
+    // Phase 3: New Interactive Station System (Skeleton Implementation)
+    // =====================================================================
+    // Mapping of model object names to modal trigger IDs
+    this.stationMapping = {
+      'Station01': 'station-1-goethestr-45',
+      'Station02': 'station-2-afz-theo',
+      'Station03': 'station-3-rueckenwind',
+      'Station04': 'station-4-beet',
+      'Station05': 'station-5-zolli',
+      'Station06': 'station-6-starthaus',
+      'Station07': 'station-7-studierendenhaus-h34',
+      'Station08': 'station-8-quartiersmeisterei-lehe',
+      'Station09': 'station-9-kulturbahnhof-lehe',
+      'Station10': 'station-10-goethestrasse-60'
+    };
+
+    // Interaction system core properties (populated in Phase 4)
+    this.interactiveObjects = []; // Array of THREE.Object3D that can be interacted with
+    this.hoveredObject = null;    // Currently hovered object reference
+
+    // Raycasting utilities (initialized after Three.js + scene setup)
+    this.raycaster = null;
+    this.mouse = null; // Normalized device coordinates vector
+    this.interactionSystemInitialized = false;
     
     // Default configuration based on your 3d-config.json
     this.config = {
@@ -869,13 +869,10 @@ class Simple3DLoader {
     // Add lights
     this.setupLighting();
 
-    // =============================================================================
-    // DEVELOPMENT ONLY - POI MAPPING INITIALIZATION
-    // =============================================================================
-    // PRODUCTION NOTE: Remove this section for production deployment
-    if (this.isDevelopment) {
-      this.initializePOIMapping();
-    }
+    // (Phase 2 Cleanup) POI mapping initialization removed
+
+  // Initialize new interaction system core (Phase 3 skeleton)
+  this.initializeInteractionSystem();
 
     console.log('✅ Scene setup complete');
   }
@@ -932,8 +929,19 @@ class Simple3DLoader {
           // Center and scale model
           this.centerModel();
 
-          // Initialize flag POI system
-          this.initializeFlags();
+          // (Phase 1 Cleanup) Flag POI system initialization removed
+
+          // Phase 5.1: Initialize interactive stations automatically after model load
+          try {
+            if (this.interactionSystemInitialized) {
+              this.setupInteractiveObjects();
+              console.log('🧭 Phase 5.1: Interactive objects auto-setup after model load');
+            } else {
+              console.warn('⚠️ Phase 5.1: Interaction system not initialized yet when model loaded');
+            }
+          } catch (e) {
+            console.error('❌ Phase 5.1: Failed to setup interactive objects:', e);
+          }
 
           // Start fade-in animation for the model
           this.fadeInModel();
@@ -1127,6 +1135,11 @@ class Simple3DLoader {
     if (this.isDevelopment && (now - this.lastDebugUpdate) > 100) {
       this.updateCameraInfo();
       this.lastDebugUpdate = now;
+    }
+
+    // Phase 5.1: Per-frame interaction visuals update (hover glow easing)
+    if (this.updateInteractionVisuals) {
+      this.updateInteractionVisuals();
     }
 
     // Render scene
@@ -1504,16 +1517,12 @@ class Simple3DLoader {
     // Pause rendering immediately
     this.pauseRendering = true;
 
-    // Clean up flags
-    this.disposeFlags();
+  // (Phase 1 Cleanup) Flag system disposal removed
 
-    // =============================================================================
-    // DEVELOPMENT ONLY - POI CLEANUP
-    // =============================================================================
-    // PRODUCTION NOTE: Remove this section for production deployment
-    if (this.isDevelopment) {
-      this.disposePOIMapping();
-    }
+    // (Phase 2 Cleanup) POI mapping disposal removed
+
+  // Phase 3: Interaction system disposal
+  this.disposeInteractionSystem && this.disposeInteractionSystem();
 
     // Clean up model and its materials/geometries
     if (this.model) {
@@ -1590,389 +1599,493 @@ class Simple3DLoader {
     material.dispose();
   }
 
-  // =============================================================================
-  // PRODUCTION - FLAG POI SYSTEM METHODS
-  // =============================================================================
+  // (Phase 1 Cleanup) Legacy flag POI system methods removed (initializeFlags, createFlag, animateFlags, disposeFlags)
 
-  initializeFlags() {
-    console.log('🚩 Initializing flag POI system...');
+  // (Phase 2 Cleanup) POI mapping methods removed
 
-    this.flagCoordinates.forEach((flagData, index) => {
-      this.createFlag(flagData, index);
-    });
+  // =====================================================================
+  // Phase 3: Interactive Station System (Skeleton)
+  // =====================================================================
+  // NOTE: This phase only introduces the foundational plumbing (raycaster,
+  // event listeners, mapping object). Actual object detection, hover effects,
+  // and modal triggering will be implemented in Phase 4.
 
-    console.log(`✅ ${this.flags.length} flags created and positioned`);
-  }
+  initializeInteractionSystem() {
+    if (this.interactionSystemInitialized) {
+      return; // Prevent duplicate initialization
+    }
+    if (!window.THREE || !this.renderer || !this.camera) {
+      console.warn('⚠️ Interaction system postponed (Three.js or scene not ready yet)');
+      return;
+    }
 
-  createFlag(flagData, index) {
-    // Create 3D flag group to hold all components
-    const flagGroup = new THREE.Group();
+    try {
+      this.raycaster = new THREE.Raycaster();
+      this.mouse = new THREE.Vector2();
 
-    // =============================================================================
-    // 1. CREATE FLAG POLE (VERTICAL CYLINDER)
-    // =============================================================================
-    const poleGeometry = new THREE.CylinderGeometry(0.05, 0.05, 4, 8); // radius, height, segments
-    const poleMaterial = new THREE.MeshLambertMaterial({
-      color: 0xffe886 // Same yellow as flag (#ffe886)
-    });
-    const pole = new THREE.Mesh(poleGeometry, poleMaterial);
-    pole.position.y = 2; // Center pole vertically
-    flagGroup.add(pole);
+      // Basic throttling for mouse move to avoid excessive calculations
+      this._lastPointerMove = 0;
+      this._pointerMoveThrottleMs = 50; // Adjust in Phase 5 if needed
+      // Phase 5.3 performance metrics
+      this._lastPointerActivity = performance.now();
+      this._pointerIdleThresholdMs = 1500; // ms
+      this._lastRaycastTime = 0;
+      this._raycastIntervalMs = 50; // ms
 
-    // =============================================================================
-    // 2. CREATE FLAG SHAPE (CURVED TRIANGULAR)
-    // =============================================================================
-    // Create custom flag geometry based on SVG path analysis
-    const flagShape = new THREE.Shape();
+      // Phase 5.2 touch interaction state
+      this._touchState = {
+        active: false,
+        startX: 0,
+        startY: 0,
+        moved: false,
+        startTime: 0,
+        tapMovementThreshold: 10,
+        tapDurationThreshold: 500
+      };
 
-    // Scale down the SVG coordinates to reasonable 3D size (original was 334x434)
-    const scale = 0.01; // Scale factor to convert SVG to 3D units
+      // Phase 4: Wire handlers to actual interaction logic methods
+      this._interactionHandlers = {
+        pointerMove: (event) => {
+          const now = performance.now();
+          if (now - this._lastPointerMove < this._pointerMoveThrottleMs) return;
+          this._lastPointerMove = now;
+          this.onPointerMove(event);
+        },
+        click: (event) => {
+          this.onClick(event);
+        },
+        touchStart: (event) => {
+          if (!event.touches || event.touches.length === 0) return;
+          const touch = event.touches[0];
+          this._touchState.active = true;
+          this._touchState.startX = touch.clientX;
+          this._touchState.startY = touch.clientY;
+          this._touchState.startTime = performance.now();
+          this._touchState.moved = false;
+          // Immediate hover feedback
+          this.onPointerMove(touch);
+        },
+        touchMove: (event) => {
+          if (!event.touches || event.touches.length === 0) return;
+          const touch = event.touches[0];
+          const dx = touch.clientX - this._touchState.startX;
+          const dy = touch.clientY - this._touchState.startY;
+          if (Math.abs(dx) > 5 || Math.abs(dy) > 5) this._touchState.moved = true;
+          if (!this._touchState.moved) this.onPointerMove(touch);
+        },
+        touchEnd: (event) => {
+          if (!this._touchState.active) return;
+          const duration = performance.now() - this._touchState.startTime;
+          const wasTap = !this._touchState.moved && duration < this._touchState.tapDurationThreshold;
+          this._touchState.active = false;
+          if (wasTap && event.changedTouches && event.changedTouches.length > 0) {
+            this.onClick(event.changedTouches[0]);
+          }
+        }
+      };
 
-    // Recreate the curved triangular flag shape from SVG path
-    flagShape.moveTo(16.988 * scale, 0);
-    flagShape.lineTo((16.988 + 82.193) * scale, 4.364 * scale);
+      // Attach listeners to canvas element for scoped interaction
+      const el = this.renderer.domElement;
+      el.addEventListener('mousemove', this._interactionHandlers.pointerMove);
+      el.addEventListener('click', this._interactionHandlers.click);
+      el.addEventListener('touchstart', this._interactionHandlers.touchStart, { passive: true });
+      el.addEventListener('touchmove', this._interactionHandlers.touchMove, { passive: true });
+      el.addEventListener('touchend', this._interactionHandlers.touchEnd, { passive: true });
 
-    // Create curved edge using quadratic curves to approximate the SVG path
-    flagShape.quadraticCurveTo(
-      (16.988 + 82.193 + 100) * scale, 30 * scale,
-      (16.988 + 82.193 + 150) * scale, 60 * scale
-    );
-    flagShape.quadraticCurveTo(
-      (16.988 + 82.193 + 200) * scale, 100 * scale,
-      (16.988 + 82.193 + 226.731) * scale, (4.364 + 84.821) * scale
-    );
-
-    // Complete the flag outline with more curved sections
-    flagShape.quadraticCurveTo(
-      250 * scale, 150 * scale,
-      200 * scale, 200 * scale
-    );
-    flagShape.quadraticCurveTo(
-      150 * scale, 230 * scale,
-      100 * scale, 230 * scale
-    );
-    flagShape.lineTo(16.988 * scale, 230 * scale);
-    flagShape.lineTo(16.988 * scale, 0);
-
-    const flagGeometry = new THREE.ExtrudeGeometry(flagShape, {
-      depth: 0.05, // Thin flag
-      bevelEnabled: false
-    });
-
-    const flagMaterial = new THREE.MeshLambertMaterial({
-      color: 0xffe886, // Yellow color from SVG (#ffe886)
-      side: THREE.DoubleSide
-    });
-
-    const flagMesh = new THREE.Mesh(flagGeometry, flagMaterial);
-
-    // Position flag next to pole
-    flagMesh.position.x = 1.2; // Offset from pole
-    flagMesh.position.y = 2.8; // Upper part of pole
-    flagMesh.rotation.y = Math.PI / 2; // Face outward from pole
-
-    flagGroup.add(flagMesh);
-
-    // =============================================================================
-    // 3. CREATE 3D NUMBER TEXT
-    // =============================================================================
-    // Create a canvas-based number texture for the flag
-    const canvas = document.createElement('canvas');
-    canvas.width = 128;
-    canvas.height = 128;
-    const context = canvas.getContext('2d');
-
-    // Draw number on canvas
-    context.fillStyle = '#000000'; // Black text
-    context.font = 'bold 80px Arial';
-    context.textAlign = 'center';
-    context.textBaseline = 'middle';
-    context.fillText(flagData.id.toString(), 64, 64);
-
-    // Create texture from canvas
-    const numberTexture = new THREE.CanvasTexture(canvas);
-    const numberGeometry = new THREE.PlaneGeometry(0.8, 0.8);
-    const numberMaterial = new THREE.MeshLambertMaterial({
-      map: numberTexture,
-      transparent: true,
-      side: THREE.DoubleSide
-    });
-
-    const numberMesh = new THREE.Mesh(numberGeometry, numberMaterial);
-    numberMesh.position.x = 1.8; // On the flag
-    numberMesh.position.y = 3.2; // Upper area of flag
-    numberMesh.rotation.y = Math.PI / 2; // Face same direction as flag
-
-    flagGroup.add(numberMesh);
-
-    // =============================================================================
-    // POSITION THE ENTIRE FLAG GROUP
-    // =============================================================================
-    flagGroup.position.set(
-      flagData.position.x,
-      flagData.position.y + 2.1, // Adjust height so base of pole touches ground
-      flagData.position.z
-    );
-
-    // Store references
-    this.flags.push({
-      flag: flagGroup,
-      data: flagData
-    });
-
-    // Add to scene
-    this.scene.add(flagGroup);
-
-    console.log(`📍 3D Flag ${flagData.id} created at (${flagData.position.x}, ${flagData.position.y}, ${flagData.position.z})`);
-  }
-
-  animateFlags() {
-    // No animation needed - flags are static
-  }
-
-  disposeFlags() {
-    console.log('🧹 Cleaning up flags...');
-
-    this.flags.forEach(flagObj => {
-      // Remove from scene
-      this.scene.remove(flagObj.flag);
-
-      // Dispose geometries and materials
-      flagObj.flag.geometry.dispose();
-      flagObj.flag.material.dispose();
-      if (flagObj.flag.material.map) {
-        flagObj.flag.material.map.dispose();
-      }
-    });
-
-    this.flags = [];
-    console.log('✅ Flags disposed');
-  }
-
-  // =============================================================================
-  // DEVELOPMENT ONLY - POI MAPPING METHODS
-  // =============================================================================
-  // PRODUCTION NOTE: Remove this entire section for production deployment
-
-  initializePOIMapping() {
-    if (!this.isDevelopment) return;
-
-    console.log('🎯 Initializing POI mapping system...');
-
-    // Initialize raycaster and mouse vector for 3D intersection detection
-    this.raycaster = new THREE.Raycaster();
-    this.mouse = new THREE.Vector2();
-
-    // Add click event listener for POI placement
-    this.renderer.domElement.addEventListener('click', (event) => {
-      if (this.poiMappingMode) {
-        this.placePOI(event);
-      }
-    });
-
-    // Add keyboard shortcuts
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'p' && event.ctrlKey && event.altKey) {
-        event.preventDefault();
-        this.togglePOIMappingMode();
-      }
-      if (event.key === 'c' && event.ctrlKey && this.poiMappingMode) {
-        event.preventDefault();
-        this.clearAllPOIs();
-      }
-    });
-
-    console.log('✅ POI mapping system ready (Ctrl+Alt+P to toggle, Ctrl+C to clear)');
-  }
-
-  togglePOIMappingMode() {
-    if (!this.isDevelopment) return;
-
-    this.poiMappingMode = !this.poiMappingMode;
-
-    if (this.poiMappingMode) {
-      console.log('🎯 POI Mapping Mode: ENABLED - Click on the 3D model to place POIs');
-      this.showPOIMappingNotification('POI Mapping Mode: ENABLED\nClick on the 3D model to place POIs\nCtrl+C to clear all POIs');
-
-      // Change cursor to crosshair
-      this.renderer.domElement.style.cursor = 'crosshair';
-
-      // Disable orbit controls to prevent interference
-      if (this.controls) {
-        this.controls.enabled = false;
-      }
-    } else {
-      console.log('🎯 POI Mapping Mode: DISABLED');
-      this.showPOIMappingNotification('POI Mapping Mode: DISABLED');
-
-      // Restore normal cursor
-      this.renderer.domElement.style.cursor = 'default';
-
-      // Re-enable orbit controls
-      if (this.controls) {
-        this.controls.enabled = true;
-      }
+      this.interactionSystemInitialized = true;
+      console.log('🧩 Phase 3 interaction system skeleton initialized');
+    } catch (err) {
+      console.error('❌ Failed to initialize interaction system skeleton:', err);
     }
   }
 
-  placePOI(event) {
-    if (!this.isDevelopment || !this.model) return;
-
-    // Calculate mouse position in normalized device coordinates (-1 to +1)
+  updateNormalizedPointer(event) {
+    if (!this.mouse || !this.renderer) return;
     const rect = this.renderer.domElement.getBoundingClientRect();
     this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  }
 
-    // Update the raycaster with camera and mouse position
-    this.raycaster.setFromCamera(this.mouse, this.camera);
-
-    // Calculate intersections with the model
-    const intersects = this.raycaster.intersectObject(this.model, true);
-
-    if (intersects.length > 0) {
-      const intersection = intersects[0];
-      const position = intersection.point;
-
-      // Create POI data
-      const poiData = {
-        id: this.tempPOIs.length + 1,
-        position: {
-          x: parseFloat(position.x.toFixed(2)),
-          y: parseFloat(position.y.toFixed(2)),
-          z: parseFloat(position.z.toFixed(2))
-        },
-        name: `POI ${this.tempPOIs.length + 1}`,
-        type: 'default',
-        timestamp: new Date().toISOString()
-      };
-
-      // Add to temporary POI list
-      this.tempPOIs.push(poiData);
-
-      // Create visual marker
-      this.createPOIMarker(poiData);
-
-      console.log('🎯 POI placed:', poiData);
-      this.updatePOIExport();
+  disposeInteractionSystem() {
+    if (!this.interactionSystemInitialized || !this.renderer) return;
+    const el = this.renderer.domElement;
+    if (this._interactionHandlers) {
+      el.removeEventListener('mousemove', this._interactionHandlers.pointerMove);
+      el.removeEventListener('click', this._interactionHandlers.click);
+      el.removeEventListener('touchstart', this._interactionHandlers.touchStart);
+      el.removeEventListener('touchmove', this._interactionHandlers.touchMove);
+      el.removeEventListener('touchend', this._interactionHandlers.touchEnd);
     }
-  }
-
-  createPOIMarker(poiData) {
-    if (!this.isDevelopment) return;
-
-    // Create a visual marker at the POI position
-    const markerGeometry = new THREE.SphereGeometry(0.5, 8, 6);
-    const markerMaterial = new THREE.MeshBasicMaterial({
-      color: 0xff4444,
-      transparent: true,
-      opacity: 0.8
-    });
-    const marker = new THREE.Mesh(markerGeometry, markerMaterial);
-
-    marker.position.set(poiData.position.x, poiData.position.y, poiData.position.z);
-    marker.userData = { poiId: poiData.id, isPOIMarker: true };
-
-    this.scene.add(marker);
-    this.poiMarkers.push(marker);
-
-    // Create text label
-    this.createPOILabel(poiData, marker);
-  }
-
-  createPOILabel(poiData, marker) {
-    if (!this.isDevelopment) return;
-
-    // Create a simple text label using CSS3D (simplified approach)
-    // This is a basic implementation - could be enhanced with HTML labels
-    const labelGeometry = new THREE.PlaneGeometry(2, 0.5);
-    const labelMaterial = new THREE.MeshBasicMaterial({
-      color: 0x000000,
-      transparent: true,
-      opacity: 0.6
-    });
-    const label = new THREE.Mesh(labelGeometry, labelMaterial);
-
-    label.position.copy(marker.position);
-    label.position.y += 1; // Position above the marker
-    label.lookAt(this.camera.position);
-
-    this.scene.add(label);
-    this.poiMarkers.push(label);
-  }
-
-  clearAllPOIs() {
-    if (!this.isDevelopment) return;
-
-    console.log('🧹 Clearing all POI markers...');
-
-    // Remove visual markers from scene
-    this.poiMarkers.forEach(marker => {
-      this.scene.remove(marker);
-      if (marker.geometry) marker.geometry.dispose();
-      if (marker.material) marker.material.dispose();
-    });
-
-    // Clear arrays
-    this.tempPOIs = [];
-    this.poiMarkers = [];
-
-    this.updatePOIExport();
-    console.log('✅ All POI markers cleared');
-  }
-
-  updatePOIExport() {
-    if (!this.isDevelopment) return;
-
-    // Update export data display in console
-    if (this.tempPOIs.length > 0) {
-      console.log('📊 Current POIs:', this.tempPOIs);
-      console.log('📋 Export data:', JSON.stringify(this.tempPOIs, null, 2));
-    }
-  }
-
-  showPOIMappingNotification(message) {
-    if (!this.isDevelopment) return;
-
-    // Create a temporary notification
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: 15px 20px;
-      border-radius: 8px;
-      font-family: monospace;
-      font-size: 14px;
-      white-space: pre-line;
-      z-index: 10000;
-      max-width: 300px;
-    `;
-    notification.textContent = message;
-
-    document.body.appendChild(notification);
-
-    // Auto-remove after 3 seconds
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.parentNode.removeChild(notification);
-      }
-    }, 3000);
-  }
-
-  // Add POI cleanup to existing dispose method
-  disposePOIMapping() {
-    if (!this.isDevelopment) return;
-
-    console.log('🧹 Cleaning up POI mapping system...');
-
-    // Clear all POI markers
-    this.clearAllPOIs();
-
-    // Remove event listeners (handled by main dispose method)
-    this.poiMappingMode = false;
     this.raycaster = null;
+    this.mouse = null;
+    this.hoveredObject = null;
+    this.interactiveObjects = [];
+    this.interactionSystemInitialized = false;
+    console.log('🧹 Phase 3 interaction system skeleton disposed');
+  }
+
+  // =====================================================================
+  // Phase 4: Interactive Station System - Functional Implementation
+  // =====================================================================
+  // Provides: object detection, hover feedback, cursor changes, modal triggers
+  // NOTE: Not yet auto-invoked after model load (that will be Phase 5 task 5.1)
+
+  // Discover interactive station objects within the loaded model
+  setupInteractiveObjects() {
+    if (!this.model) {
+      console.warn('⚠️ Cannot setup interactive objects before model loads');
+      return;
+    }
+    if (!this.stationMapping) {
+      console.warn('⚠️ Station mapping not defined');
+      return;
+    }
+
+    this.interactiveObjects = [];
+    this._interactiveMetaMap = new Map();
+
+    const stationKeys = Object.keys(this.stationMapping);
+    let foundCount = 0;
+
+    const foundKeys = new Set();
+
+    this.model.traverse((child) => {
+      if (!child.isMesh || !child.name) return;
+      for (const key of stationKeys) {
+        // Allow partial / case-insensitive match (e.g., 'Station01', 'station01_mesh')
+        if (child.name.toLowerCase().includes(key.toLowerCase())) {
+          // Clone material to prevent shared-material side effects when highlighting
+            if (child.material && !child.material._isClonedForInteraction) {
+              child.material = child.material.clone();
+              child.material._isClonedForInteraction = true;
+            }
+
+          const meta = {
+            object: child,
+            stationKey: key,
+            modalId: this.stationMapping[key],
+            original: {
+              color: child.material && child.material.color ? child.material.color.clone() : null,
+              emissive: child.material && child.material.emissive ? child.material.emissive.clone() : null
+            },
+            currentGlow: 0,
+            targetGlow: 0,
+            highlighted: false
+          };
+          this.interactiveObjects.push(meta);
+          this._interactiveMetaMap.set(child.uuid, meta);
+          foundCount++;
+          foundKeys.add(key);
+          break; // Stop checking other keys for this child
+        }
+      }
+    });
+
+    console.log(`🧭 Interactive stations setup complete: ${foundCount} objects mapped`);
+
+    // Phase 5.1: Log warnings for any missing mapped stations
+    const missing = stationKeys.filter(k => !foundKeys.has(k));
+    if (missing.length > 0) {
+      console.warn('⚠️ Missing station objects for mapping keys:', missing);
+    } else {
+      console.log('✅ All station mapping keys found in model');
+    }
+    // Development overlay
+    this.createInteractionDebugOverlay && this.createInteractionDebugOverlay(foundKeys, missing);
+  }
+
+  // Handle pointer movement for hover detection
+  onPointerMove(event) {
+    if (!this.raycaster || !this.mouse || !this.camera) return;
+    const now = performance.now();
+    this._lastPointerActivity = now;
+    this.updateNormalizedPointer(event);
+
+    if (!this.interactiveObjects || this.interactiveObjects.length === 0) {
+      // Silent early exit until setupInteractiveObjects is called (Phase 5)
+      return;
+    }
+
+  if (now - this._lastRaycastTime < this._raycastIntervalMs) return; // interval gating
+  if (now - this._lastPointerActivity > this._pointerIdleThresholdMs) return; // idle gating
+  this._lastRaycastTime = now;
+  this.raycaster.setFromCamera(this.mouse, this.camera);
+    const candidates = this.interactiveObjects.map(m => m.object);
+    const intersections = this.raycaster.intersectObjects(candidates, true);
+
+    const top = intersections.length > 0 ? intersections[0].object : null;
+
+    if (top && (!this.hoveredObject || this.hoveredObject.uuid !== top.uuid)) {
+      // New hover target
+      this.clearHover();
+      this.applyHover(top);
+    } else if (!top && this.hoveredObject) {
+      // Pointer left any interactive object
+      this.clearHover();
+    }
+  }
+
+  // Handle click / touch interaction
+  onClick(event) {
+    if (!this.raycaster || !this.mouse || !this.camera) return;
+    this.updateNormalizedPointer(event);
+
+    if (!this.interactiveObjects || this.interactiveObjects.length === 0) {
+      return;
+    }
+
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const candidates = this.interactiveObjects.map(m => m.object);
+    const intersections = this.raycaster.intersectObjects(candidates, true);
+    if (intersections.length === 0) return;
+
+    const hit = intersections[0].object;
+    const meta = this._interactiveMetaMap && this._interactiveMetaMap.get(hit.uuid);
+    if (meta) {
+      console.log(`🖱️ Station clicked: ${meta.stationKey} -> modal '${meta.modalId}'`);
+      this.triggerModal(meta.modalId, meta.stationKey);
+    }
+  }
+
+  applyHover(object) {
+    this.hoveredObject = object;
+    if (!this._interactiveMetaMap) return;
+    const meta = this._interactiveMetaMap.get(object.uuid);
+    if (!meta) return;
+    meta.targetGlow = 1; // Animate towards highlight
+    meta.highlighted = true;
+    if (this.renderer && this.renderer.domElement) {
+      this.renderer.domElement.style.cursor = 'pointer';
+    }
+  }
+
+  clearHover() {
+    if (!this.hoveredObject || !this._interactiveMetaMap) return;
+    const meta = this._interactiveMetaMap.get(this.hoveredObject.uuid);
+    if (meta) {
+      meta.targetGlow = 0;
+      meta.highlighted = false;
+    }
+    this.hoveredObject = null;
+    if (this.renderer && this.renderer.domElement) {
+      this.renderer.domElement.style.cursor = 'default';
+    }
+  }
+
+  // Smooth visual feedback executed each frame from animate()
+  updateInteractionVisuals() {
+    if (!this.interactiveObjects || this.interactiveObjects.length === 0) return;
+    let active = this.hoveredObject != null;
+    if (!active) {
+      for (let i = 0; i < this.interactiveObjects.length; i++) {
+        const m = this.interactiveObjects[i];
+        if (m.currentGlow > 0.001 || m.targetGlow > 0.001) { active = true; break; }
+      }
+    }
+    if (!active) return; // nothing to update this frame
+    const highlightColor = new THREE.Color(0xffd54f); // Warm accent
+    this.interactiveObjects.forEach(meta => {
+      meta.currentGlow += (meta.targetGlow - meta.currentGlow) * 0.15; // easing factor
+      if (!meta.object.material) return;
+      const mat = meta.object.material;
+      if (mat.emissive) {
+        const base = meta.original.emissive ? meta.original.emissive.clone() : new THREE.Color(0x000000);
+        mat.emissive.copy(base.lerp(highlightColor, meta.currentGlow));
+      } else if (mat.color && meta.original.color) {
+        mat.color.copy(meta.original.color.clone().lerp(highlightColor, meta.currentGlow * 0.5));
+      }
+    });
+  }
+
+  // Development helper overlay & diagnostics
+  createInteractionDebugOverlay(foundKeys, missingKeys) {
+    if (!this.isDevelopment) return;
+    if (document.getElementById('interaction-debug-overlay')) return;
+    const overlay = document.createElement('div');
+    overlay.id = 'interaction-debug-overlay';
+    overlay.style.cssText = 'position:fixed;left:20px;bottom:20px;z-index:10001;font:11px/1.4 monospace;background:rgba(0,0,0,0.65);color:#fff;padding:10px 12px;border:1px solid rgba(255,255,255,0.15);border-radius:6px;max-width:260px;backdrop-filter:blur(6px);';
+    const foundList = Array.from(foundKeys).sort().join(', ') || '—';
+    const missingList = missingKeys.length ? missingKeys.join(', ') : 'None';
+    overlay.innerHTML = `
+      <div style="font-weight:bold;margin-bottom:4px;color:#ffd54f;">Stations Debug</div>
+      <div><strong>Found:</strong> ${foundList}</div>
+      <div><strong>Missing:</strong> <span style="color:${missingKeys.length?'#ff8080':'#8bc34a'};">${missingList}</span></div>
+      <div><strong>Interactive Objects:</strong> ${this.interactiveObjects.length}</div>
+      <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+        <button id="reload-interactive" style="flex:1 1 auto;background:#374151;color:#fff;border:1px solid #555;padding:4px 6px;border-radius:4px;cursor:pointer;">Reload</button>
+        <button id="diag-interactive" style="flex:1 1 auto;background:#2563eb;color:#fff;border:1px solid #1d4ed8;padding:4px 6px;border-radius:4px;cursor:pointer;">Diag</button>
+        <button id="close-interactive" style="flex:0 1 auto;background:#555;color:#fff;border:1px solid #666;padding:4px 6px;border-radius:4px;cursor:pointer;">×</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#reload-interactive').addEventListener('click', () => { try { this.setupInteractiveObjects(); } catch(e){ console.error(e);} });
+    overlay.querySelector('#diag-interactive').addEventListener('click', () => { this.runInteractionDiagnostics && this.runInteractionDiagnostics(); });
+    overlay.querySelector('#close-interactive').addEventListener('click', () => overlay.remove());
+  }
+
+  runInteractionDiagnostics() {
+    const results = { totalMapped: Object.keys(this.stationMapping||{}).length, interactiveCount: this.interactiveObjects.length, missing: [], duplicatedMaterials: 0 };
+    const found = new Set(this.interactiveObjects.map(m => m.stationKey));
+    Object.keys(this.stationMapping||{}).forEach(k => { if (!found.has(k)) results.missing.push(k); });
+    const matUsage = new Map();
+    this.interactiveObjects.forEach(meta => { const mat = meta.object.material; if (!mat) return; matUsage.set(mat.uuid, (matUsage.get(mat.uuid)||0)+1); });
+    matUsage.forEach(count => { if (count>1) results.duplicatedMaterials++; });
+    console.log('🧪 Interaction Diagnostics:', results);
+    if (results.missing.length) console.warn('⚠️ Missing station mapping keys:', results.missing); else console.log('✅ All station mapping keys present.');
+    if (results.duplicatedMaterials>0) console.warn('⚠️ Some interactive objects still share materials:', results.duplicatedMaterials); else console.log('✅ All interactive materials properly cloned.');
+    return results;
+  }
+
+  // Trigger modal by creating (if needed) a temporary hidden element
+  triggerModal(modalId, stationKey = '') {
+    if (!modalId) {
+      console.warn('⚠️ triggerModal called without modalId');
+      return;
+    }
+
+    // Debounce repeated rapid triggers for same station
+    const now = performance.now();
+    this._lastModalTriggerMap = this._lastModalTriggerMap || new Map();
+    const lastTime = this._lastModalTriggerMap.get(modalId) || 0;
+    if (now - lastTime < 400) return; // debounce duplicate rapid triggers
+    this._lastModalTriggerMap.set(modalId, now);
+
+    // Find existing triggers (could be multiple)
+    const matches = Array.from(document.querySelectorAll(`[data-modal-trigger="${modalId}"]`));
+    let triggerEl = null;
+    if (matches.length > 0) {
+      // Prefer visible element with anchor/button child
+      triggerEl = matches.find(el => this._isElementVisible(el)) || matches[0];
+    }
+
+    let created = false;
+    if (!triggerEl) {
+      // Create a temporary structural element closer to example markup (li > a)
+      const temp = document.createElement('li');
+      temp.dataset.modalTrigger = modalId;
+      temp.setAttribute('aria-hidden', 'true');
+      temp.style.cssText = 'position:absolute;width:1px;height:1px;left:-9999px;top:auto;overflow:hidden;';
+      const a = document.createElement('a');
+      a.href = '#';
+      a.textContent = 'auto-trigger';
+      temp.appendChild(a);
+      document.body.appendChild(temp);
+      triggerEl = temp;
+      created = true;
+    }
+
+    // Determine best dispatch target (anchor/button inside or the element itself)
+    let targetEl = triggerEl.matches('a,button') ? triggerEl : triggerEl.querySelector('a,button') || triggerEl;
+
+    // Full synthetic interaction sequence to maximize compatibility
+    const eventOptions = { bubbles: true, cancelable: true };
+    const sequence = ['pointerdown', 'mousedown', 'mouseup', 'click'];
+    sequence.forEach(type => { try { targetEl.dispatchEvent(new MouseEvent(type, eventOptions)); } catch (e) { /* ignore */ } });
+
+    // Fallback: if a global modal open function exists, call it
+    if (typeof window.openModal === 'function') {
+      try {
+        window.openModal(modalId);
+      } catch (e) { /* ignore */ }
+    }
+
+    // Attempt to lazy load assets for this modal after dispatch (modal may mount asynchronously)
+    this.lazyLoadModalAssets(modalId);
+
+    // Clean temporary element
+    if (created) {
+      setTimeout(() => {
+        if (triggerEl && triggerEl.parentNode) triggerEl.parentNode.removeChild(triggerEl);
+      }, 1500);
+    }
+  }
+
+  _isElementVisible(el) {
+    if (!el) return false;
+    const style = window.getComputedStyle(el);
+    if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return false;
+    const rect = el.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
+  }
+
+  // ============================================================================================
+  // LAZY LOADING FOR MODAL / STATION CONTENT
+  // ============================================================================================
+  // Usage pattern for HTML inside modal:
+  // <img data-src="/path/heavy.jpg" alt="..." width="400" height="300" />
+  // <source data-srcset="/path/heavy@1x.jpg 1x, /path/heavy@2x.jpg 2x" type="image/jpeg" />
+  // <div data-bg-src="/path/bg.jpg"></div>
+  // <video data-src="/video/clip.mp4" poster="/video/poster.jpg"></video>
+  // On first user click for that station/modal, assets are populated.
+
+  lazyLoadModalAssets(modalId, attempt = 0) {
+    if (!modalId) return;
+    this._lazyLoadedModals = this._lazyLoadedModals || new Set();
+    if (this._lazyLoadedModals.has(modalId)) return; // already done
+
+    const selectors = [
+      `[data-modal-id="${modalId}"]`,
+      `[data-modal="${modalId}"]`,
+      `#${modalId}`
+    ];
+    let modalEl = null;
+    for (const sel of selectors) {
+      modalEl = document.querySelector(sel);
+      if (modalEl) break;
+    }
+
+    // If modal not yet in DOM (maybe created lazily by framework), retry up to 10 times
+    if (!modalEl) {
+      if (attempt < 10) {
+        setTimeout(() => this.lazyLoadModalAssets(modalId, attempt + 1), 120);
+      }
+      return;
+    }
+
+    // Images
+    const imgs = modalEl.querySelectorAll('img[data-src]');
+    imgs.forEach(img => {
+      if (!img.getAttribute('src')) {
+        img.setAttribute('src', img.getAttribute('data-src'));
+      }
+      const ds = img.getAttribute('data-srcset');
+      if (ds && !img.getAttribute('srcset')) img.setAttribute('srcset', ds);
+    });
+
+    // Picture sources
+    const sources = modalEl.querySelectorAll('source[data-srcset]');
+    sources.forEach(src => {
+      if (!src.getAttribute('srcset')) src.setAttribute('srcset', src.getAttribute('data-srcset'));
+    });
+
+    // Background images
+    const bgEls = modalEl.querySelectorAll('[data-bg-src]');
+    bgEls.forEach(el => {
+      if (!el.dataset.bgLoaded) {
+        el.style.backgroundImage = `url('${el.getAttribute('data-bg-src')}')`;
+        el.dataset.bgLoaded = '1';
+      }
+    });
+
+    // Videos
+    const videos = modalEl.querySelectorAll('video[data-src]');
+    videos.forEach(v => {
+      if (!v.getAttribute('src')) {
+        v.setAttribute('src', v.getAttribute('data-src'));
+        try { v.load(); } catch (e) { /* ignore */ }
+      }
+    });
+
+    // Any element with data-inline-html pointing to a URL to fetch (optional enhancement)
+    const inline = modalEl.querySelectorAll('[data-inline-html]');
+    inline.forEach(el => {
+      if (!el.dataset.inlineLoaded) {
+        const url = el.getAttribute('data-inline-html');
+        fetch(url).then(r => r.text()).then(html => { el.innerHTML = html; }).catch(()=>{});
+        el.dataset.inlineLoaded = '1';
+      }
+    });
+
+    this._lazyLoadedModals.add(modalId);
   }
 }
 
@@ -2035,66 +2148,7 @@ window.copyCurrentPosition = async function() {
   }
 };
 
-// =============================================================================
-// DEVELOPMENT ONLY - POI MAPPING GLOBAL FUNCTIONS
-// =============================================================================
-// PRODUCTION NOTE: Remove this entire section for production deployment
-
-window.togglePOIMapping = function() {
-  const loader = window.simple3DLoader;
-  if (!loader || !loader.isDevelopment) return;
-
-  loader.togglePOIMappingMode();
-};
-
-window.clearPOIs = function() {
-  const loader = window.simple3DLoader;
-  if (!loader || !loader.isDevelopment) return;
-
-  loader.clearAllPOIs();
-};
-
-window.exportPOIs = async function() {
-  const loader = window.simple3DLoader;
-  if (!loader || !loader.isDevelopment || loader.tempPOIs.length === 0) {
-    console.log('No POIs to export');
-    return;
-  }
-
-  const poiConfig = {
-    pois: loader.tempPOIs.map(poi => ({
-      id: poi.id,
-      name: poi.name,
-      type: poi.type,
-      position: poi.position,
-      // Template for additional POI data
-      content: {
-        title: poi.name,
-        description: "Add POI description here",
-        image: "path/to/poi/image.jpg",
-        website: "https://example.com"
-      }
-    })),
-    exportedAt: new Date().toISOString(),
-    totalPOIs: loader.tempPOIs.length
-  };
-
-  const exportData = JSON.stringify(poiConfig, null, 2);
-
-  try {
-    await navigator.clipboard.writeText(exportData);
-    console.log('📋 POI configuration copied to clipboard!');
-    console.log('📊 Exported POIs:', poiConfig);
-
-    // Show notification
-    if (loader.showPOIMappingNotification) {
-      loader.showPOIMappingNotification(`✅ ${poiConfig.totalPOIs} POIs exported to clipboard!\n\nPaste into your POI configuration file.`);
-    }
-  } catch (err) {
-    console.warn('Copy failed, POI data logged to console:', exportData);
-    alert('Copy failed - check console for POI configuration');
-  }
-};
+// (Phase 2 Cleanup) POI mapping global functions removed
 
 // Export current controls configuration to clipboard
 window.exportControlsConfig = function() {
@@ -2185,16 +2239,7 @@ window.exportControlsConfig = function() {
 };
 
 // Console helper commands
-if (typeof window !== 'undefined' && window.simple3DLoader && window.simple3DLoader.isDevelopment) {
-  console.log(`
-🎯 POI Mapping Commands Available:
-- togglePOIMapping() - Enable/disable POI placement mode
-- clearPOIs() - Remove all placed POI markers
-- exportPOIs() - Copy POI configuration to clipboard
-- Ctrl+Alt+P - Toggle POI mapping mode
-- Ctrl+C - Clear all POIs (when in POI mode)
-  `);
-}
+// (Phase 2 Cleanup) POI mapping console helper commands removed
 
 // Auto-initialization
 if (document.readyState === 'loading') {
