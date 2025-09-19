@@ -133,6 +133,14 @@ Production scripts load dynamic configurations (local in dev / Vercel in prod):
 
 # Claude Development Notes
 
+## Temporary Configuration: Webflow.io Production Mode
+
+**CURRENT OVERRIDE**: `WEBFLOW_USE_PRODUCTION_MODE = true` in `src/scripts/simple-3d-loader.js:20`
+
+**Effect**: `webflow.io` domains now try Vercel first → fallback to localhost (production behavior)
+
+**To revert**: Change `const WEBFLOW_USE_PRODUCTION_MODE = true;` to `false` on line 20
+
 ## Project: Webflow Gunther Map - 3D Interactive Map
 
 ### Overview

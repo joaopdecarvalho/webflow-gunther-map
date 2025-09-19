@@ -15,6 +15,10 @@
  * 4. Panel functions are safe to leave - they won't break if DOM elements don't exist
  */
 
+// TEMPORARY: Make webflow.io domains use production URLs (Vercel first)
+// Set to false to revert to localhost-first behavior
+const WEBFLOW_USE_PRODUCTION_MODE = true;
+
 class Simple3DLoader {
   constructor() {
     // Inject CSS immediately to prevent any flash
@@ -138,12 +142,17 @@ class Simple3DLoader {
   }
 
   detectDevelopmentMode() {
-    // Check for localhost, development domains, Webflow domains, or debug flags
+    const isWebflowDomain = location.hostname.includes('webflow.io') || location.hostname.includes('webflow.com');
+    
+    // TEMPORARY OVERRIDE: treat webflow domains as production if flag is enabled
+    if (isWebflowDomain) {
+      return !WEBFLOW_USE_PRODUCTION_MODE; // true flag = false isDevelopment = production behavior
+    }
+    
+    // Normal detection for other domains
     return location.hostname === 'localhost' ||
            location.hostname === '127.0.0.1' ||
            location.hostname.includes('dev') ||
-           location.hostname.includes('webflow.io') || // Enable on Webflow staging/preview
-           location.hostname.includes('webflow.com') || // Enable on Webflow editor
            location.search.includes('debug=true') ||
            location.hostname.includes('5173'); // Vite dev server
   }
