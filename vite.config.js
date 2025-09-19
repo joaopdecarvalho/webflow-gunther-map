@@ -4,9 +4,7 @@ import path from 'path';
 
 // Get all script files dynamically
 const getScriptEntries = () => {
-  const entries = {
-    router: './src/router.js'
-  };
+  const entries = {};
   
   const scriptsDir = './src/scripts';
   if (fs.existsSync(scriptsDir)) {
