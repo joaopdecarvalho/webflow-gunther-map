@@ -1,5 +1,37 @@
-<!-- Script Router System - Environment-aware loading -->
-<script src="https://webflow-gunther-map.vercel.app/src/router.js"></script>
+<!-- Script Router System - Environment-aware loading with fallback -->
+<script>
+(function() {
+  // Try localhost first, then fallback to Vercel
+  const localUrl = 'http://localhost:8080/src/scripts/simple-3d-loader.js';
+  const vercelUrl = 'https://webflow-gunther-map.vercel.app/src/scripts/simple-3d-loader.js';
+  
+  function loadScript(url, fallbackUrl) {
+    const script = document.createElement('script');
+    script.src = url;
+    
+    script.onerror = function() {
+      console.log('Failed to load from ' + url + ', trying fallback...');
+      if (fallbackUrl) {
+        const fallbackScript = document.createElement('script');
+        fallbackScript.src = fallbackUrl;
+        fallbackScript.onerror = function() {
+          console.error('Failed to load router from both localhost and Vercel');
+        };
+        document.head.appendChild(fallbackScript);
+      }
+    };
+    
+    script.onload = function() {
+      console.log('Successfully loaded router from: ' + url);
+    };
+    
+    document.head.appendChild(script);
+  }
+  
+  // Start loading process
+  loadScript(localUrl, vercelUrl);
+})();
+</script>
 
 <!-- Anti-Flash Styling (Critical - Load Immediately) -->
 <style>
@@ -13,5 +45,12 @@
     display: block;
     width: 100% !important;
     height: 100% !important;
+  }
+    
+  .nav_mobile_logo,
+  .nav_button_wrap,
+  .bottom_contain {
+    opacity: 0;
+    /* Don't use any positioning - let GSAP handle it completely */
   }
 </style>

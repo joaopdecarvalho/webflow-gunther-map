@@ -2,28 +2,34 @@
 
 ## Project Overview
 
-Interactive 3D map system for Webflow integration using Three.js. Features dual-environment script router with **configuration export system** that enables seamless transfer of test interface settings to production Webflow sites with automatic **Vercel** deployment.
+Interactive 3D map system for Webflow integration using Three.js. Features **direct script loading** with environment-aware fallback system and **configuration export workflow** that enables seamless transfer of test interface settings to production Webflow sites with automatic **Vercel** deployment.
 
 ## Architecture Pattern
 
-**Script Router + Configuration System**: All scripts load through `src/router.js` with environment detection. The **configuration export workflow** allows `Advanced-3D-Testing-Suite.html` settings to be exported as JSON and consumed in production.
+**Direct Script Loading + Configuration System**: Scripts load directly via smart fallback system (localhost → Vercel). The **configuration export workflow** allows `Advanced-3D-Testing-Suite.html` settings to be exported as JSON and consumed in production.
 
 ```javascript
-// Environment detection in router.js
-// If running on localhost, load everything from the local dev server
-const isLocal = ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
+// Direct loading with environment-aware fallback
+// Try localhost first, then fallback to Vercel
+const localUrl = 'http://localhost:8080/src/scripts/simple-3d-loader.js';
+const vercelUrl = 'https://webflow-gunther-map.vercel.app/src/scripts/simple-3d-loader.js';
 
-const baseUrl = isLocal
-  ? 'http://localhost:8080/src'
-  : 'https://webflow-gunther-map.vercel.app/src';
+function loadScript(url, fallbackUrl) {
+  const script = document.createElement('script');
+  script.src = url;
 
-// Configuration source (local in dev, Vercel in prod)
-const configUrl = isLocal
-  ? 'http://localhost:8080/src/config/3d-config.json'
-  : 'https://webflow-gunther-map.vercel.app/src/config/3d-config.json';
+  script.onerror = function() {
+    if (fallbackUrl) {
+      const fallbackScript = document.createElement('script');
+      fallbackScript.src = fallbackUrl;
+      document.head.appendChild(fallbackScript);
+    }
+  };
 
-// Optional: override for experiments
-// window.SCRIPT_BASE_URL = 'http://localhost:8080/src' // or Vercel URL to force prod
+  document.head.appendChild(script);
+}
+
+loadScript(localUrl, vercelUrl);
 ```
 
 ## Development Workflow
@@ -81,14 +87,14 @@ await this.loadConfiguration(configUrl);
 ## Webflow Integration
 
 * **Head code injection:** Use `webflow-production-embed-enhanced.html` in Webflow Site Settings → Custom Code → Head
-* **Page‑specific loading:** Router detects homepage and loads `simple-3d-loader.js` automatically
-* **Global scripts:** Defined in `window.globalScripts` array (loads on every page)
-* **Production toggle:** Uncomment `window.SCRIPT_BASE_URL` line to force a specific mode during testing
+* **Direct loading:** Script automatically loads `simple-3d-loader.js` with localhost → Vercel fallback
+* **Environment detection:** Automatically uses localhost in development, Vercel in production
+* **No configuration needed:** Works seamlessly across all environments
 
 ## Key Files & Patterns
 
-* `src/router.js`: Core script loader — handles environment switching and script discovery
 * `src/scripts/simple-3d-loader.js`: Main script for loading 3D models and handling interactions
+* `webflow-production-embed-enhanced.html`: Production embed code with direct script loading and fallback
 * `webflow-staging-site-files/index.html`: **Staging site** for testing Webflow integration (primary testing surface)
 * `Advanced-3D-Testing-Suite.html`: Development interface with real‑time camera position copying and configuration export
 * `vite.config.js`: Auto‑discovery of scripts, CORS headers for Webflow, models endpoint
@@ -99,7 +105,7 @@ await this.loadConfiguration(configUrl);
 ## Adding New Scripts
 
 1. Create file in `src/scripts/scriptname.js`
-2. Add to `window.globalScripts` or `window.pageScripts` in router
+2. Update `webflow-production-embed-enhanced.html` to load your new script directly
 3. Vite automatically includes in build — no manual configuration needed
 
 ## Configuration JSON Format

@@ -111,7 +111,7 @@ class Simple3DLoader {
     };
     
     // Model URL - using Vercel URL for faster loading and updates
-    this.modelUrl = 'https://webflow-gunther-map.vercel.app/Goetheviertel_250812_with-textures_webp25.glb';
+    this.modelUrl = 'https://webflow-gunther-map.vercel.app/Goetheviertel_250919_withflags_webp25.glb';
     
     this.init();
   }
