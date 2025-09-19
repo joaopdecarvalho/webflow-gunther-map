@@ -1,35 +1,80 @@
-<!-- Script Router System - Environment-aware loading with fallback -->
+<!-- Modular 3D Loader System - Environment-aware loading with fallback -->
 <script>
 (function() {
-  // Try localhost first, then fallback to Vercel
-  const localUrl = 'http://localhost:8080/src/scripts/simple-3d-loader.js';
-  const vercelUrl = 'https://webflow-gunther-map.vercel.app/src/scripts/simple-3d-loader.js';
-  
-  function loadScript(url, fallbackUrl) {
+  // Detect environment
+  const isDevelopment = location.hostname === 'localhost' ||
+                       location.hostname === '127.0.0.1' ||
+                       location.hostname.includes('dev') ||
+                       location.hostname.includes('webflow.io') ||
+                       location.hostname.includes('webflow.com') ||
+                       location.search.includes('debug=true') ||
+                       location.hostname.includes('5173');
+
+  // Entry points for modular system
+  const entryPoints = {
+    development: {
+      local: 'http://localhost:8080/src/modules/entry/development.js',
+      vercel: 'https://webflow-gunther-map.vercel.app/src/modules/entry/development.js'
+    },
+    production: {
+      local: 'http://localhost:8080/src/modules/entry/production.js',
+      vercel: 'https://webflow-gunther-map.vercel.app/src/modules/entry/production.js'
+    }
+  };
+
+  // Legacy fallback (for gradual migration)
+  const legacyFallback = {
+    local: 'http://localhost:8080/src/scripts/simple-3d-loader.js',
+    vercel: 'https://webflow-gunther-map.vercel.app/src/scripts/simple-3d-loader.js'
+  };
+
+  function loadModularSystem() {
+    const env = isDevelopment ? 'development' : 'production';
+    const primaryUrl = entryPoints[env].local;
+    const fallbackUrl = entryPoints[env].vercel;
+
+    console.log(`🚀 Loading ${env} modular system...`);
+
+    loadScript(primaryUrl, fallbackUrl, function() {
+      // If modular system fails, fall back to legacy monolith
+      console.warn('⚠️ Modular system failed, falling back to legacy loader...');
+      loadScript(legacyFallback.local, legacyFallback.vercel);
+    });
+  }
+
+  function loadScript(url, fallbackUrl, errorCallback) {
     const script = document.createElement('script');
+    script.type = 'module';
     script.src = url;
-    
+
     script.onerror = function() {
       console.log('Failed to load from ' + url + ', trying fallback...');
       if (fallbackUrl) {
         const fallbackScript = document.createElement('script');
+        fallbackScript.type = 'module';
         fallbackScript.src = fallbackUrl;
         fallbackScript.onerror = function() {
-          console.error('Failed to load router from both localhost and Vercel');
+          console.error('Failed to load from both primary and fallback URLs');
+          if (errorCallback) errorCallback();
+        };
+        fallbackScript.onload = function() {
+          console.log('✅ Successfully loaded from fallback: ' + fallbackUrl);
         };
         document.head.appendChild(fallbackScript);
+      } else if (errorCallback) {
+        errorCallback();
       }
     };
-    
+
     script.onload = function() {
-      console.log('Successfully loaded router from: ' + url);
+      console.log('✅ Successfully loaded from: ' + url);
     };
-    
+
     document.head.appendChild(script);
   }
-  
-  // Start loading process
-  loadScript(localUrl, vercelUrl);
+
+  // Start modular loading process
+  loadModularSystem();
 })();
 </script>
 
