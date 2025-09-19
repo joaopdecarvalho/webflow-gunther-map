@@ -34,7 +34,7 @@ loadScript(localUrl, vercelUrl);
 
 ## Development Workflow
 
-* **Primary testing interface:** `webflow-staging-site-files/index.html` (staging page that mirrors Webflow layout/UX)
+* **Primary testing interface:** `https://go-goethe.webflow.io/` (staging page that mirrors Webflow layout/UX)
 * **Power testing interface:** `Advanced-3D-Testing-Suite.html` (comprehensive 3D testing with camera copying + configuration export)
 * **Configuration export:** Export from testing suite → commit to repo → **Vercel auto‑deploys on push** → production reads new JSON
 * **Dev server:** `npm run dev` starts Vite on port 8080 with CORS for Webflow integration
@@ -77,8 +77,8 @@ loadScript(localUrl, vercelUrl);
 // Model URLs pattern - Vercel for production, local for dev
 this.modelUrls = {
   goetheviertel: isLocal
-    ? 'http://localhost:8080/Goetheviertel_250812_with-textures_webp25.glb'
-    : 'https://webflow-gunther-map.vercel.app/Goetheviertel_250812_with-textures_webp25.glb'
+    ? 'http://localhost:8080/Goetheviertel_250919_with_flags_webp80.glb'
+    : 'https://webflow-gunther-map.vercel.app/Goetheviertel_250919_with_flags_webp80.glb'
 };
 
 // Configuration loading (env‑aware)
@@ -96,8 +96,6 @@ await this.loadConfiguration(configUrl);
 
 * `src/scripts/simple-3d-loader.js`: Main script for loading 3D models and handling interactions
 * `webflow-production-embed-enhanced.html`: Production embed code with direct script loading and fallback
-* `webflow-staging-site-files/index.html`: **Staging site** for testing Webflow integration (primary testing surface)
-* `Advanced-3D-Testing-Suite.html`: Development interface with real‑time camera position copying and configuration export
 * `vite.config.js`: Auto‑discovery of scripts, CORS headers for Webflow, models endpoint
 * `public/`: 3D models (served locally in dev, via Vercel in prod)
 * `/src/config/`: Configuration files (local in dev, Vercel in prod)
@@ -130,42 +128,7 @@ Production scripts load dynamic configurations (local in dev / Vercel in prod):
     "delay": 2000
   }
 }
-```
 
-## Phase 1 Lazy Loading Implementation
-
-**Intelligent Loading System**: The 3D loader now supports multiple loading triggers to optimize performance and user experience:
-
-### Loading Triggers
-
-* **Viewport Intersection**: Uses IntersectionObserver to detect when the 3D container enters the viewport
-* **User Interaction**: Responds to clicks, hover, touch, and keyboard interactions
-* **Delay Timer**: Optional delay-based loading after a specified time
-* **Manual Trigger**: Programmatic loading via `loader.load()` method
-
-### Loading States & UI
-
-* **Pending**: Shows animated loading placeholder with spinner
-* **Loading**: Updates progress during model download with percentage
-* **Loaded**: Removes placeholder and shows final 3D scene
-* **Error**: Displays user-friendly error state with retry button
-
-### Configuration
-
-```javascript
-// Enable/disable lazy loading
-this.lazyLoadingEnabled = true;
-
-// Configure triggers
-this.loadTriggers = {
-  viewport: true,      // Load when container enters viewport
-  userInteraction: true, // Load on first user interaction
-  delay: false,        // Load after delay (requires delay config)
-  manual: false        // Manual loading only
-};
-
-// Manual trigger example
-window.simple3DLoader.load();
 ```
 
 # Claude Development Notes
@@ -190,107 +153,9 @@ This project implements a 3D interactive map for a Webflow homepage using Three.
 * `src/scripts/simple-3d-loader.js` — **Main production script** with development POI mapping features
 * `public/Goetheviertel_250812_with-textures_webp25.glb` — Main 3D model (GLB format)
 
-### POI Mapping System (Development Only)
-
-**Controls:**
-
-* `Ctrl+Alt+P` — Toggle POI mapping mode (enables click‑to‑place)
-* `Ctrl+C` — Clear all POI markers (when in mapping mode)
-* `togglePOIMapping()` — Console command to enable/disable POI placement
-* `clearPOIs()` — Console command to remove all markers
-* `exportPOIs()` — Console command to copy POI configuration to clipboard
-
-**Workflow:**
-
-1. Load your dev site with the 3D model
-2. Press `Ctrl+Alt+P` to enter POI mapping mode
-3. Click directly on the 3D model where you want POIs
-4. Red spherical markers will appear at click locations
-5. Use `exportPOIs()` to copy configuration to clipboard
-6. Use `clearPOIs()` to remove markers and start over
-
 ### Model URLs (Vercel CDN)
 
-* Goetheviertel: `https://webflow-gunther-map.vercel.app/Goetheviertel_250812_with-textures_webp25.glb`
-
-### Development Features
-
-* **Camera Position Debugging:** Real‑time coordinates, target, distance, rotation
-* **Copy Camera Position:** One‑click copying of camera setup for production
-* **Performance Optimization:** Automatic quality adaptation based on device capabilities
-* **POI Coordinate Mapping:** Visual click‑to‑place system for point‑of‑interest positioning
-
-### Production Integration
-
-For Webflow deployment:
-
-1. Use `src/scripts/simple-3d-loader.js` as the main script
-2. Host models on Vercel for CORS‑free access (dev uses local `public/`)
-3. Ensure proper z‑index layering for UI elements
-
-### Production Cleanup Instructions
-
-**IMPORTANT:** Before deploying to production, remove all POI mapping development code:
-
-**Option 1: Automated Cleanup (Recommended)**
-
-* Remove all code blocks marked with `// DEVELOPMENT ONLY` comments
-* Search for `PRODUCTION NOTE:` comments and follow removal instructions
-
-**Option 2: Manual Section Removal**
-Remove these specific sections from `simple-3d-loader.js`:
-
-1. **Constructor POI Variables** (lines \~35–46):
-
-```javascript
-// =============================================================================
-// DEVELOPMENT ONLY - POI MAPPING SYSTEM
-// =============================================================================
-// Remove this entire if block
-```
-
-2. **Scene Setup POI Initialization** (lines \~828–834):
-
-```javascript
-// =============================================================================
-// DEVELOPMENT ONLY - POI MAPPING INITIALIZATION
-// =============================================================================
-// Remove this entire if block
-```
-
-3. **POI Methods** (lines \~1245–1469):
-
-```javascript
-// =============================================================================
-// DEVELOPMENT ONLY - POI MAPPING METHODS
-// =============================================================================
-// Remove this entire section until the next separator
-```
-
-4. **Dispose POI Cleanup** (lines \~1170–1176):
-
-```javascript
-// =============================================================================
-// DEVELOPMENT ONLY - POI CLEANUP
-// =============================================================================
-// Remove this entire if block
-```
-
-5. **Global POI Functions** (lines \~1538–1609):
-
-```javascript
-// =============================================================================
-// DEVELOPMENT ONLY - POI MAPPING GLOBAL FUNCTIONS
-// =============================================================================
-// Remove this entire section
-```
-
-**Verification:**
-
-* Search for `isDevelopment` — should only appear in `detectDevelopmentMode()` method
-* Search for `POI` — should return no results
-* Search for `raycaster` — should return no results
-* Test that production version works without POI functionality
+* Goetheviertel: `https://webflow-gunther-map.vercel.app/Goetheviertel_250919_with_flags_webp80.glb`
 
 ### Technical Stack
 
@@ -302,5 +167,5 @@ Remove these specific sections from `simple-3d-loader.js`:
 ### Notes
 
 * DRACO decoder hosted on Google's CDN for compression support
-* Staging page (`webflow-staging-site-files/index.html`) provides real‑time debugging with near‑production UI parity
+* Staging page (`https://go-goethe.webflow.io/`) provides real‑time debugging with near‑production UI parity
 * Camera positions can be copied directly from test interface to configuration JSON

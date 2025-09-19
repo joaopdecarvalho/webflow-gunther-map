@@ -58,46 +58,46 @@ Transform the monolithic 1,849-line `simple-3d-loader.js` into a maintainable mo
 **Goal**: Extract stable, reusable core systems and create module router
 
 ### 1.1 Simple Module Loading System
-- [ ] **Task 1.1.1** - Add module loading helper methods to main loader
-  - [ ] 1.1.1a - Extract existing `loadDebugPanelsScript` into generic `loadModuleScript`
-  - [ ] 1.1.1b - Add generic `loadModule(moduleName)` method using proven pattern
-  - [ ] 1.1.1c - Environment-aware URL generation for any module
-  - [ ] 1.1.1d - Fallback mechanism for all modules
+- [x] **Task 1.1.1** - Add module loading helper methods to main loader (COMPLETED 2025-09-19)
+  - [x] 1.1.1a - Extract existing `loadDebugPanelsScript` into generic `loadModuleScript`
+  - [x] 1.1.1b - Add generic `loadModule(moduleName)` method using proven pattern
+  - [x] 1.1.1c - Environment-aware URL generation for any module
+  - [x] 1.1.1d - Fallback mechanism for all modules
 
 ### 1.2 Existing Module Alignment (SIMPLIFIED)
 - [x] **Task 1.2.1** - ✅ `debug-panels.js` already follows correct pattern
   - [x] 1.2.1a - Uses function-based attachment ✅ PROVEN TO WORK
   - [x] 1.2.1b - Script injection loading ✅ PROVEN TO WORK
   - [x] 1.2.1c - Dual compatibility (ES6 + global) ✅ PROVEN TO WORK
-  - [ ] 1.2.1d - Move from `src/scripts/` to `src/modules/dev/` (file organization only)
+  - [~] 1.2.1d - Move from `src/scripts/` to `src/modules/dev/` (STUB: placeholder stub created; full migration pending removal of legacy path after validation)
 
 ### 1.3 Core Engine Extraction (SIMPLIFIED)
 - [ ] **Task 1.3.1** - Extract `src/modules/core/core-engine.js` using function pattern
-  - [ ] 1.3.1a - Create `attachCoreEngine(loader)` function (lines 829-879)
-  - [ ] 1.3.1b - Move scene/camera/renderer setup methods to module
-  - [ ] 1.3.1c - Add methods to loader: `loader.setupScene()`, `loader.setupCamera()`
-  - [ ] 1.3.1d - Test loading with `loader.loadModule('core-engine')`
+  - [x] 1.3.1a - Create `attachCoreEngine(loader)` function (initial minimal extraction complete)
+  - [x] 1.3.1b - Move scene/camera/renderer setup methods to module (Monolith now delegates; legacy methods wrapped only for fallback)
+  - [x] 1.3.1c - Add methods to loader: `loader.setupScene()`, `loader.setupCamera()` (Camera wrapper added 2025-09-19)
+  - [ ] 1.3.1d - Test loading with `loader.loadModule('core/core-engine')` (Pending manual validation pass)
 
 ### 1.4 Model Loading System (SIMPLIFIED)
 - [ ] **Task 1.4.1** - Extract `src/modules/core/model-loader.js` using function pattern
-  - [ ] 1.4.1a - Create `attachModelLoader(loader)` function (lines 898-992)
-  - [ ] 1.4.1b - Move GLB loading and processing methods to module
-  - [ ] 1.4.1c - Add methods to loader: `loader.loadModel()`, `loader.centerModel()`
-  - [ ] 1.4.1d - Test loading with `loader.loadModule('model-loader')`
+  - [x] 1.4.1a - Create `attachModelLoader(loader)` function (INITIAL extraction complete 2025-09-19)
+  - [x] 1.4.1b - Move GLB loading and processing methods to module (DUPLICATED in monolith pending validation)
+  - [x] 1.4.1c - Add methods to loader: `loader.loadModel()`, `loader.centerModel()` (module overrides instance if loaded first)
+  - [x] 1.4.1d - Test loading with `loader.loadModule('core/model-loader')` (Validated via console logs 2025-09-19)
 
 ### 1.5 Controls System (SIMPLIFIED)
 - [ ] **Task 1.5.1** - Extract `src/modules/core/controls-manager.js` using function pattern
-  - [ ] 1.5.1a - Create `attachControlsManager(loader)` function (lines 994-1079)
-  - [ ] 1.5.1b - Move OrbitControls setup methods to module
-  - [ ] 1.5.1c - Add methods to loader: `loader.setupControls()`, `loader.updateControls()`
-  - [ ] 1.5.1d - Test loading with `loader.loadModule('controls-manager')`
+  - [x] 1.5.1a - Create `attachControlsManager(loader)` function (INITIAL extraction complete 2025-09-19)
+  - [x] 1.5.1b - Move OrbitControls setup methods to module (DUPLICATED in monolith pending validation)
+  - [x] 1.5.1c - Add methods to loader: `loader.setupControls()`, `loader.updateControls()`
+  - [x] 1.5.1d - Test loading with `loader.loadModule('core/controls-manager')` (Validated via console logs 2025-09-19)
 
 ### 1.6 Simplified Main Loader (REVISED)
 - [ ] **Task 1.6.1** - Refactor main loader to use modules
-  - [ ] 1.6.1a - Replace direct method calls with module loading
-  - [ ] 1.6.1b - Maintain same external API (backwards compatibility)
-  - [ ] 1.6.1c - Load core modules on demand instead of bundled
-  - [ ] 1.6.1d - Keep fallback to bundled code if modules fail
+  - [x] 1.6.1a - Replace direct method calls with module loading (ensureCoreModules centralizes logic 2025-09-19)
+  - [x] 1.6.1b - Maintain same external API (ensurePublicAPI() adds stubs if modules absent 2025-09-19)
+  - [x] 1.6.1c - Load core modules on demand instead of bundled (eager vs lazy sets + requestIdleCallback for animations)
+  - [x] 1.6.1d - Keep fallback to bundled code if modules fail (legacy *_legacy* bindings + conditional reassignment)
 
 ---
 
@@ -105,16 +105,16 @@ Transform the monolithic 1,849-line `simple-3d-loader.js` into a maintainable mo
 **Goal**: Complete core system extraction and separate development tools
 
 ### 2.1 Lighting and Animation Systems
-- [ ] **Task 2.1.1** - Extract `src/modules/core/LightingSystem.js` (lines 881-896)
-  - [ ] 2.1.1a - Ambient and directional lighting setup
-  - [ ] 2.1.1b - Dynamic lighting configuration
-  - [ ] 2.1.1c - Shadow mapping and optimization
+- [ ] **Task 2.1.1** - Extract `src/modules/core/lighting-system.js` (lines 881-896)
+  - [x] 2.1.1a - Ambient lighting setup extracted (lighting-system module initial 2025-09-19)
+  - [~] 2.1.1b - Dynamic lighting configuration (directional / intensity adaptation pending)
+  - [~] 2.1.1c - Shadow optimization (per-light shadow config not yet modularized)
 
-- [ ] **Task 2.1.2** - Extract `src/modules/core/AnimationSystem.js` (lines 447-503)
-  - [ ] 2.1.2a - Welcome animation system
-  - [ ] 2.1.2b - Smooth camera transitions
-  - [ ] 2.1.2c - Easing functions and animation curves
-  - [ ] 2.1.2d - Animation state management
+- [ ] **Task 2.1.2** - Extract `src/modules/core/animation-system.js` (lines 447-503)
+  - [x] 2.1.2a - Welcome animation system extracted (module added 2025-09-19)
+  - [~] 2.1.2b - Generic smooth camera transitions (only welcome path implemented)
+  - [~] 2.1.2c - Easing library abstraction (single inline easing retained)
+  - [ ] 2.1.2d - Animation state / cancellation management (pending)
 
 ### 2.2 Event Management
 - [ ] **Task 2.2.1** - Extract `src/modules/core/EventManager.js` (lines 1081-1116)
@@ -310,6 +310,6 @@ If any phase causes critical issues:
 
 ---
 
-*Last Updated: 2025-01-19*
+*Last Updated: 2025-09-19*
 *Total Estimated Tasks: 47 individual tasks across 4 phases*
 *Expected Timeline: Phase 1-2 (High Priority), Phase 3-4 (Lower Priority)*

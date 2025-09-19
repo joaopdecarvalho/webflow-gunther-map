@@ -216,6 +216,34 @@ export default defineConfig({
           });
         }
       }
+    },
+    {
+      name: 'copy-modules-directory',
+      writeBundle() {
+        const modulesSrc = path.join(process.cwd(), 'src', 'modules');
+        const modulesDest = path.join(process.cwd(), 'dist', 'src', 'modules');
+        try {
+          if (fs.existsSync(modulesSrc)) {
+            const copyRecursive = (srcDir, destDir) => {
+              if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+              const entries = fs.readdirSync(srcDir, { withFileTypes: true });
+              for (const entry of entries) {
+                const srcPath = path.join(srcDir, entry.name);
+                const destPath = path.join(destDir, entry.name);
+                if (entry.isDirectory()) {
+                  copyRecursive(srcPath, destPath);
+                } else if (entry.isFile() && entry.name.endsWith('.js')) {
+                  fs.copyFileSync(srcPath, destPath);
+                  console.log(`[modules] Copied: ${path.relative(process.cwd(), destPath)}`);
+                }
+              }
+            };
+            copyRecursive(modulesSrc, modulesDest);
+          }
+        } catch (err) {
+          console.warn('⚠️ Failed to copy modules directory:', err.message);
+        }
+      }
     }
   ],
   build: {

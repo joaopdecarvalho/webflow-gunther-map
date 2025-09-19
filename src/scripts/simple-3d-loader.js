@@ -166,10 +166,10 @@ class Simple3DLoader {
   async init() {
     try {
       // Find the container element
-      this.container = document.querySelector('#webgl-container') || 
+      this.container = document.querySelector('#webgl-container') ||
                        document.querySelector('.webgl-container') ||
                        document.querySelector('[data-webgl-container]');
-      
+
       if (!this.container) {
         console.error('WebGL container not found! Looking for #webgl-container');
         return;
@@ -180,32 +180,33 @@ class Simple3DLoader {
       // Apply initial styling to prevent gradient flash
       this.applyInitialStyling();
 
-      // Load Three.js from CDN
+      // Load Three.js then ensure core modules (or fallbacks) are ready
       await this.loadThreeJS();
-      
+      await this.ensureCoreModules();
+
       // Setup Three.js scene
       this.setupScene();
-      
+
       // Load the GLB model
       await this.loadModel();
-      
+
       // Setup controls
       this.setupControls();
-      
+
       // Handle window resize and visibility changes
       this.setupEventListeners();
-      
+
       // Start render loop
       this.animate();
-      
+
       // Play welcome animation if enabled
       if (this.config.animations.welcomeAnimation.enabled) {
         this.playWelcomeAnimation();
       }
-      
+
       // Remove loading state after everything is initialized
       this.finishLoading();
-      
+
       console.log('✅ 3D scene initialized successfully!');
       console.log('🧩 Debug panels are available with enableDebugPanels() method');
 
@@ -213,6 +214,110 @@ class Simple3DLoader {
       console.error('❌ Error initializing 3D scene:', error);
       this.loadingState = 'error';
     }
+  }
+
+  // Centralized core module loader + fallback binding
+  async ensureCoreModules() {
+    // Skip if already attempted
+    if (this._coreModulesEnsured) return;
+    this._coreModulesEnsured = true;
+    console.log('🧩 Ensuring core modules (Phase 1)...');
+    // Phase 1.6.1c: On‑demand / conditional module list
+    const eagerModules = [
+      'core/core-engine',       // Required before scene setup
+      'core/model-loader',      // Needed for loadModel()
+      'core/controls-manager'   // Needed for setupControls()
+    ];
+    // Lighting is generally inexpensive & required visually; keep eager unless explicitly disabled
+    if (!(this.config?.lighting?.warmAmbient?.enabled === false)) {
+      eagerModules.push('core/lighting-system');
+    }
+    // Animation module loaded only if welcome animation enabled (lazy after first frame)
+    const lazyModules = [];
+    if (this.config?.animations?.welcomeAnimation?.enabled) {
+      lazyModules.push('core/animation-system');
+    }
+
+    // Load eager modules sequentially for clearer error logs (avoid Promise noise masking root cause)
+    for (const mod of eagerModules) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        await this.loadModule(mod);
+      } catch (err) {
+        console.warn(`⚠️ Eager module failed '${mod}' -> fallback will be used where possible:`, err.message);
+      }
+    }
+
+    // Schedule lazy modules using requestIdleCallback / setTimeout fallback
+    if (lazyModules.length) {
+      const loadLazy = () => {
+        lazyModules.forEach(m => {
+          this.loadModule(m).catch(err => console.warn(`⚠️ Lazy module failed '${m}':`, err.message));
+        });
+      };
+      if (typeof window.requestIdleCallback === 'function') {
+        requestIdleCallback(loadLazy, { timeout: 1500 });
+      } else {
+        setTimeout(loadLazy, 500); // after first render(s)
+      }
+    }
+
+    // Fallback wiring (idempotent) if module methods not attached
+    if (!this.modelLoaderAttached) {
+      if (!this.loadModel || this.loadModel === Simple3DLoader.prototype.loadModel) {
+        this.loadModel = this._legacyLoadModel.bind(this);
+      }
+      if (!this.centerModel || this.centerModel === Simple3DLoader.prototype.centerModel) {
+        this.centerModel = this._legacyCenterModel.bind(this);
+      }
+      console.log('↩️ Using legacy model loader fallback');
+    }
+    if (!this.controlsManagerAttached) {
+      if (!this.setupControls || this.setupControls === Simple3DLoader.prototype.setupControls) {
+        this.setupControls = this._legacySetupControls.bind(this);
+      }
+      console.log('↩️ Using legacy controls manager fallback');
+    }
+    if (!this.lightingSystemAttached) {
+      if (!this.setupLighting || this.setupLighting === Simple3DLoader.prototype.setupLighting) {
+        // already present legacy setupLighting
+      }
+      console.log('↩️ Using legacy lighting system fallback');
+    }
+    if (!this.animationSystemAttached) {
+      if (!this.playWelcomeAnimation || this.playWelcomeAnimation === Simple3DLoader.prototype.playWelcomeAnimation) {
+        // legacy playWelcomeAnimation already in place
+      }
+      console.log('↩️ Using legacy animation system fallback');
+    }
+    if (!this.coreEngineAttached) {
+      if (!this.setupScene || this.setupScene === Simple3DLoader.prototype.setupScene) {
+        // keep legacy method as-is (already defined below) - no rename needed
+        console.log('↩️ Using legacy core engine (scene setup) fallback');
+      }
+    }
+
+    // Phase 1.6.1b: Ensure public API surface remains stable regardless of module load success
+    this.ensurePublicAPI();
+    console.log('🧩 Core module ensure complete (API compatibility enforced)');
+  }
+
+  // Ensure all expected public methods exist (backwards compatibility layer)
+  ensurePublicAPI() {
+    if (this._publicApiEnsured) return; // idempotent
+    const requiredMethods = [
+      'setupScene', 'loadModel', 'centerModel', 'setupControls', 'setupLighting', 'playWelcomeAnimation',
+      // forward‑looking placeholders (will be added in later phases but safe to expose early)
+      'dispose', 'updateConfig', 'getStats'
+    ];
+    requiredMethods.forEach(name => {
+      if (typeof this[name] !== 'function') {
+        this[name] = () => {
+          console.warn(`⚠️ Public API stub '${name}' invoked before its module was loaded.`);
+        };
+      }
+    });
+    this._publicApiEnsured = true;
   }
 
   // Progressive loading alternative for better performance
@@ -444,7 +549,8 @@ class Simple3DLoader {
     return qualityAdjustments;
   }
 
-  playWelcomeAnimation() {
+  // Legacy fallback (will be overridden by animation-system module)
+  playWelcomeAnimation() { // keep name for now until module attached, module loader will replace with module version; rename internals next phase if needed
     const animConfig = this.config.animations.welcomeAnimation;
     console.log('🎬 Playing welcome animation with updated start/end positions (smooth expo.inOut easing)...');
     
@@ -591,14 +697,32 @@ class Simple3DLoader {
   }
 
   async loadThreeJSWithRetry(maxRetries = 3) {
+    console.log('📦 Starting Three.js loading with retry logic...');
+
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         console.log(`📦 Loading Three.js (attempt ${attempt}/${maxRetries})...`);
+        console.log('🌐 Network status:', navigator.onLine ? 'online' : 'offline');
+
         await this.attemptThreeJSLoad();
         console.log('✅ Three.js loaded successfully!');
-        return;
+
+        // Verify all required objects are available
+        if (window.THREE && window.GLTFLoader && window.OrbitControls) {
+          console.log('✅ All Three.js modules verified present');
+          return;
+        } else {
+          throw new Error('Three.js modules incomplete after load');
+        }
       } catch (error) {
         console.warn(`❌ Three.js loading attempt ${attempt} failed:`, error.message);
+        console.warn('📍 Error details:', {
+          message: error.message,
+          stack: error.stack,
+          windowTHREE: !!window.THREE,
+          GLTFLoader: !!window.GLTFLoader,
+          OrbitControls: !!window.OrbitControls
+        });
 
         if (attempt === maxRetries) {
           console.error('💥 All Three.js loading attempts failed, initializing fallback mode');
@@ -828,56 +952,93 @@ class Simple3DLoader {
 
   setupScene() {
     console.log('🎬 Setting up Three.js scene...');
-    
+
     // Use viewport dimensions for full-page coverage
     const width = window.innerWidth;
     const height = window.innerHeight;
+    console.log('📐 Viewport dimensions:', { width, height });
 
+    // Verify Three.js is available
+    if (!window.THREE) {
+      console.error('❌ THREE.js not available for scene setup');
+      throw new Error('THREE.js not available');
+    }
+
+    console.log('🎬 Creating Three.js scene...');
     // Create scene
     this.scene = new THREE.Scene();
     // Start with transparent background to prevent gradient flash
     this.scene.background = null; // Will be set after loading
+    console.log('✅ Scene created');
 
     // Create camera using configuration
+    console.log('📷 Creating camera with config:', this.config.camera);
     const cameraConfig = this.config.camera;
     this.camera = new THREE.PerspectiveCamera(
-      cameraConfig.fov, 
-      width / height, 
-      0.1, 
+      cameraConfig.fov,
+      width / height,
+      0.1,
       1000
     );
     this.camera.position.set(...cameraConfig.position);
+    console.log('✅ Camera created at position:', this.camera.position);
 
     // Create renderer with configuration
+    console.log('🖥️ Creating WebGL renderer...');
     const performanceConfig = this.config.performance;
-    this.renderer = new THREE.WebGLRenderer({ 
-      antialias: performanceConfig.enableAntialiasing,
-      alpha: true,
-      premultipliedAlpha: false // Prevent alpha blending issues
-    });
+
+    try {
+      this.renderer = new THREE.WebGLRenderer({
+        antialias: performanceConfig.enableAntialiasing,
+        alpha: true,
+        premultipliedAlpha: false // Prevent alpha blending issues
+      });
+      console.log('✅ WebGL renderer created successfully');
+    } catch (error) {
+      console.error('❌ Failed to create WebGL renderer:', error);
+      throw error;
+    }
+
+    console.log('🖥️ Configuring renderer settings...');
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(performanceConfig.pixelRatio);
     this.renderer.setClearColor(0x000000, 0); // Transparent clear color initially
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+    console.log('📊 Renderer configuration:', {
+      size: { width, height },
+      pixelRatio: performanceConfig.pixelRatio,
+      antialias: performanceConfig.enableAntialiasing,
+      shadowsEnabled: this.renderer.shadowMap.enabled
+    });
+
     // Add renderer to container
+    console.log('🎬 Adding renderer canvas to container...');
+    if (!this.container) {
+      console.error('❌ Container not available for renderer attachment');
+      throw new Error('Container not available');
+    }
+
     this.container.appendChild(this.renderer.domElement);
+    console.log('✅ Renderer canvas added to container');
 
     // Detect capabilities and adapt quality settings
+    console.log('🔍 Detecting WebGL capabilities...');
     this.adaptQualitySettings();
 
     // Add lights
+    console.log('💡 Setting up lighting...');
     this.setupLighting();
 
-    // (Phase 2 Cleanup) POI mapping initialization removed
+    // Initialize new interaction system core (Phase 3 skeleton)
+    console.log('🧭 Initializing interaction system...');
+    this.initializeInteractionSystem();
 
-  // Initialize new interaction system core (Phase 3 skeleton)
-  this.initializeInteractionSystem();
-
-    console.log('✅ Scene setup complete');
+    console.log('✅ Scene setup complete - all components initialized');
   }
 
+  // Legacy fallback (will be overridden by lighting-system module)
   setupLighting() {
     const lightingConfig = this.config.lighting;
     
@@ -895,46 +1056,107 @@ class Simple3DLoader {
     console.log('✅ Lighting setup complete with configuration');
   }
 
-  async loadModel() {
+  // Legacy fallback (replaced by module attachModelLoader). Retained for safety.
+  async _legacyLoadModel() {
     return new Promise((resolve, reject) => {
-      console.log('📁 Loading GLB model:', this.modelUrl);
-      
+      console.log('📁 Starting GLB model loading...');
+      console.log('🌐 Model URL:', this.modelUrl);
+      console.log('🔧 Development mode:', this.isDevelopment);
+      console.log('🌐 Network status:', navigator.onLine ? 'online' : 'offline');
+
       if (!window.GLTFLoader) {
-        console.error('❌ GLTFLoader not available');
+        console.error('❌ GLTFLoader not available - Three.js modules not properly loaded');
+        console.log('🔍 Available window objects:', Object.keys(window).filter(k => k.includes('THREE') || k.includes('GLTF') || k.includes('Orbit')));
         reject(new Error('GLTFLoader not available'));
         return;
       }
-      
+
+      console.log('✅ GLTFLoader available, creating loader instance...');
       const loader = new window.GLTFLoader();
-      
+
+      // Test network connectivity to model URL
+      console.log('🔍 Testing model URL accessibility...');
+      fetch(this.modelUrl, { method: 'HEAD' })
+        .then(response => {
+          console.log('🌐 Model URL test response:', {
+            status: response.status,
+            statusText: response.statusText,
+            ok: response.ok,
+            headers: Object.fromEntries(response.headers.entries())
+          });
+        })
+        .catch(error => {
+          console.warn('⚠️ Model URL test failed:', error);
+        });
+
       loader.load(
         this.modelUrl,
         (gltf) => {
-          console.log('✅ Model loaded successfully!');
+          console.log('🎉 Model loaded successfully!');
+          console.log('📊 Model data:', {
+            scene: !!gltf.scene,
+            animations: gltf.animations?.length || 0,
+            scenes: gltf.scenes?.length || 0,
+            cameras: gltf.cameras?.length || 0
+          });
+
           this.model = gltf.scene;
-          
+
+          // Log model structure
+          let meshCount = 0;
+          let materialCount = 0;
+          this.model.traverse((child) => {
+            if (child.isMesh) {
+              meshCount++;
+              if (child.material) {
+                if (Array.isArray(child.material)) {
+                  materialCount += child.material.length;
+                } else {
+                  materialCount++;
+                }
+              }
+            }
+          });
+
+          console.log('📊 Model structure:', {
+            totalChildren: this.model.children.length,
+            meshCount: meshCount,
+            materialCount: materialCount
+          });
+
           // Enable shadows on all meshes and set initial opacity to 0
+          console.log('🎨 Configuring materials and shadows...');
           this.model.traverse((child) => {
             if (child.isMesh) {
               child.castShadow = true;
               child.receiveShadow = true;
               // Make model invisible initially for fade-in effect
-              child.material.transparent = true;
-              child.material.opacity = 0;
+              if (child.material) {
+                if (Array.isArray(child.material)) {
+                  child.material.forEach(mat => {
+                    mat.transparent = true;
+                    mat.opacity = 0;
+                  });
+                } else {
+                  child.material.transparent = true;
+                  child.material.opacity = 0;
+                }
+              }
             }
           });
-          
-          // Add model to scene
-          this.scene.add(this.model);
-          
-          // Center and scale model
-          this.centerModel();
 
-          // (Phase 1 Cleanup) Flag POI system initialization removed
+          // Add model to scene
+          console.log('🎬 Adding model to scene...');
+          this.scene.add(this.model);
+
+          // Center and scale model
+          console.log('📐 Centering and scaling model...');
+          this.centerModel();
 
           // Phase 5.1: Initialize interactive stations automatically after model load
           try {
             if (this.interactionSystemInitialized) {
+              console.log('🧭 Setting up interactive objects...');
               this.setupInteractiveObjects();
               console.log('🧭 Phase 5.1: Interactive objects auto-setup after model load');
             } else {
@@ -945,23 +1167,37 @@ class Simple3DLoader {
           }
 
           // Start fade-in animation for the model
+          console.log('✨ Starting model fade-in animation...');
           this.fadeInModel();
 
+          console.log('✅ Model loading process complete!');
           resolve();
         },
         (progress) => {
-          const percent = (progress.loaded / progress.total * 100).toFixed(0);
-          console.log(`📊 Loading progress: ${percent}%`);
+          if (progress.total > 0) {
+            const percent = (progress.loaded / progress.total * 100).toFixed(1);
+            console.log(`📊 Loading progress: ${percent}% (${progress.loaded}/${progress.total} bytes)`);
+          } else {
+            console.log(`📊 Loading progress: ${progress.loaded} bytes loaded`);
+          }
         },
         (error) => {
           console.error('❌ Error loading model:', error);
+          console.error('📍 Model loading error details:', {
+            message: error.message,
+            type: error.type,
+            target: error.target,
+            stack: error.stack
+          });
+          console.log('🔍 Attempted URL:', this.modelUrl);
+          console.log('🔍 Current scene state:', !!this.scene);
           reject(error);
         }
       );
     });
   }
 
-  centerModel() {
+  _legacyCenterModel() {
     if (!this.model) return;
 
     // Calculate bounding box
@@ -991,7 +1227,7 @@ class Simple3DLoader {
     console.log('✅ Model centered and scaled with configuration positioning');
   }
 
-  setupControls() {
+  _legacySetupControls() {
     if (!window.OrbitControls) {
       console.warn('⚠️ OrbitControls not available, using basic mouse controls');
       this.setupBasicControls();
@@ -1183,39 +1419,67 @@ class Simple3DLoader {
   // DEBUG PANELS LOADER
   // =============================================================================
   
-  // Helper method to load debug panels script with fallback
-  async loadDebugPanelsScript(primaryUrl, urls) {
+  // Generic helper to load any module script with environment-aware fallback
+  async loadModuleScript(primaryUrl, fallbackUrl) {
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.type = 'module';
       script.src = primaryUrl;
 
       script.onload = () => {
-        console.log('✅ Debug panels script loaded from:', primaryUrl);
+        console.log('✅ Module script loaded:', primaryUrl);
         resolve();
       };
 
       script.onerror = () => {
-        console.log('🔄 Primary debug panels URL failed, trying fallback...');
+        if (!fallbackUrl || fallbackUrl === primaryUrl) {
+          reject(new Error('Failed to load module script: ' + primaryUrl));
+          return;
+        }
+        console.log('🔄 Primary module URL failed, trying fallback:', fallbackUrl);
         const fallbackScript = document.createElement('script');
         fallbackScript.type = 'module';
-        const fallbackUrl = this.isDevelopment ? urls.production : urls.local;
         fallbackScript.src = fallbackUrl;
-
         fallbackScript.onload = () => {
-          console.log('✅ Debug panels script loaded from fallback:', fallbackUrl);
+          console.log('✅ Module script loaded from fallback:', fallbackUrl);
           resolve();
         };
-
         fallbackScript.onerror = () => {
-          reject(new Error('Failed to load debug panels from both primary and fallback URLs'));
+          reject(new Error('Failed to load module script from both primary & fallback URLs'));
         };
-
         document.head.appendChild(fallbackScript);
       };
 
       document.head.appendChild(script);
     });
+  }
+
+  // Convert a module path (e.g. "dev/debug-panels") to an attach function name (attachDebugPanels)
+  _deriveAttachFunctionName(moduleName) {
+    const base = moduleName.split('/').pop().replace(/\.js$/,'');
+    const pascal = base.split(/[-_]/).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('');
+    return 'attach' + pascal;
+  }
+
+  // Load a module from /src/modules/ with environment-aware URLs
+  async loadModule(moduleName) {
+    try {
+      const localUrl = `http://localhost:8080/src/modules/${moduleName}.js`;
+      const prodUrl = `https://webflow-gunther-map.vercel.app/src/modules/${moduleName}.js`;
+      const primary = this.isDevelopment ? localUrl : prodUrl;
+      const fallback = this.isDevelopment ? prodUrl : localUrl;
+      await this.loadModuleScript(primary, fallback);
+      const attachFnName = this._deriveAttachFunctionName(moduleName);
+      if (typeof window[attachFnName] === 'function') {
+        window[attachFnName](this);
+        console.log(`🧩 Module '${moduleName}' attached via ${attachFnName}()`);
+      } else {
+        console.warn(`⚠️ Module '${moduleName}' loaded but global ${attachFnName}() not found`);
+      }
+    } catch (err) {
+      console.warn(`⚠️ Failed to load module '${moduleName}':`, err.message);
+      throw err;
+    }
   }
 
   // Method to enable debug panels by loading the external module
@@ -1227,22 +1491,22 @@ class Simple3DLoader {
 
     try {
       console.log('🧩 Loading debug panels module...');
-
-      // Environment-aware debug panels URL (same pattern as model URLs)
-      const debugPanelsUrls = {
-        local: 'http://localhost:8080/src/scripts/debug-panels.js',
-        production: 'https://webflow-gunther-map.vercel.app/src/scripts/debug-panels.js'
-      };
-      const debugPanelsUrl = this.isDevelopment ? debugPanelsUrls.local : debugPanelsUrls.production;
-
-      // Load debug panels module using script injection (more compatible)
-      await this.loadDebugPanelsScript(debugPanelsUrl, debugPanelsUrls);
-
-      // Attach debug functionality to this loader instance
-      if (window.attachDebugPanels) {
-        window.attachDebugPanels(this);
-      } else {
-        throw new Error('Debug panels module did not expose attachDebugPanels globally');
+      // New preferred path (Phase 1 modularization)
+      try {
+        await this.loadModule('dev/debug-panels');
+      } catch (modErr) {
+        console.warn('⚠️ New module path failed, falling back to legacy scripts directory...', modErr.message);
+        // Legacy fallback (pre-modular path)
+        const legacyLocal = 'http://localhost:8080/src/scripts/debug-panels.js';
+        const legacyProd = 'https://webflow-gunther-map.vercel.app/src/scripts/debug-panels.js';
+        const primary = this.isDevelopment ? legacyLocal : legacyProd;
+        const fallback = this.isDevelopment ? legacyProd : legacyLocal;
+        await this.loadModuleScript(primary, fallback);
+        if (window.attachDebugPanels) {
+          window.attachDebugPanels(this);
+        } else {
+          throw new Error('Legacy debug panels script loaded but attachDebugPanels not found');
+        }
       }
       
       console.log('✅ Debug panels loaded and enabled');
