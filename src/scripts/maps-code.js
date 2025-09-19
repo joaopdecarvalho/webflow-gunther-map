@@ -5,30 +5,32 @@
   }
 
   onReady(function () {
-    var btn = document.querySelector('[data-button-id="maps"]');
-    if (!btn) return;
+    // We only need to set up delegation once; use the first button (if present) as a sentinel.
+    var firstBtn = document.querySelector('[data-button-id="maps"]');
+    if (!firstBtn) return; // No maps buttons yet
 
-    // Prevent duplicate listeners
-    if (btn.dataset.mapsListenerAdded) return;
-    btn.dataset.mapsListenerAdded = "true";
+    if (firstBtn.dataset.mapsListenerAdded) return; // Already initialized
+    firstBtn.dataset.mapsListenerAdded = "true";
 
     var modeLetters = { driving: "d", walking: "w", bicycling: "b", transit: "t" };
 
-    function handleMapClick(e) {
+    function handleMapClick(e, el) {
       e.preventDefault();
       e.stopPropagation();
 
-      var dest = btn.dataset.stationAdress || "-";
-      var mode = (btn.dataset.mode || "walking").toLowerCase();
+      // Support both spellings (stationAddress & stationAdress) to be forgiving
+      var ds = el.dataset || {};
+      var dest = ds.stationAddress || ds.stationAdress || "-";
+      var mode = (ds.mode || "walking").toLowerCase();
 
-      openGoogleMaps(dest, mode);
+      openGoogleMaps(dest, mode, ds);
     }
 
-    // Use event delegation to catch clicks
+    // Event delegation so dynamically added buttons also work
     document.addEventListener("click", function(e) {
       var mapsButton = e.target.closest('[data-button-id="maps"]');
       if (mapsButton) {
-        handleMapClick(e);
+        handleMapClick(e, mapsButton);
       }
     });
 
@@ -75,7 +77,7 @@
       }, delay);
     }
 
-    async function openGoogleMaps(destination, mode) {
+    async function openGoogleMaps(destination, mode, ds) {
       var destEncoded = encodeURIComponent(destination);
 
       // Build a privacy-first fallback (no geolocation). Google Maps web will ask the user directly if needed.
@@ -86,7 +88,7 @@
 
       // Optional: only if you set data-geo-consent="true", ask user if they want to share location for better fallback.
       function buildWebFallbackWithOptionalConsent() {
-        if (btn.dataset.geoConsent === "true") {
+        if (ds && ds.geoConsent === "true") {
           var msg = btn.dataset.geoConsentText
             || "Share your location to improve directions in your browser?";
           if (window.confirm(msg)) {
