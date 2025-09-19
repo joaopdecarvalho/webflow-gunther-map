@@ -673,6 +673,21 @@ class Simple3DLoader {
     console.log('📱 Viewport resized:', { width, height });
   }
 
+  injectAntiFlashCSS() {
+    // Create and inject CSS to prevent any white flash
+    const style = document.createElement('style');
+    style.textContent = `
+      #webgl-container,
+      .webgl-container,
+      [data-webgl-container] {
+        background-color: #3c5e71 !important;
+        transition: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+    console.log('🚫 Anti-flash CSS injected');
+  }
+
   // Conditionally load and attach debug panels module
   async maybeAttachDebugPanels() {
     try {
