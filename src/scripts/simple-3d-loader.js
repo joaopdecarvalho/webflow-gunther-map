@@ -66,11 +66,22 @@ class Simple3DLoader {
     this.config = {
       "version": "1.0.0",
       "camera": {
-        "position": [10.3, 21.9, 16.0],
-        "target": [-6.5, -34.2, -11.8],
+        "position": [12.2, 7.1, 79.2],
+        "target": [-17.5, -68.8, 36.7],
         "fov": 60,
         "minDistance": 50,
-        "maxDistance": 90
+        "maxDistance": 125
+      },
+      "controls": {
+        "minPolarAngle": 22,
+        "maxPolarAngle": 104,
+        "minDistance": 50,
+        "maxDistance": 125,
+        "enableZoom": true,
+        "enableRotate": true,
+        "enablePan": true,
+        "dampingFactor": 0.02,
+        "enableDamping": true
       },
       "lighting": {
         "warmAmbient": {
@@ -87,7 +98,11 @@ class Simple3DLoader {
         "welcomeAnimation": {
           "enabled": true,
           "duration": 1300,
-          "easing": "easeInOut"
+          "easing": "easeInOut",
+          "startPosition": [30.7, 20.7, 107.5],
+          "startTarget": [-18.7, -72.1, 39.8],
+          "endPosition": [12.2, 7.1, 79.2],
+          "endTarget": [-17.5, -68.8, 36.7]
         }
       },
       "performance": {
@@ -433,13 +448,13 @@ class Simple3DLoader {
 
   playWelcomeAnimation() {
     const animConfig = this.config.animations.welcomeAnimation;
-    console.log('🎬 Playing welcome animation with custom start/end positions (smooth expo.inOut easing)...');
+    console.log('🎬 Playing welcome animation with updated start/end positions (smooth expo.inOut easing)...');
     
-    // Custom animation parameters from user specification
-    const startPos = new THREE.Vector3(26.6, 29.9, 43.7);
-    const startTarget = new THREE.Vector3(-0.8, -37.3, -9.4);
-    const endPos = new THREE.Vector3(10.3, 21.9, 16.0);
-    const endTarget = new THREE.Vector3(-6.5, -34.2, -11.8);
+    // Use configuration values for animation positions
+    const startPos = new THREE.Vector3(...animConfig.startPosition);
+    const startTarget = new THREE.Vector3(...animConfig.startTarget);
+    const endPos = new THREE.Vector3(...animConfig.endPosition);
+    const endTarget = new THREE.Vector3(...animConfig.endTarget);
     
     // Set initial camera position and target
     this.camera.position.copy(startPos);
@@ -482,7 +497,7 @@ class Simple3DLoader {
         this.camera.position.copy(endPos);
         this.controls.target.copy(endTarget);
         this.controls.update();
-        console.log('✅ Welcome animation complete - synced with Advanced Suite');
+        console.log('✅ Welcome animation complete - new camera positions applied');
       }
     };
     
@@ -975,31 +990,39 @@ class Simple3DLoader {
     }
 
     const cameraConfig = this.config.camera;
+    const controlsConfig = this.config.controls;
     const uiConfig = this.config.ui;
     
     this.controls = new window.OrbitControls(this.camera, this.renderer.domElement);
     
-    // Apply configuration settings
-    this.controls.enableDamping = true;
-    this.controls.dampingFactor = 0.05;
+    // Apply enhanced configuration settings
+    this.controls.enableDamping = controlsConfig.enableDamping;
+    this.controls.dampingFactor = controlsConfig.dampingFactor;
     
-    // Restrict vertical rotation to prevent looking under the model
-    this.controls.minPolarAngle = Math.PI * 0.1; // 18 degrees from top (prevents looking too far down)
-    this.controls.maxPolarAngle = Math.PI * 0.34; // 81 degrees (prevents looking under the model)
+    // Apply updated polar angle restrictions
+    this.controls.minPolarAngle = THREE.MathUtils.degToRad(controlsConfig.minPolarAngle); // 22 degrees
+    this.controls.maxPolarAngle = THREE.MathUtils.degToRad(controlsConfig.maxPolarAngle); // 104 degrees
     
-    this.controls.minDistance = cameraConfig.minDistance;
-    this.controls.maxDistance = cameraConfig.maxDistance;
+    // Apply updated distance constraints
+    this.controls.minDistance = controlsConfig.minDistance; // 50
+    this.controls.maxDistance = controlsConfig.maxDistance; // 125
     
     // Enable/disable controls based on configuration
-    this.controls.enableZoom = uiConfig.enableZoom;
-    this.controls.enableRotate = uiConfig.enableRotate;
-    this.controls.enablePan = uiConfig.enablePan;
+    this.controls.enableZoom = controlsConfig.enableZoom;
+    this.controls.enableRotate = controlsConfig.enableRotate;
+    this.controls.enablePan = controlsConfig.enablePan;
     
     // Set camera target from configuration
     this.controls.target.set(...cameraConfig.target);
     this.controls.update();
 
-    console.log('🎮 Camera controls setup complete with configuration');
+    console.log('🎮 Camera controls setup complete with updated configuration:', {
+      minPolarAngle: controlsConfig.minPolarAngle + '°',
+      maxPolarAngle: controlsConfig.maxPolarAngle + '°',
+      minDistance: controlsConfig.minDistance,
+      maxDistance: controlsConfig.maxDistance,
+      dampingFactor: controlsConfig.dampingFactor
+    });
   }
 
   setupBasicControls() {
@@ -1273,13 +1296,13 @@ class Simple3DLoader {
           <div style="color: #FFC107; margin-bottom: 4px;"><strong>Rotation Limits:</strong></div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
             <label style="width: 45%;">Min Polar (°):</label>
-            <input type="range" id="minPolar" min="0" max="90" step="1" value="18" style="width: 40%;">
-            <span id="minPolarValue" style="width: 10%; text-align: right;">18</span>
+            <input type="range" id="minPolar" min="0" max="90" step="1" value="22" style="width: 40%;">
+            <span id="minPolarValue" style="width: 10%; text-align: right;">22</span>
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
             <label style="width: 45%;">Max Polar (°):</label>
-            <input type="range" id="maxPolar" min="45" max="180" step="1" value="81" style="width: 40%;">
-            <span id="maxPolarValue" style="width: 10%; text-align: right;">81</span>
+            <input type="range" id="maxPolar" min="45" max="180" step="1" value="104" style="width: 40%;">
+            <span id="maxPolarValue" style="width: 10%; text-align: right;">104</span>
           </div>
         </div>
 
@@ -1293,8 +1316,8 @@ class Simple3DLoader {
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
             <label style="width: 45%;">Max Distance:</label>
-            <input type="range" id="maxDistance" min="50" max="200" step="5" value="90" style="width: 40%;">
-            <span id="maxDistanceValue" style="width: 10%; text-align: right;">90</span>
+            <input type="range" id="maxDistance" min="50" max="200" step="5" value="125" style="width: 40%;">
+            <span id="maxDistanceValue" style="width: 10%; text-align: right;">125</span>
           </div>
         </div>
 
@@ -1320,8 +1343,8 @@ class Simple3DLoader {
           <div style="color: #9C27B0; margin-bottom: 4px;"><strong>Damping:</strong></div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
             <label style="width: 45%;">Damping Factor:</label>
-            <input type="range" id="dampingFactor" min="0.01" max="0.2" step="0.01" value="0.05" style="width: 40%;">
-            <span id="dampingFactorValue" style="width: 10%; text-align: right;">0.05</span>
+            <input type="range" id="dampingFactor" min="0.01" max="0.2" step="0.01" value="0.02" style="width: 40%;">
+            <span id="dampingFactorValue" style="width: 10%; text-align: right;">0.02</span>
           </div>
         </div>
 
